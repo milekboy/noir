@@ -1,32 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react";
 import Nouislider from "nouislider-react";
 import "nouislider/distribute/nouislider.css";
 
+interface Props {
+  onChange: (range: [number, number]) => void;
+  value: [number, number]; // 🔧 required controlled value from parent
+}
 
+export default function ShopSidebarPriceSlider({ onChange, value }: Props) {
+  function handleChangeVale(eve: (string | number)[]) {
+    const parseVal = (val: string | number): number => {
+      if (typeof val === "string")
+        return Math.round(parseFloat(val.replace("$", "")));
+      return Math.round(val);
+    };
 
+    const newMin = parseVal(eve[0]);
+    const newMax = parseVal(eve[1]);
+    onChange([newMin, newMax]);
+  }
 
-export default function ShopSidebarPriceSlider(){
-    const [priceValue , setPriceValue] = useState({min : 40, max : 350});
-
-    function handleChangeVale(eve : number[]){
-        setPriceValue({min: eve[0], max : eve[1]})
-    }
-
-    return(
-        <div className="range-slider style-1">
-            <div id="slider-tooltips2" className="mb-3">
-                <Nouislider range={{ min: 0, max: 400 }} start={[priceValue.min, priceValue.max]} connect 
-                    format={{
-                        to: (value: number) => `$${value.toFixed(0)}`, 
-                        from: (value: string) => parseFloat(value.replace('$', ''))
-                    }}
-                    onChange={handleChangeVale}
-                />   
-            </div>            
-            <span className="example-val" id="slider-margin-value-min2">Min Price: {priceValue.min}</span>
-            <span className="example-val" id="slider-margin-value-max2">Max Price: {priceValue.max}</span>
-        </div>
-    )
-} 
+  return (
+    <div className="range-slider style-1">
+      <div id="slider-tooltips2" className="mb-3">
+        <Nouislider
+          key={`${value[0]}-${value[1]}`}
+          range={{ min: 0, max: 400 }}
+          start={[value[0], value[1]]}
+          connect
+          format={{
+            to: (val: number) => `$${val.toFixed(0)}`,
+            from: (val: string) => parseFloat(val.replace("$", "")),
+          }}
+          onChange={handleChangeVale}
+        />
+      </div>
+      <span className="example-val">Min Price: {value[0]}</span>
+      <span className="example-val ms-3">Max Price: {value[1]}</span>
+    </div>
+  );
+}
