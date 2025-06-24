@@ -3,60 +3,55 @@ import Link from "next/link";
 import { Modal, Tab } from "react-bootstrap";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
-import { useSearchParams } from "next/navigation";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
 import SelectBoxOne from "@/elements/Shop/SelectBoxOne";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-
 import { shopStyleData } from "@/constant/Alldata";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import { useState } from "react";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
-import Image from "next/image";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 import ShopListCard from "@/elements/Shop/ShopListCard";
 
-export default function ShopList() {
+export default function ShopList({
+  selectedCategory,
+}: {
+  selectedCategory: string | null;
+}) {
   const handleResetFilters = () => {
     setSelectedColor(null);
     setSelectedSize(null);
     setSelectedPriceRange([0, 400]);
   };
 
-  const searchParams = useSearchParams();
-  const selectedCategory = searchParams.get("category");
-
-  const [detailModal, setDetailModal] = useState<boolean>(false);
-  const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
+  const [detailModal, setDetailModal] = useState(false);
+  const [mobileSidebar, setMobileSidebar] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
     [number, number]
   >([0, 400]);
+
   const onPriceChange = (range: [number, number]) =>
     setSelectedPriceRange(range);
   const onColorChange = (color: string) => setSelectedColor(color);
   const onSizeChange = (size: string) => setSelectedSize(Number(size));
+
   const filteredCategory = selectedCategory
     ? shopStyleData.filter((item) => item.category === selectedCategory)
     : shopStyleData;
 
   const filteredProducts = filteredCategory.filter((item) => {
     const price = parseFloat(item.priceValue?.replace("$", "") || "0");
-
     const matchColor = selectedColor ? item.color === selectedColor : true;
     const matchSize = selectedSize ? item.size === selectedSize : true;
     const matchPrice =
       price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
-    if (selectedColor) {
-      console.log(
-        `item: ${item.name}, color: ${item.color}, matchColor: ${matchColor}`
-      );
-    }
     return matchColor && matchSize && matchPrice;
   });
+
   return (
     <div className="page-content bg-light">
       <CommanBanner
@@ -68,6 +63,7 @@ export default function ShopList() {
       <section className="content-inner-3 pt-3">
         <div className="container">
           <div className="row">
+            {/* Sidebar */}
             <div className="col-xl-3">
               <div className="sticky-xl-top">
                 <Link
@@ -75,28 +71,7 @@ export default function ShopList() {
                   className={`panel-close-btn ${mobileSidebar ? "active" : ""}`}
                   onClick={() => setMobileSidebar(false)}
                 >
-                  <svg
-                    width="35"
-                    height="35"
-                    viewBox="0 0 51 50"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M37.748 12.5L12.748 37.5"
-                      stroke="white"
-                      strokeWidth="1.25"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12.748 12.5L37.748 37.5"
-                      stroke="white"
-                      strokeWidth="1.25"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  ✕
                 </Link>
                 <div
                   className={`shop-filter mt-xl-2 mt-0 ${
@@ -118,7 +93,6 @@ export default function ShopList() {
                       selectedSize={selectedSize}
                       selectedPriceRange={selectedPriceRange}
                     />
-
                     <button
                       type="button"
                       onClick={handleResetFilters}
@@ -130,6 +104,8 @@ export default function ShopList() {
                 </div>
               </div>
             </div>
+
+            {/* Main Content */}
             <div className="col-80 col-xl-9 ">
               <h4 className="mb-3">Category</h4>
               <div className="row">
@@ -137,30 +113,21 @@ export default function ShopList() {
                   <ShopCategorySlider />
                 </div>
               </div>
+
               <Tab.Container defaultActiveKey={"Grid"}>
                 <div className="filter-wrapper border-top p-t20">
                   <div className="filter-left-area">
                     <ul className="filter-tag">
                       <li>
                         <Link href={"#"} className="tag-btn">
-                          Dresses
-                          <i className="icon feather icon-x tag-close" />
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href={"#"} className="tag-btn">
-                          Tops
-                          <i className="icon feather icon-x tag-close" />
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href={"#"} className="tag-btn">
-                          Outerwear
+                          Dresses{" "}
                           <i className="icon feather icon-x tag-close" />
                         </Link>
                       </li>
                     </ul>
-                    <span>Showing 1–5 Of 50 Results</span>
+                    <span>
+                      Showing 1–5 Of {filteredProducts.length} Results
+                    </span>
                   </div>
                   <div className="filter-right-area">
                     <Link
@@ -168,19 +135,6 @@ export default function ShopList() {
                       className="panel-btn"
                       onClick={() => setMobileSidebar(true)}
                     >
-                      <svg
-                        className="me-2"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 25 25"
-                        width="20"
-                        height="20"
-                      >
-                        <g id="Layer_28" data-name="Layer 28">
-                          <path d="M2.54,5H15v.5A1.5,1.5,0,0,0,16.5,7h2A1.5,1.5,0,0,0,20,5.5V5h2.33a.5.5,0,0,0,0-1H20V3.5A1.5,1.5,0,0,0,18.5,2h-2A1.5,1.5,0,0,0,15,3.5V4H2.54a.5.5,0,0,0,0,1ZM16,3.5a.5.5,0,0,1,.5-.5h2a.5.5,0,0,1,.5.5v2a.5.5,0,0,1-.5.5h-2a.5.5,0,0,1-.5-.5Z"></path>
-                          <path d="M22.4,20H18v-.5A1.5,1.5,0,0,0,16.5,18h-2A1.5,1.5,0,0,0,13,19.5V20H2.55a.5.5,0,0,0,0,1H13v.5A1.5,1.5,0,0,0,14.5,23h2A1.5,1.5,0,0,0,18,21.5V21h4.4a.5.5,0,0,0,0-1ZM17,21.5a.5.5,0,0,1-.5.5h-2a.5.5,0,0,1-.5-.5v-2a.5.5,0,0,1,.5-.5h2a.5.5,0,0,1,.5.5Z"></path>
-                          <path d="M8.5,15h2A1.5,1.5,0,0,0,12,13.5V13H22.45a.5.5,0,1,0,0-1H12v-.5A1.5,1.5,0,0,0,10.5,10h-2A1.5,1.5,0,0,0,7,11.5V12H2.6a.5.5,0,1,0,0,1H7v.5A1.5,1.5,0,0,0,8.5,15ZM8,11.5a.5.5,0,0,1,.5-.5h2a.5.5,0,0,1,.5.5v2a.5.5,0,0,1-.5.5h-2a.5.5,0,0,1-.5-.5Z"></path>
-                        </g>
-                      </svg>
                       Filter
                     </Link>
                     <div className="form-group">
@@ -189,57 +143,35 @@ export default function ShopList() {
                     <div className="form-group Category">
                       <SelectBoxTwo />
                     </div>
-                    <div className="shop-tab">{/* <TabData /> */}</div>
                   </div>
                 </div>
+
                 <div className="row">
-                  <Tab.Content
-                    className="col-12 tab-content shop-"
-                    id="pills-tabContent"
-                  >
+                  <Tab.Content className="col-12 tab-content shop-">
                     <Tab.Pane eventKey={"List"}>
                       <div className="row">
-                        {filteredProducts.slice(2, 8).map((elem, ind) => (
+                        {filteredProducts.slice(0, 6).map((item, index) => (
                           <div
                             className="col-md-12 col-sm-12 col-xxxl-6"
-                            key={ind}
+                            key={index}
                           >
                             <ShopListCard
-                              image={elem.image}
-                              title={elem.name}
-                              price={elem.priceValue}
-                              inputtype={elem.inputtype}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey={"Coloumn"}>
-                      <div className="row gx-xl-4 g-3 mb-xl-0 mb-md-0 mb-3">
-                        {filteredProducts.map((item, ind) => (
-                          <div
-                            className="col-6 col-xl-4 col-lg-6 col-md-6 col-sm-6 m-md-b15 m-sm-b0 m-b30"
-                            key={ind}
-                          >
-                            <ShopGridCard
                               image={item.image}
                               title={item.name}
                               price={item.priceValue}
-                              showdetailModal={() => setDetailModal(true)}
+                              inputtype={item.inputtype}
                             />
                           </div>
                         ))}
                       </div>
                     </Tab.Pane>
-                    <Tab.Pane
-                      eventKey={"Grid"}
-                      aria-labelledby="tab-list-grid-btn"
-                    >
+
+                    <Tab.Pane eventKey={"Grid"}>
                       <div className="row gx-xl-4 g-3">
-                        {filteredProducts.map((item, ind) => (
+                        {filteredProducts.map((item, index) => (
                           <div
-                            className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30"
-                            key={ind}
+                            className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-b30"
+                            key={index}
                           >
                             <ShopGridCard
                               image={item.image}
@@ -254,9 +186,13 @@ export default function ShopList() {
                   </Tab.Content>
                 </div>
               </Tab.Container>
+
+              {/* Pagination */}
               <div className="row page mt-0">
                 <div className="col-md-6">
-                  <p className="page-text">Showing 1–5 of 50 Results</p>
+                  <p className="page-text">
+                    Showing 1–5 of {filteredProducts.length} Results
+                  </p>
                 </div>
                 <div className="col-md-6">
                   <nav aria-label="Blog Pagination">
@@ -270,6 +206,8 @@ export default function ShopList() {
           </div>
         </div>
       </section>
+
+      {/* Modal */}
       <Modal
         className="quick-view-modal"
         centered
