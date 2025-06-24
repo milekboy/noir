@@ -1386,6 +1386,7 @@ interface shopStyletype {
   priceValue?: string;
   inputtype?: string;
   color?: string;
+  category?: string;
   size?: number;
 }
 
@@ -1397,6 +1398,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Sophisticated Swagger Suit",
     color: "#000000",
     size: 14,
+    category: "bliss-dress",
   },
   {
     image: IMAGES.shopproduct2,
@@ -1405,6 +1407,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Checkered Slim Collar Casual Shirt",
     color: "#3E68FF",
     size: 10,
+    category: "glam-pants",
   },
   {
     image: IMAGES.shopproduct3,
@@ -1413,6 +1416,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Solid Cut Away Collar Casual Shirt",
     color: "#51EDC8",
     size: 8,
+    category: "bliss-dress",
   },
   {
     image: IMAGES.shopproduct4,
@@ -1421,6 +1425,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Athletic Mesh Sports Leggings",
     color: "#7BEF68",
     size: 16,
+    category: "leggings",
   },
   {
     image: IMAGES.shopproduct5,
@@ -1429,6 +1434,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Denim Overalls Shorts",
     color: "#9BD1FF",
     size: 12,
+    category: "bliss-dress",
   },
   {
     image: IMAGES.shopproduct6,
@@ -1437,6 +1443,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Plaid Wool Winter Coat",
     color: "#FF4A76",
     size: 20,
+    category: "silk-dress",
   },
   {
     image: IMAGES.shopproduct7,
@@ -1445,6 +1452,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Comfy Lounge Jogger Pants",
     color: "#B77CF3",
     size: 18,
+    category: "bliss-dress",
   },
   {
     image: IMAGES.shopproduct8,
@@ -1453,6 +1461,7 @@ export const shopStyleData: shopStyletype[] = [
     name: "Water-Resistant Windbreaker Jacket",
     color: "#000000",
     size: 10,
+    category: "classic-capri",
   },
   {
     image: IMAGES.shopproduct9,
@@ -1461,23 +1470,25 @@ export const shopStyleData: shopStyletype[] = [
     name: "Classic Denim Skinny Jeans",
     color: "#3E68FF",
     size: 8,
+    category: "bliss-dress",
   },
 ];
 
 interface ShopSlidertype {
   image: string;
   name: string;
+  id: string;
 }
 
 export const ShopCatSlider: ShopSlidertype[] = [
-  { image: IMAGES.shopproduct1, name: "Bliss Dress" },
-  { image: IMAGES.shopproduct2, name: "Glam Pants" },
-  { image: IMAGES.shopproduct3, name: "Leggings" },
-  { image: IMAGES.shopproduct4, name: "Classic Capri" },
-  { image: IMAGES.shopproduct5, name: "Dapper Coat" },
-  { image: IMAGES.shopproduct6, name: "Comfy Leggings" },
-  { image: IMAGES.shopproduct7, name: "Denim Jeans" },
-  { image: IMAGES.shopproduct8, name: "Silk Dress" },
+  { image: IMAGES.shopproduct1, name: "Bliss Dress", id: "bliss-dress" },
+  { image: IMAGES.shopproduct2, name: "Glam Pants", id: "glam-pants" },
+  { image: IMAGES.shopproduct3, name: "Leggings", id: "leggings" },
+  { image: IMAGES.shopproduct4, name: "Classic Capri", id: "classic-capri" },
+  { image: IMAGES.shopproduct5, name: "Dapper Coat", id: "dapper-coat" },
+  { image: IMAGES.shopproduct6, name: "Comfy Leggings", id: "comfy-leggings" },
+  { image: IMAGES.shopproduct7, name: "Denim Jeans", id: "denim-jeans" },
+  { image: IMAGES.shopproduct8, name: "Silk Dress", id: "silk-dress" },
 ];
 
 export type ShopProductItemtype = {
@@ -1564,13 +1575,14 @@ export const menuDataOne: MenuItemOne[] = [
   {
     title: "Shop Structure",
     links: [
-      { name: "Shop Standard", path: "/shop-standard" },
-      { name: "Shop List", path: "/shop-list" },
       { name: "Shop With Category", path: "/shop-with-category" },
-      { name: "Shop Filters Top Bar", path: "/shop-filters-top-bar" },
-      { name: "Shop Sidebar", path: "/shop-sidebar" },
-      { name: "Shop Style 1", path: "/shop-style-1" },
-      { name: "Shop Style 2", path: "/shop-style-2" },
+      { name: "Shop Standard", path: "/shop-standard" },
+      // { name: "Shop List", path: "/shop-list" },
+
+      // { name: "Shop Filters Top Bar", path: "/shop-filters-top-bar" },
+      // { name: "Shop Sidebar", path: "/shop-sidebar" },
+      // { name: "Shop Style 1", path: "/shop-style-1" },
+      // { name: "Shop Style 2", path: "/shop-style-2" },
     ],
   },
   {

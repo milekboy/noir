@@ -5,7 +5,7 @@ import { useState } from "react";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-import { shopStyleData, TabData } from "@/constant/Alldata";
+import { shopStyleData } from "@/constant/Alldata";
 import ShopListCard from "@/elements/Shop/ShopListCard";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
@@ -126,7 +126,7 @@ export default function ShopWithCategory() {
                 </div>
               </div>
             </div>
-            <div className="col-80 col-xl-9">
+            <div className="col-80 col-xl-9 ">
               <h4 className="mb-3">Category</h4>
               <div className="row">
                 <div className="col-xl-12">
