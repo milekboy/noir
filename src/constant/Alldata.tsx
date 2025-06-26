@@ -1393,7 +1393,7 @@ interface shopStyletype {
 export const shopStyleData: shopStyletype[] = [
   {
     image: IMAGES.shopproduct1,
-    inputtype: "favoriteCheck1",
+    inputtype: "favoriteChec1",
     priceValue: "$80.00",
     name: "Sophisticated Swagger Suit",
     color: "#000000",

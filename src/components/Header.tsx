@@ -256,27 +256,6 @@ const Header = ({ design }: DesignType) => {
                         <span className="badge badge-circle">5</span>
                       </Link>
                     </li>
-                    <li className="nav-item filte-link">
-                      <Link
-                        href="#"
-                        className="nav-link filte-btn"
-                        // onClick={() => setHeadSideBar(true)}
-                        onClick={() =>
-                          dispatch({ type: "TOGGLE_HEAD_SIDEBAR" })
-                        }
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="30"
-                          height="30"
-                          viewBox="0 0 30 13"
-                          fill="none"
-                        >
-                          <rect y="11" width="30" height="2" fill="black" />
-                          <rect width="30" height="2" fill="black" />
-                        </svg>
-                      </Link>
-                    </li>
                   </ul>
                 </div>
               </div>
