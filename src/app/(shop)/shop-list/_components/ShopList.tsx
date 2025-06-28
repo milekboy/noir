@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Modal, Tab } from "react-bootstrap";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
@@ -9,11 +10,11 @@ import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
 import { shopStyleData } from "@/constant/Alldata";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
-import { useState } from "react";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
-import ShopListCard from "@/elements/Shop/ShopListCard";
+
+import NetworkInstance from "../../../api/NetworkInstance";
 
 export default function ShopList({
   selectedCategory,
@@ -23,7 +24,47 @@ export default function ShopList({
   const handleResetFilters = () => {
     setSelectedColor(null);
     setSelectedSize(null);
-    setSelectedPriceRange([0, 400]);
+    setSelectedPriceRange([1000, 10000]);
+  };
+
+  interface ProductImage {
+    url: string;
+    public_id: string;
+    filename: string;
+  }
+
+  interface Product {
+    _id: string;
+    name: string;
+    price: any;
+    category: string;
+    productImages: ProductImage[];
+    description: string;
+    color: string;
+    size: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const networkInstance = NetworkInstance();
+  //api call
+
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("product/get-all-products");
+
+      setProducts(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
   const [detailModal, setDetailModal] = useState(false);
@@ -32,21 +73,23 @@ export default function ShopList({
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
     [number, number]
-  >([0, 400]);
+  >([1000, 10000]);
 
   const onPriceChange = (range: [number, number]) =>
     setSelectedPriceRange(range);
   const onColorChange = (color: string) => setSelectedColor(color);
   const onSizeChange = (size: string) => setSelectedSize(Number(size));
 
-  const filteredCategory = selectedCategory
-    ? shopStyleData.filter((item) => item.category === selectedCategory)
-    : shopStyleData;
+  const filteredCategory = products
+    ? products.filter((item) => item.category === selectedCategory)
+    : products;
 
   const filteredProducts = filteredCategory.filter((item) => {
-    const price = parseFloat(item.priceValue?.replace("$", "") || "0");
+    const price = item.price;
     const matchColor = selectedColor ? item.color === selectedColor : true;
-    const matchSize = selectedSize ? item.size === selectedSize : true;
+    const matchSize = selectedSize
+      ? item.size === selectedSize.toString()
+      : true;
     const matchPrice =
       price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
     return matchColor && matchSize && matchPrice;
@@ -125,9 +168,7 @@ export default function ShopList({
                         </Link>
                       </li>
                     </ul>
-                    <span>
-                      Showing 1–5 Of {filteredProducts.length} Results
-                    </span>
+                    <span>Showing 1–5 Of {products.length} Results</span>
                   </div>
                   <div className="filter-right-area">
                     <Link
@@ -150,16 +191,19 @@ export default function ShopList({
                   <Tab.Content className="col-12 tab-content shop-">
                     <Tab.Pane eventKey={"List"}>
                       <div className="row">
-                        {filteredProducts.slice(0, 6).map((item, index) => (
+                        {products.slice(0, 6).map((item, index) => (
                           <div
                             className="col-md-12 col-sm-12 col-xxxl-6"
                             key={index}
                           >
-                            <ShopListCard
-                              image={item.image}
+                            {" "}
+                            <ShopGridCard
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
-                              inputtype={item.inputtype}
+                              price={item.price}
+                              showdetailModal={() => setDetailModal(true)}
                             />
                           </div>
                         ))}
@@ -168,15 +212,17 @@ export default function ShopList({
 
                     <Tab.Pane eventKey={"Grid"}>
                       <div className="row gx-xl-4 g-3">
-                        {filteredProducts.map((item, index) => (
+                        {products.map((item, index) => (
                           <div
                             className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-b30"
                             key={index}
                           >
                             <ShopGridCard
-                              image={item.image}
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
+                              price={item.price}
                               showdetailModal={() => setDetailModal(true)}
                             />
                           </div>

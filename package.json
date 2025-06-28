@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@types/imagesloaded": "^4.1.6",
+    "axios": "^1.10.0",
     "imagesloaded": "^5.0.0",
     "isotope-layout": "^3.0.6",
     "lightgallery": "^2.8.3",

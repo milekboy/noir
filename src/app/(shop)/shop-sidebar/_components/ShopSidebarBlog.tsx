@@ -21,7 +21,7 @@ export default function ShopSidebarBlog() {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
     [number, number]
-  >([0, 400]);
+  >([1000, 10000]);
 
   const handlePriceChange = (range: [number, number]) =>
     setSelectedPriceRange(range);

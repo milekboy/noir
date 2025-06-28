@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-zoom.css";
@@ -8,24 +8,26 @@ import "lightgallery/css/lg-fullscreen.css";
 import "lightgallery/css/lg-share.css";
 import "lightgallery/css/lg-zoom.css";
 
-import '../../public/assets/icons/iconly/index.min.css';
-import '../../public/assets/vendor/swiper/swiper-bundle.min.css'
-import '../../public/assets/vendor/animate/animate.css'
-import '../../public/assets/css/style.css'
-import '../../public/assets/css/skin/skin-1.css'
+import "../../public/assets/icons/iconly/index.min.css";
+import "../../public/assets/vendor/swiper/swiper-bundle.min.css";
+import "../../public/assets/vendor/animate/animate.css";
+import "../../public/assets/css/style.css";
+import "../../public/assets/css/skin/skin-1.css";
+import { CartProvider } from "@/components/CartContext";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 // import SubscribeModal from "@/constant/SubscribeModal";
 import ScrollToTopButton from "@/constant/ScrollToTopButton";
 
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const path = usePathname();
 
-export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
-  const path = usePathname();  
-  
   useEffect(() => {
     setTimeout(() => {
       const links = document.querySelectorAll('a[href="#"]');
-      const handleClick = (event : any) => {
+      const handleClick = (event: any) => {
         event.preventDefault();
       };
       if (links) {
@@ -46,7 +48,7 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
         mobile: false,
         once: true,
         live: false,
-        callback: function (box : HTMLElement) {
+        callback: function (box: HTMLElement) {
           box.classList.add("will-animate");
           box.classList.add("animated");
         },
@@ -61,9 +63,9 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
           href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Roboto:wght@100;300;400;500;700;900&display=swap"
           rel="stylesheet"
         />
-      </head> 
+      </head>
       <body>
-        {children}        
+        <CartProvider>{children}</CartProvider>
         <ScrollToTopButton />
       </body>
     </html>

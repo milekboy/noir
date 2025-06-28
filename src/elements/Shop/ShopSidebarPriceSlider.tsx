@@ -26,7 +26,7 @@ export default function ShopSidebarPriceSlider({ onChange, value }: Props) {
       <div id="slider-tooltips2" className="mb-3">
         <Nouislider
           key={`${value[0]}-${value[1]}`}
-          range={{ min: 0, max: 400 }}
+          range={{ min: 1000, max: 10000 }}
           start={[value[0], value[1]]}
           connect
           format={{

@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Nav, Tab } from "react-bootstrap";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES, { SVGICON } from "@/constant/theme";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
 import ShopListCard from "@/elements/Shop/ShopListCard";
-import { shopStyleData, TabData } from "@/constant/Alldata";
+import { TabData } from "@/constant/Alldata";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
-
+import NetworkInstance from "@/app/api/NetworkInstance";
 import SelectBoxOne from "@/elements/Shop/SelectBoxOne";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
@@ -16,18 +16,72 @@ import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 
 export default function ShopStandard() {
+  const handleResetFilters = () => {
+    setSelectedColor(null);
+    setSelectedSize(null);
+    setSelectedPriceRange([1000, 10000]);
+  };
+  interface ProductImage {
+    url: string;
+    public_id: string;
+    filename: string;
+  }
+
+  interface Product {
+    _id: string;
+    name: string;
+    price: any;
+    category: string;
+    productImages: ProductImage[];
+    description: string;
+    color: string;
+    size: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }
+  const [products, setProducts] = useState<Product[]>([]);
+  const networkInstance = NetworkInstance();
+  //api call
+
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("product/get-all-products");
+
+      setProducts(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
   const [detailModal, setDetailModal] = useState<boolean>(false);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
     [number, number]
-  >([0, 400]);
+  >([1000, 10000]);
 
-  const handlePriceChange = (range: [number, number]) =>
+  const onPriceChange = (range: [number, number]) =>
     setSelectedPriceRange(range);
-  const handleColorChange = (color: string) => setSelectedColor(color);
-  const handleSizeChange = (size: string) => setSelectedSize(Number(size));
+  const onColorChange = (color: string) => setSelectedColor(color);
+  const onSizeChange = (size: string) => setSelectedSize(Number(size));
+
+  const filteredProducts = products.filter((item) => {
+    const price = item.price;
+    const matchColor = selectedColor ? item.color === selectedColor : true;
+    const matchSize = selectedSize
+      ? item.size === selectedSize.toString()
+      : true;
+    const matchPrice =
+      price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
+    return matchColor && matchSize && matchPrice;
+  });
   return (
     <div className="page-content bg-light">
       <CommanBanner
@@ -82,19 +136,20 @@ export default function ShopStandard() {
                       </h6>
                     </div>
                     <ShopSidebar
-                      onPriceChange={handlePriceChange}
-                      onColorChange={handleColorChange}
-                      onSizeChange={handleSizeChange}
+                      onPriceChange={onPriceChange}
+                      onColorChange={onColorChange}
+                      onSizeChange={onSizeChange}
                       selectedColor={selectedColor}
                       selectedSize={selectedSize}
                       selectedPriceRange={selectedPriceRange}
                     />
-                    <Link
-                      href="#"
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
                       className="btn btn-sm font-14 btn-secondary btn-sharp"
                     >
                       RESET
-                    </Link>
+                    </button>
                   </aside>
                 </div>
               </div>
@@ -164,16 +219,20 @@ export default function ShopStandard() {
                   >
                     <Tab.Pane eventKey={"List"}>
                       <div className="row">
-                        {shopStyleData.slice(2, 8).map((elem, ind) => (
+                        {products.slice(2, 8).map((item, ind) => (
                           <div
                             className="col-md-12 col-sm-12 col-xxxl-6"
                             key={ind}
                           >
                             <ShopListCard
-                              image={elem.image}
-                              title={elem.name}
-                              price={elem.priceValue}
-                              inputtype={elem.inputtype}
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
+                              description={item.description}
+                              title={item.name}
+                              price={item.price}
+                              _id={item._id}
+                              category={item.category}
                             />
                           </div>
                         ))}
@@ -181,15 +240,19 @@ export default function ShopStandard() {
                     </Tab.Pane>
                     <Tab.Pane eventKey={"Coloumn"}>
                       <div className="row gx-xl-4 g-3 mb-xl-0 mb-md-0 mb-3">
-                        {shopStyleData.map((item, ind) => (
+                        {filteredProducts.map((item, ind) => (
                           <div
                             className="col-6 col-xl-4 col-lg-6 col-md-6 col-sm-6 m-md-b15 m-sm-b0 m-b30"
                             key={ind}
                           >
                             <ShopGridCard
-                              image={item.image}
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
+                              price={item.price}
+                              _id={item._id}
+                              category={item.category}
                             />
                           </div>
                         ))}
@@ -200,43 +263,23 @@ export default function ShopStandard() {
                       aria-labelledby="tab-list-grid-btn"
                     >
                       <div className="row gx-xl-4 g-3">
-                        {shopStyleData.map((item, ind) => (
+                        {filteredProducts.map((item, ind) => (
                           <div
                             className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30"
                             key={ind}
                           >
                             <ShopGridCard
-                              image={item.image}
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
+                              price={`₦${item.price}`}
+                              _id={item._id}
+                              category={item.category}
                               showdetailModal={() => setDetailModal(true)}
                             />
                           </div>
                         ))}
-                        <div className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30">
-                          <ShopGridCard
-                            image={IMAGES.shopproduct10}
-                            title="Stylish Fedora Hat Collection"
-                            price="$80"
-                            showdetailModal={() => setDetailModal(true)}
-                          />
-                        </div>
-                        <div className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30">
-                          <ShopGridCard
-                            image={IMAGES.shopproduct11}
-                            title="Suede Ankle Booties Collection"
-                            price="$70"
-                            showdetailModal={() => setDetailModal(true)}
-                          />
-                        </div>
-                        <div className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30">
-                          <ShopGridCard
-                            image={IMAGES.shopproduct12}
-                            title="Hiking Outdoor Gear Collection"
-                            price="$50"
-                            showdetailModal={() => setDetailModal(true)}
-                          />
-                        </div>
                       </div>
                     </Tab.Pane>
                   </Tab.Content>

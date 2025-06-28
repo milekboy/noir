@@ -1264,8 +1264,8 @@ export const widgetBox = [
 ];
 
 export const colorData = [
-  { valuecolor: "#000000", inputid: "radioNoLabel01" },
-  { valuecolor: "#9BD1FF", inputid: "radioNoLabel02" },
+  { valuecolor: "white", inputid: "radioNoLabel01" },
+  { valuecolor: "blue", inputid: "radioNoLabel02" },
   { valuecolor: "#21B290", inputid: "radioNoLabel03" },
   { valuecolor: "#FEC4C4", inputid: "radioNoLabel04" },
   { valuecolor: "#FF7354", inputid: "radioNoLabel05" },
@@ -1381,6 +1381,7 @@ export const Bloglight2: Bloglight2Type[] = [
 ];
 
 interface shopStyletype {
+  _id: string;
   image: string;
   name: string;
   priceValue?: string;
@@ -1389,90 +1390,6 @@ interface shopStyletype {
   category?: string;
   size?: number;
 }
-
-export const shopStyleData: shopStyletype[] = [
-  {
-    image: IMAGES.shopproduct1,
-    inputtype: "favoriteChec1",
-    priceValue: "$80.00",
-    name: "Sophisticated Swagger Suit",
-    color: "#000000",
-    size: 14,
-    category: "bliss-dress",
-  },
-  {
-    image: IMAGES.shopproduct2,
-    inputtype: "favoriteCheck2",
-    priceValue: "$94.00",
-    name: "Checkered Slim Collar Casual Shirt",
-    color: "#3E68FF",
-    size: 10,
-    category: "glam-pants",
-  },
-  {
-    image: IMAGES.shopproduct3,
-    inputtype: "favoriteCheck3",
-    priceValue: "$35.00",
-    name: "Solid Cut Away Collar Casual Shirt",
-    color: "#51EDC8",
-    size: 8,
-    category: "bliss-dress",
-  },
-  {
-    image: IMAGES.shopproduct4,
-    inputtype: "favoriteCheck4",
-    priceValue: "$45.00",
-    name: "Athletic Mesh Sports Leggings",
-    color: "#7BEF68",
-    size: 16,
-    category: "leggings",
-  },
-  {
-    image: IMAGES.shopproduct5,
-    inputtype: "favoriteCheck5",
-    priceValue: "$70.00",
-    name: "Denim Overalls Shorts",
-    color: "#9BD1FF",
-    size: 12,
-    category: "bliss-dress",
-  },
-  {
-    image: IMAGES.shopproduct6,
-    inputtype: "favoriteCheck6",
-    priceValue: "$36.00",
-    name: "Plaid Wool Winter Coat",
-    color: "#FF4A76",
-    size: 20,
-    category: "silk-dress",
-  },
-  {
-    image: IMAGES.shopproduct7,
-    inputtype: "favoriteCheck7",
-    priceValue: "$75.00",
-    name: "Comfy Lounge Jogger Pants",
-    color: "#B77CF3",
-    size: 18,
-    category: "bliss-dress",
-  },
-  {
-    image: IMAGES.shopproduct8,
-    inputtype: "favoriteCheck8",
-    priceValue: "$90.00",
-    name: "Water-Resistant Windbreaker Jacket",
-    color: "#000000",
-    size: 10,
-    category: "classic-capri",
-  },
-  {
-    image: IMAGES.shopproduct9,
-    inputtype: "favoriteCheck9",
-    priceValue: "$50.00",
-    name: "Classic Denim Skinny Jeans",
-    color: "#3E68FF",
-    size: 8,
-    category: "bliss-dress",
-  },
-];
 
 interface ShopSlidertype {
   image: string;

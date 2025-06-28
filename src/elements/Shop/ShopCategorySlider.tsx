@@ -1,15 +1,43 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { ShopCatSlider } from "../../constant/Alldata";
+import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import Image from "next/image";
 
 import "swiper/css";
 import "swiper/css/bundle";
 
-export default function ShopCategorySlider() {
+export default function ShopCategorySlider({
+  onCategorySelect,
+}: {
+  onCategorySelect: (id: string) => void;
+}) {
+  interface Category {
+    _id: string;
+    name: string;
+    image: string[];
+    __v: number;
+  }
+  const [category, setCategory] = useState<Category[]>([]);
+  const networkInstance = NetworkInstance();
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("category/get-all-categories");
+
+      setCategory(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
   return (
     <Swiper
       className="category-swiper"
@@ -30,12 +58,21 @@ export default function ShopCategorySlider() {
         320: { slidesPerView: 1 },
       }}
     >
-      {ShopCatSlider.map((item, index) => (
+      {category.map((item, index) => (
         <SwiperSlide key={index}>
-          <div className="shop-card">
-            <div className="dz-media rounded overflow-hidden">
+          <div
+            onClick={() => onCategorySelect(item._id)}
+            className="shop-card "
+          >
+            <div
+              style={{ cursor: "pointer" }}
+              className="dz-media rounded overflow-hidden"
+            >
               <Image
-                src={item.image}
+                src={
+                  item.image[0] ||
+                  "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                }
                 alt={item.name}
                 width={200}
                 height={200}
@@ -44,7 +81,9 @@ export default function ShopCategorySlider() {
             </div>
             <div className="dz-content">
               <h6 className="title">
-                <Link href={`/shop-list?category=${item.id}`}>{item.name}</Link>
+                <Link href={`/shop-list?category=${item._id}`}>
+                  {item.name}
+                </Link>
               </h6>
             </div>
           </div>

@@ -1,13 +1,12 @@
 "use client";
 import { Modal, Tab } from "react-bootstrap";
 import Link from "next/link";
-import { useState } from "react";
+import { Key, useState, useEffect } from "react";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-import { shopStyleData } from "@/constant/Alldata";
+import NetworkInstance from "@/app/api/NetworkInstance";
 import ShopListCard from "@/elements/Shop/ShopListCard";
-import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import SelectBoxOne from "@/elements/Shop/SelectBoxOne";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
@@ -16,11 +15,50 @@ import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 
 export default function ShopWithCategory() {
+  interface ProductImage {
+    url: string;
+    public_id: string;
+    filename: string;
+  }
+
+  interface Product {
+    _id: string;
+    name: string;
+    price: any;
+    category: string;
+    productImages: ProductImage[];
+    description: string;
+    color: string;
+    size: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }
+  const [products, setProducts] = useState<Product[]>([]);
+  const networkInstance = NetworkInstance();
+  //api call
+
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("product/get-all-products");
+
+      setProducts(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
     [number, number]
-  >([0, 400]);
+  >([1000, 10000]);
 
   const [detailModal, setDetailModal] = useState<boolean>(false);
   const [mobileSidebar, setMobileSidebar] = useState<boolean>(false);
@@ -34,11 +72,15 @@ export default function ShopWithCategory() {
   const onSizeChange = (size: string) => {
     setSelectedSize(Number(size));
   };
-  const filteredProducts = shopStyleData.filter((item) => {
-    const price = parseFloat(item.priceValue?.replace("$", "") || "0");
-
+  const filteredProducts = products.filter((item) => {
+    const price = item.price;
+    const matchCategory = selectedCategory
+      ? item.category === selectedCategory
+      : true;
     const matchColor = selectedColor ? item.color === selectedColor : true;
-    const matchSize = selectedSize ? item.size === selectedSize : true;
+    const matchSize = selectedSize
+      ? item.size === selectedSize.toString()
+      : true;
     const matchPrice =
       price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
     if (selectedColor) {
@@ -46,12 +88,13 @@ export default function ShopWithCategory() {
         `item: ${item.name}, color: ${item.color}, matchColor: ${matchColor}`
       );
     }
-    return matchColor && matchSize && matchPrice;
+    return matchCategory && matchColor && matchSize && matchPrice;
   });
   const handleResetFilters = () => {
     setSelectedColor(null);
     setSelectedSize(null);
-    setSelectedPriceRange([0, 400]);
+    setSelectedCategory(null);
+    setSelectedPriceRange([1000, 10000]);
   };
 
   return (
@@ -130,7 +173,9 @@ export default function ShopWithCategory() {
               <h4 className="mb-3">Category</h4>
               <div className="row">
                 <div className="col-xl-12">
-                  <ShopCategorySlider />
+                  <ShopCategorySlider
+                    onCategorySelect={(id: string) => setSelectedCategory(id)}
+                  />
                 </div>
               </div>
               <Tab.Container defaultActiveKey={"Grid"}>
@@ -195,16 +240,20 @@ export default function ShopWithCategory() {
                   >
                     <Tab.Pane eventKey={"List"}>
                       <div className="row">
-                        {filteredProducts.slice(2, 8).map((elem, ind) => (
+                        {filteredProducts.slice(0, 8).map((item, ind) => (
                           <div
                             className="col-md-12 col-sm-12 col-xxxl-6"
                             key={ind}
                           >
                             <ShopListCard
-                              image={elem.image}
-                              title={elem.name}
-                              price={elem.priceValue}
-                              inputtype={elem.inputtype}
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
+                              description={item.description}
+                              title={item.name}
+                              price={item.price}
+                              _id={item._id}
+                              category={item.category}
                             />
                           </div>
                         ))}
@@ -212,16 +261,20 @@ export default function ShopWithCategory() {
                     </Tab.Pane>
                     <Tab.Pane eventKey={"Coloumn"}>
                       <div className="row gx-xl-4 g-3 mb-xl-0 mb-md-0 mb-3">
-                        {filteredProducts.map((item, ind) => (
+                        {filteredProducts.slice(0, 8).map((item, ind) => (
                           <div
-                            className="col-6 col-xl-4 col-lg-6 col-md-6 col-sm-6 m-md-b15 m-sm-b0 m-b30"
+                            className="col-md-12 col-sm-12 col-xxxl-6"
                             key={ind}
                           >
-                            <ShopGridCard
-                              image={item.image}
+                            <ShopListCard
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
-                              showdetailModal={() => setDetailModal(true)}
+                              price={item.price}
+                              description={item.description}
+                              _id={item._id}
+                              category={item.category}
                             />
                           </div>
                         ))}
@@ -232,16 +285,20 @@ export default function ShopWithCategory() {
                       aria-labelledby="tab-list-grid-btn"
                     >
                       <div className="row gx-xl-4 g-3">
-                        {filteredProducts.map((item, ind) => (
+                        {filteredProducts.slice(0, 8).map((item, ind) => (
                           <div
-                            className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-md-b15 m-b30"
+                            className="col-md-12 col-sm-12 col-xxxl-6"
                             key={ind}
                           >
-                            <ShopGridCard
-                              image={item.image}
+                            <ShopListCard
+                              image={
+                                item.productImages[0]?.url || "/fallback.jpg"
+                              }
                               title={item.name}
-                              price={item.priceValue}
-                              showdetailModal={() => setDetailModal(true)}
+                              description={item.description}
+                              price={item.price}
+                              _id={item._id}
+                              category={item.category}
                             />
                           </div>
                         ))}
