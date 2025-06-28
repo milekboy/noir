@@ -153,7 +153,11 @@ export default function ShopList({
               <h4 className="mb-3">Category</h4>
               <div className="row">
                 <div className="col-xl-12">
-                  <ShopCategorySlider />
+                  <ShopCategorySlider
+                    onCategorySelect={function (id: string): void {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
                 </div>
               </div>
 
@@ -204,6 +208,8 @@ export default function ShopList({
                               title={item.name}
                               price={item.price}
                               showdetailModal={() => setDetailModal(true)}
+                              _id={""}
+                              category={""}
                             />
                           </div>
                         ))}
@@ -224,6 +230,8 @@ export default function ShopList({
                               title={item.name}
                               price={item.price}
                               showdetailModal={() => setDetailModal(true)}
+                              _id={""}
+                              category={""}
                             />
                           </div>
                         ))}

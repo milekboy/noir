@@ -1381,15 +1381,89 @@ export const Bloglight2: Bloglight2Type[] = [
 ];
 
 interface shopStyletype {
-  _id: string;
   image: string;
+  _id: string;
+  category: string;
   name: string;
   priceValue?: string;
   inputtype?: string;
-  color?: string;
-  category?: string;
-  size?: number;
 }
+
+export const shopStyleData: shopStyletype[] = [
+  {
+    image: IMAGES.shopproduct1,
+    inputtype: "favoriteCheck1",
+    priceValue: "$80.00",
+    name: "Sophisticated Swagger Suit",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct2,
+    inputtype: "favoriteCheck2",
+    priceValue: "$94.00",
+    name: "Checkered Slim Collar Casual Shirt",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct3,
+    inputtype: "favoriteCheck3",
+    priceValue: "$35.00",
+    name: "Solid Cut Away Collar Casual Shirt",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct4,
+    inputtype: "favoriteCheck4",
+    priceValue: "$45.00",
+    name: "Athletic Mesh Sports Leggings",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct5,
+    inputtype: "favoriteCheck5",
+    priceValue: "$70.00",
+    name: "Denim Overalls Shorts",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct6,
+    inputtype: "favoriteCheck6",
+    priceValue: "$36.00",
+    name: "Plaid Wool Winter Coat",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct7,
+    inputtype: "favoriteCheck7",
+    priceValue: "$75.00",
+    name: "Comfy Lounge Jogger Pants",
+    _id: "",
+    category: "",
+  },
+  {
+    image: IMAGES.shopproduct8,
+    inputtype: "favoriteCheck8",
+    priceValue: "$90.00",
+    name: "Water-Resistant Windbreaker Jacket",
+    _id: "",
+    category: "",
+  },
+
+  {
+    image: IMAGES.shopproduct9,
+    inputtype: "favoriteCheck9",
+    priceValue: "$50.00",
+    name: "Classic Denim Skinny Jeans",
+    _id: "",
+    category: "",
+  },
+];
 
 interface ShopSlidertype {
   image: string;

@@ -329,6 +329,8 @@ export default function ShopSidebarBlog() {
                               title={item.name}
                               price={item.priceValue}
                               showdetailModal={() => setDetailModal(true)}
+                              _id={""}
+                              category={""}
                             />
                           </div>
                         ))}
@@ -346,6 +348,8 @@ export default function ShopSidebarBlog() {
                               title={item.name}
                               price={item.priceValue}
                               showdetailModal={() => setDetailModal(true)}
+                              _id={""}
+                              category={""}
                             />
                           </div>
                         ))}
