@@ -11,6 +11,18 @@ import router from "next/router";
 
 export default function ShopCheckout() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [shippingDetails, setShippingDetails] = useState<Shipping>({
+    email: "",
+    phoneNumber: "",
+    fullName: "",
+    lastName: "",
+    street: "",
+    state: "",
+    apartment: "",
+    city: "",
+    firstName: "",
+    country: "",
+  });
   interface ProductImage {
     url: string;
     public_id: string;
@@ -30,6 +42,36 @@ export default function ShopCheckout() {
     productDetails: ProductDetails;
     quantity: number;
   }
+
+  interface Shipping {
+    country: string;
+    firstName: string;
+    lastName: string;
+    street: string;
+    state: string;
+    apartment: string;
+    city: string;
+    email: string;
+    phoneNumber: string;
+    fullName: string;
+  }
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      !document.getElementById("flutterwave-script")
+    ) {
+      const script = document.createElement("script");
+      script.id = "flutterwave-script";
+      script.src = "https://checkout.flutterwave.com/v3.js";
+      script.async = true;
+      script.onload = () => {
+        setFlutterwaveLoaded(true);
+      };
+      document.body.appendChild(script);
+    } else {
+      setFlutterwaveLoaded(true); // already loaded
+    }
+  }, []);
 
   const networkInstance = NetworkInstance();
   useEffect(() => {
@@ -86,29 +128,56 @@ export default function ShopCheckout() {
   const [flutterwaveLoaded, setFlutterwaveLoaded] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const updateShipping = async (e: any) => {
+    console.log;
+    const requestData = {
+      ...shippingDetails,
+      fullName:
+        `${shippingDetails.firstName} ${shippingDetails.lastName}`.trim(),
+    };
+    console.log(requestData);
+    try {
+      const response = await networkInstance.post(
+        `/shipping-address/create`,
+        requestData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        const shippingId = response.data.shippingAddress._id;
+        localStorage.setItem("shippingId", shippingId);
+        console.log(shippingId, "-shippingID");
+
+        makePayment();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    const scriptId = "flutterwave-checkout-script";
-    const existingScript = document.getElementById(scriptId);
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://checkout.flutterwave.com/v3.js";
-      script.async = true;
-      script.onload = () => setFlutterwaveLoaded(true);
-      script.onerror = () =>
-        console.error("Failed to load Flutterwave script.");
-      document.body.appendChild(script);
-    } else {
-      setFlutterwaveLoaded(true);
+    async function getShippingDetails() {
+      try {
+        const shippingId = localStorage.getItem("shippingId");
+        if (!shippingId) {
+          console.log("No shipping ID found.");
+          return;
+        }
+
+        const res = await networkInstance.get(
+          `/shipping-address/get/${shippingId}`
+        );
+        setShippingDetails(res.data);
+      } catch (err) {
+        console.log("Error fetching shipping details:", err);
+      }
     }
+
+    getShippingDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const publicKey = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY;
-
+  const publicKey = "FLWPUBK_TEST-f797b2a19e6d343574e84c5c036b2d44-X";
   function initiateFlutter(
     transactionRef: any,
-    amount: number,
+    amount: any,
     customer: {
       email: any;
       phoneNumber: any;
@@ -117,12 +186,15 @@ export default function ShopCheckout() {
       ShippingAddressId?: string | null;
     }
   ) {
-    if (!flutterwaveLoaded || typeof FlutterwaveCheckout !== "function") {
+    if (
+      !flutterwaveLoaded ||
+      typeof (window as any).FlutterwaveCheckout !== "function"
+    ) {
+      console.log("script has not been loaded");
       alert("Payment system not ready. Please wait a moment.");
       return;
     }
-
-    FlutterwaveCheckout({
+    (window as any).FlutterwaveCheckout({
       public_key: publicKey,
       tx_ref: transactionRef,
       amount: amount,
@@ -132,7 +204,13 @@ export default function ShopCheckout() {
         phonenumber: customer.phoneNumber,
         name: `${customer.firstName} ${customer.lastName}`,
       },
-      callback: async function (data) {
+      callback: async function (data: {
+        status: string;
+        tx_ref: any;
+        transaction_id: any;
+      }) {
+        console.log("Flutterwave response:", data);
+
         try {
           await networkInstance.post("/order/webhook", {
             data: {
@@ -144,9 +222,7 @@ export default function ShopCheckout() {
 
           if (data.status === "successful") {
             setCartCount(0);
-            localStorage.removeItem("cartId");
-            localStorage.removeItem("shippingId");
-            router.push("/payment-successful");
+            console.log("Payment successful! Your order is confirmed.");
           } else {
             console.log("❌ Payment failed or was cancelled.");
           }
@@ -164,82 +240,63 @@ export default function ShopCheckout() {
       },
     });
   }
-
   const makePayment = async () => {
     const cartId = localStorage.getItem("cartId");
+    const ShippingAddressId = localStorage.getItem("shippingId");
     if (!cartId) {
-      alert("Cart not found.");
+      console.log("No cart ID found.");
+
       return;
     }
-
-    const form = formRef.current;
-    if (!form) {
-      alert("Form not found.");
-      return;
-    }
-
-    const formData = new FormData(form);
-
-    const fullName =
-      formData.get("dzName")?.toString().trim() +
-      " " +
-      formData.getAll("dzName")[1]?.toString().trim();
-    const [firstName, lastName] = fullName.split(" ");
-
-    const payload = {
-      fullName,
-      phoneNumber: formData.getAll("dzName")[4]?.toString().trim(),
-      email: formData.getAll("dzName")[5]?.toString().trim(),
-      apartment: formData.getAll("dzName")[2]?.toString().trim() || "", // country/region
-      street: formData.getAll("dzName")[3]?.toString().trim(), // street
-      city: formData.getAll("dzName")[6]?.toString().trim(), // city/state
-      state: formData.getAll("dzName")[6]?.toString().trim(), // same as above
-      country: formData.getAll("dzName")[2]?.toString().trim(), // same as apartment for now
-    };
 
     try {
-      const shippingRes = await networkInstance.post(
-        "/shipping-address/create",
-        payload
-      );
-      const ShippingAddressId = shippingRes.data?.id;
-      localStorage.setItem("shippingId", ShippingAddressId);
-
       const cartRes = await networkInstance.get(`/cart/view/${cartId}`);
-      const validItems = cartRes.data.items?.filter(
-        (item: any) => item.productDetails?.name
-      );
 
-      if (!validItems || validItems.length === 0) {
-        console.log("Cart items invalid.");
+      // Check for missing products
+      if (!cartRes.data.items || cartRes.data.items.length === 0) {
+        console.log("No valid items found in cart.");
         return;
       }
 
-      const orderRes = await networkInstance.post(`/order/create/${cartId}`, {
+      const validItems = cartRes.data.items.filter(
+        (item: { productDetails: { name: any } }) =>
+          item.productDetails && item.productDetails.name
+      );
+
+      if (validItems.length === 0) {
+        console.log("Cart items contain invalid products.");
+        return;
+      }
+
+      const response = await networkInstance.post(`/order/create/${cartId}`, {
         ShippingAddressId,
       });
 
-      if (orderRes?.status === 200 || orderRes?.status === 201) {
-        const transactionId = orderRes.data.transactionId;
-
+      if (response?.status === 200 || response?.status === 201) {
+        console.log(response);
+        const transactionId = response.data.transactionId;
         const customer = {
-          email: payload.email,
-          phoneNumber: payload.phoneNumber,
-          firstName,
-          lastName,
-          ShippingAddressId,
+          email: shippingDetails?.email || "",
+          phoneNumber: shippingDetails?.phoneNumber || "",
+          firstName: shippingDetails?.firstName || "",
+          lastName: shippingDetails?.lastName || "",
+          ShippingAddressId: ShippingAddressId,
         };
 
-        initiateFlutter(transactionId, 7000, customer);
+        initiateFlutter(transactionId, totalPrice, customer);
       }
     } catch (err: any) {
-      if (err.response?.data?.message?.includes("duplicate key")) {
+      if (
+        err.response?.data?.message?.includes("duplicate key") ||
+        err.message?.includes("duplicate key")
+      ) {
         localStorage.removeItem("cartId");
+        console.log(ShippingAddressId);
         localStorage.removeItem("shippingId");
         alert("You've already placed an order for this cart.");
-      } else {
-        console.error("Error during payment process:", err);
       }
+
+      console.log("Payment error:", err);
     }
   };
 
@@ -296,13 +353,33 @@ export default function ShopCheckout() {
                 <div className="col-md-6">
                   <div className="form-group m-b25">
                     <label className="label-title">First Name</label>
-                    <input name="dzName" required className="form-control" />
+                    <input
+                      name="firstName"
+                      value={shippingDetails.firstName}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          firstName: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="form-group m-b25">
                     <label className="label-title">Last Name</label>
-                    <input name="dzName" required className="form-control" />
+                    <input
+                      name="lastName"
+                      value={shippingDetails.lastName}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          lastName: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
                   </div>
                 </div>
 
@@ -311,7 +388,17 @@ export default function ShopCheckout() {
                     <label className="label-title">
                       Country / Region <span className="text-danger">*</span>
                     </label>
-                    <input name="dzName" required className="form-control" />
+                    <input
+                      name="firstName"
+                      value={shippingDetails.country}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          country: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -320,19 +407,70 @@ export default function ShopCheckout() {
                       Street address <span className="text-danger">*</span>
                     </label>
                     <input
-                      name="dzName"
-                      required
-                      className="form-control m-b15"
-                      placeholder="House number and street name"
+                      name="firstName"
+                      value={shippingDetails.street}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          street: e.target.value,
+                        })
+                      }
+                      className="form-control"
                     />
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="m-b25 value-select">
                     <label className="label-title">
-                      State / City <span className="text-danger">*</span>
+                      State <span className="text-danger">*</span>
                     </label>
-                    <input name="dzName" required className="form-control" />
+                    <input
+                      name="firstName"
+                      value={shippingDetails.state}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          state: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12">
+                  <div className="m-b25 value-select">
+                    <label className="label-title">
+                      Apartment <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      name="firstName"
+                      value={shippingDetails.apartment}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          apartment: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12">
+                  <div className="m-b25 value-select">
+                    <label className="label-title">
+                      City/ Town<span className="text-danger">*</span>
+                    </label>
+                    <input
+                      name="firstName"
+                      value={shippingDetails.city}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          city: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
                   </div>
                 </div>
 
@@ -342,9 +480,14 @@ export default function ShopCheckout() {
                       Phone <span className="text-danger">*</span>
                     </label>
                     <input
-                      type="number"
-                      name="dzName"
-                      required
+                      name="firstName"
+                      value={shippingDetails.phoneNumber}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          phoneNumber: e.target.value,
+                        })
+                      }
                       className="form-control"
                     />
                   </div>
@@ -354,7 +497,17 @@ export default function ShopCheckout() {
                     <label className="label-title">
                       Email address <span className="text-danger">*</span>
                     </label>
-                    <input name="dzName" required className="form-control" />
+                    <input
+                      name="firstName"
+                      value={shippingDetails.email}
+                      onChange={(e) =>
+                        setShippingDetails({
+                          ...shippingDetails,
+                          email: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    />
                   </div>
                 </div>
                 <div className="col-md-12 m-b25">
@@ -633,7 +786,7 @@ export default function ShopCheckout() {
                   </div>
                 </div>
                 <button
-                  onClick={makePayment}
+                  onClick={updateShipping}
                   className="btn btn-secondary w-100"
                 >
                   PLACE ORDER
