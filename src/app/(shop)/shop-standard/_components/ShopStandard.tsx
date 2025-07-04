@@ -42,11 +42,9 @@ export default function ShopStandard() {
   }
   const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
-  //api call
 
   useEffect(() => {
     getProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getProducts = async () => {
