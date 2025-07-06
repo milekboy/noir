@@ -20,10 +20,10 @@ const CollectionBlog = () => {
                     <Link href="/shop-list" className="btn btn-secondary btn-lg wow fadeInUp m-b30" data-wow-delay="0.4s">All Collections</Link>
                 </div>	
             </div>
-            {collectionImgData.map(({image, design}, ind)=>(
+            {/* {collectionImgData.map(({image, design}, ind)=>(
                 <div className={design} key={ind}><Image src={image} alt="ind" /></div>
             ))}
-            
+             */}
         </React.Fragment>
     );
 };

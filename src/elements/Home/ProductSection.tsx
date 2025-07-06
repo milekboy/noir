@@ -155,7 +155,7 @@ const ProductSection = () => {
                                 </div>
                                 <div className="dz-content">
                                     <h5 className="title"><Link href="/shop-list">{item.name}</Link></h5>
-                                    <h5 className="price">${item.price}</h5>
+                                    <h5 className="price">&#8358;{item.price}</h5>
                                 </div>
                                 <div className="product-tag">
                                     <span className="badge ">Get {item.discount}% Off</span>
