@@ -56,15 +56,31 @@ export default function HeaderSideShoppingCard(props: propType) {
   const [shoppingItem, setShoppingItem] =
     useState<ShopProductItemtype[]>(ShopProductItem);
 
-  const handleRemove = (index: number) => {
-    setArrayitem((prevItems) => prevItems.filter((_, i) => i !== index));
+  const handleRemove = async (index: number) => {
+    const cartId = localStorage.getItem("cartId");
+    const item = cartItems[index];
+    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+
+    try {
+      await networkInstance.delete(`/cart/remove/${cartId}`, {
+        data: {
+          productId: item.product,
+          quantity: item.quantity,
+        },
+      });
+    } catch (err: any) {
+      console.log(err);
+    }
   };
   const handlePrice = (index: number) => {
     setShoppingItem((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
-  function handleIncrease(ind: number) {
-    setArrayitem((prev) => {
+  async function handleIncrease(ind: number) {
+    const cartId = localStorage.getItem("cartId");
+    const item = cartItems[ind];
+
+    setCartItems((prev) => {
       const updateData = [...prev];
       updateData[ind] = {
         ...updateData[ind],
@@ -72,19 +88,37 @@ export default function HeaderSideShoppingCard(props: propType) {
       };
       return updateData;
     });
+
+    try {
+      await networkInstance.put(`/cart/update-quantity/${cartId}`, {
+        productId: item.product,
+        quantity: 1,
+      });
+    } catch (err: any) {
+      console.log("Error increasing quantity: ", err);
+    }
   }
-  function handledDecrease(ind: number) {
-    setArrayitem((prev) => {
+  async function handledDecrease(ind: number) {
+    const cartId = localStorage.getItem("cartId");
+    const item = cartItems[ind];
+
+    setCartItems((prev) => {
       const updateData = [...prev];
       updateData[ind] = {
         ...updateData[ind],
-        quantity:
-          updateData[ind].quantity > 1
-            ? updateData[ind].quantity - 1
-            : updateData[ind].quantity,
+        quantity: updateData[ind].quantity - 1,
       };
       return updateData;
     });
+
+    try {
+      await networkInstance.put(`/cart/update-quantity/${cartId}`, {
+        productId: item.product,
+        quantity: -1,
+      });
+    } catch (err: any) {
+      console.log("Error increasing quantity: ", err);
+    }
   }
 
   const totalPrice = cartItems.reduce(

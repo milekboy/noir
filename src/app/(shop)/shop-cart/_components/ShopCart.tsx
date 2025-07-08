@@ -47,42 +47,41 @@ export default function ShopCart() {
     getCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-const handleRemove = async (index: number) => {
-  const cartId = localStorage.getItem("cartId");
-  const item = cartItems[index];
-  try {
-    await networkInstance.delete(`/cart/remove/${cartId}`, {
-      data: {
-        productId: item.product,
-        quantity: item.quantity, 
-      },
-    });
-    const res = await networkInstance.get(`/cart/view/${cartId}`);
-    setCartItems(res.data.items);
-  } catch (err: any) {
-    console.log("Error removing item:", err?.response?.data || err);
-  }
-};
+  const handleRemove = async (index: number) => {
+    const cartId = localStorage.getItem("cartId");
+    const item = cartItems[index];
+
+    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+    try {
+      await networkInstance.delete(`/cart/remove/${cartId}`, {
+        data: {
+          productId: item.product,
+          quantity: item.quantity,
+        },
+      });
+    } catch (err: any) {
+      console.log("Error removing item:", err?.response?.data || err);
+    }
+  };
   async function handleIncrease(ind: number) {
     const cartId = localStorage.getItem("cartId");
     const item = cartItems[ind];
+
+    // Update visually first
+    setCartItems((prev) => {
+      const updateData = [...prev];
+      updateData[ind] = {
+        ...updateData[ind],
+        quantity: updateData[ind].quantity + 1,
+      };
+      return updateData;
+    });
 
     try {
       await networkInstance.put(`/cart/update-quantity/${cartId}`, {
         productId: item.product,
         quantity: 1,
       });
-      const res = await networkInstance.get(`/cart/view/${cartId}`);
-      setCartItems(res.data.items);
-
-      //  setCartItems((prev) => {
-      //   const updateData = [...prev];
-      //   updateData[ind] = {
-      //     ...updateData[ind],
-      //     quantity: updateData[ind].quantity + 1,
-      //   };
-      //   return updateData;
-      // });
     } catch (err: any) {
       console.log("Error increasing quantity: ", err);
     }
@@ -90,15 +89,22 @@ const handleRemove = async (index: number) => {
   async function handledDecrease(ind: number) {
     const cartId = localStorage.getItem("cartId");
     const item = cartItems[ind];
-    if (item.quantity === 0) return;
+
+    setCartItems((prev) => {
+      const updateData = [...prev];
+      updateData[ind] = {
+        ...updateData[ind],
+        quantity: updateData[ind].quantity - 1,
+      };
+      return updateData;
+    });
+
+    // if (item.quantity === 0) return;
     try {
       await networkInstance.put(`/cart/update-quantity/${cartId}`, {
         productId: item.product,
         quantity: -1,
       });
-      const res = await networkInstance.get(`/cart/view/${cartId}`);
-      // console.log(res.data.items)
-      setCartItems(res.data.items);
     } catch (err: any) {
       console.log("Error decreasing quantity: ", err?.response?.data || err);
     }
