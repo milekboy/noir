@@ -1,4 +1,3 @@
-
 // import {motion} from 'framer-motion'
 import IMAGES from "../constant/theme";
 import { FooterMenu, OurStores, 
@@ -36,13 +35,13 @@ const Footer = (props : footertype) => {
                                 </div>
                                 <ul className="widget-address">
                                     <li>
-                                        <p><span>Address</span> : 451 Wall Street, UK, London</p>
+                                        <p><span>Address</span> : 5b college road, Lagos State</p>
                                     </li>
                                     <li>
-                                        <p><span>E-mail</span> : example@info.com</p>
+                                        <p><span>E-mail</span> : noir@gmail.com</p>
                                     </li>
                                     <li>
-                                        <p><span>Phone</span> : (064) 332-1233</p>
+                                        <p><span>Phone</span> : (+234) 80 234 453 3509</p>
                                     </li>
                                 </ul>
                                 <div className="subscribe_widget">
@@ -69,7 +68,7 @@ const Footer = (props : footertype) => {
                                 </ul>
                             </div>
                         </div>
-                        <div className="col-xl-2 col-md-4 col-sm-4 col-6">
+                        {/* <div className="col-xl-2 col-md-4 col-sm-4 col-6">
                             <div className="widget widget_services">
                                 <h5 className="footer-title">Our Stores</h5>
                                 <ul>
@@ -78,7 +77,7 @@ const Footer = (props : footertype) => {
                                     ))}                                    
                                 </ul>   
                             </div>
-                        </div>
+                        </div> */}
                         <div className="col-xl-2 col-md-4 col-sm-4 col-6">
                             <div className="widget widget_services">
                                 <h5 className="footer-title">Useful Links</h5>
@@ -105,7 +104,7 @@ const Footer = (props : footertype) => {
             {/*  Footer Top End  */}
             
             {/*  Footer Bottom  */}
-            <div className="footer-bottom">
+            {/* <div className="footer-bottom">
                 <div className="container">
                     <div className="row fb-inner">
                         <div className="col-lg-6 col-md-12 text-start"> 
@@ -119,7 +118,7 @@ const Footer = (props : footertype) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             {/*  Footer Bottom End  */}
         </footer>
     );

@@ -52,7 +52,7 @@ const MainBannerSlider2 = () => {
                     <div className="swiper-meta-items">
                         <div className="meta-content">
                             <span className="price-name">Price</span>
-                            <span className="price-num d-inline-block">&#036;{item.price}</span>
+                            <span className="price-num d-inline-block">&#8358;{item.price}</span>
                         </div>
                     </div>
                     <div className="content-btn m-b30">

@@ -7,10 +7,10 @@ const AboutusBlog = () => {
         <div className="row about-style1">
             <div className="col-lg-6 col-md-12 m-b30">
                 <div className="about-thumb wow fadeInUp  position-relative" data-wow-delay="0.2s">
-                    <div className="dz-media h-100">	
+                    <div className="dz-media h-55" style={{marginTop: 108}} >	
                         <Image src={IMAGES.Womenpng} alt="" />
                     </div>	
-                    <Link href="/shop-list" className="btn btn-outline-secondary btn-light btn-xl">Woman collection</Link>	
+                    <Link href="/shop-list" className="btn btn-outline-secondary btn-light btn-xl" style={{marginBottom: 180}}>Woman collection</Link>	
                 </div>
             </div>
             <div className="col-lg-6 col-md-12 align-self-center">
@@ -35,7 +35,7 @@ const AboutusBlog = () => {
                         </div>
                         <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="shop-card style-6 wow fadeInUp" data-wow-delay="1.0s">
-                                <div className="dz-media">
+                                <div className="dz-media" style={{height: 400}}>
                                     <Image src={IMAGES.productmedium2} alt="image" />
                                 </div>
                                 <div className="dz-content">
