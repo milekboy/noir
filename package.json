@@ -14,6 +14,7 @@
     "@tensorflow/tfjs-backend-wasm": "^4.22.0",
     "@tensorflow/tfjs-core": "^4.22.0",
     "@types/imagesloaded": "^4.1.6",
+    "@types/three": "^0.178.0",
     "axios": "^1.10.0",
     "imagesloaded": "^5.0.0",
     "isotope-layout": "^3.0.6",

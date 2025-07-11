@@ -1,21 +1,15 @@
 import TryOn from "@/components/TryOn";
 import CommanLayout from "@/components/CommanLayout";
+import TryOn3D from "@/components/TryOn3D";
 export default function Augument() {
   return (
     <CommanLayout>
       <TryOn
         garmentUrl={
-          "https://res.cloudinary.com/dk6wshewb/image/upload/v1751627007/uploads/t7zgidwvvwhcllcmyq6y.jpg"
+          "https://res.cloudinary.com/dbpjskran/image/upload/v1752226877/2_omkjax.png"
         }
       />
-      {/* <div className="page-content bg-light">
-        <div className="flex  h-screen w-screen">
-          <div className="   flex">
-            <p>here</p>
-            <p>here</p>
-          </div>
-        </div>
-      </div> */}
+      {/* <TryOn3D /> */}
     </CommanLayout>
   );
 }
