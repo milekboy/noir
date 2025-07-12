@@ -77,7 +77,7 @@ export default function ShopProductRightContent() {
                 defaultChecked
               />
               <label className="btn" htmlFor="btnradio101">
-                {product?.size}
+                S
               </label>
               <input
                 type="radio"
