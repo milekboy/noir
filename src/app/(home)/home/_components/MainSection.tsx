@@ -117,7 +117,7 @@ const MainSection = () =>{
                     </div>
                 </section> */}
                 {/*  Offer Section Start */}
-                <section className="content-inner-2">
+                {/* <section className="content-inner-2">
                     <div className="container">	
                         <div className="section-head style-1 wow fadeInUp d-flex justify-content-between m-b30" data-wow-delay="0.2s">
                             <div className="left-content">
@@ -131,7 +131,7 @@ const MainSection = () =>{
                     <div className="container-fluid px-3">
                         <OffersectionSlider />
                     </div>
-                </section>
+                </section> */}
                 <section className="content-inner  overflow-hidden">
                     <div className="container">	
                         <div className="section-head style-1 wow fadeInUp d-flex justify-content-between" data-wow-delay="0.2s">
