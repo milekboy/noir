@@ -1228,9 +1228,9 @@ export const CategoryData: CategoryType[] = [
   { name: "Top & Blouses", number: 5 },
   { name: "Boots", number: 17 },
   { name: "Jewelry", number: 13 },
-  { name: "Makeup", number: 11 },
+  // { name: "Makeup", number: 11 },
   { name: "Fragrances", number: 17 },
-  { name: "Shaving & Grooming", number: 13 },
+  // { name: "Shaving & Grooming", number: 13 },
   { name: "Jacket", number: 12 },
   { name: "Coat", number: 22 },
 ];

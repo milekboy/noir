@@ -17,7 +17,7 @@ const AboutusBlog = () => {
                 <div className="about-content">
                     <div className="section-head style-1 wow fadeInUp" data-wow-delay="0.4s">
                         <h3 className="title ">Set your wardrobe with our  amazing selection!</h3>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the</p>
+                        <p>Refresh your closet with must-have looks. From everyday basics to statement styles — shop now and redefine your wardrobe.</p>
                     </div>
                     <Link href="/about-us" className="service-btn-2 wow fadeInUp" data-wow-delay="0.6s">
                         <span className="icon-wrapper" dangerouslySetInnerHTML={{__html: SVGICON.ArrowUpSvg}}></span>
