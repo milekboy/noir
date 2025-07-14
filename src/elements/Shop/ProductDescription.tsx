@@ -11,17 +11,17 @@ export default function ProductDescription(){
                     <Nav.Item as="li">
                         <Nav.Link as="button" eventKey={"description"}>Description</Nav.Link>
                     </Nav.Item>
-                    <Nav.Item as="li">
+                    {/* <Nav.Item as="li">
                         <Nav.Link as="button" eventKey={"review"}>Reviews (12)</Nav.Link>
-                    </Nav.Item>
+                    </Nav.Item> */}
                 </Nav>
                 <Tab.Content>
                     <Tab.Pane eventKey={"description"}>
-                        <ProductTabStyleOne image1 = {IMAGES.ProductFeaturePng1} image2={IMAGES.ProductFeaturePng2} image3={IMAGES.ProductFeaturePng3}  />
+                        <ProductTabStyleOne productImages={[]} description="" name="" price="" category="" _id="" />
                     </Tab.Pane>
-                    <Tab.Pane eventKey={"review"}>
+                    {/* <Tab.Pane eventKey={"review"}>
                         <Comments />
-                    </Tab.Pane>
+                    </Tab.Pane> */}
                 </Tab.Content>
             </Tab.Container>
         </div>

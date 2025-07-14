@@ -34,9 +34,9 @@ const Footer = (props : footertype) => {
                                     </Link> 
                                 </div>
                                 <ul className="widget-address">
-                                    <li>
+                                    {/* <li>
                                         <p><span>Address</span> : 5b college road, Lagos State</p>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <p><span>E-mail</span> : noir@gmail.com</p>
                                     </li>

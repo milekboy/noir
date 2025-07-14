@@ -61,7 +61,7 @@ export default function ShopProductFullWidth(){
                                     </Nav>
                                     <Tab.Content>
                                         <Tab.Pane eventKey={"description"}>
-                                            <ProductTabStyleOne image1 = {IMAGES.ProductFeature4Png1} image2={IMAGES.ProductFeature4Png2} image3={IMAGES.ProductFeature4Png3}  />
+                                            <ProductTabStyleOne productImages={[]} description="" name="" price="" category="" _id=""  />
                                         </Tab.Pane>
                                         <Tab.Pane eventKey={"review"}>
                                             <Comments />

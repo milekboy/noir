@@ -313,7 +313,7 @@ export default function ShopCheckout() {
           <div className="row shop-checkout">
             <div className="col-xl-8">
               <h4 className="title m-b15">Billing details</h4>
-              <Accordion
+              {/* <Accordion
                 className="dz-accordion accordion-sm"
                 id="accordionFaq"
                 defaultActiveKey={"0"}
@@ -348,7 +348,7 @@ export default function ShopCheckout() {
                     </p>
                   </Accordion.Body>
                 </Accordion.Item>
-              </Accordion>
+              </Accordion> */}
               <form className="row" ref={formRef}>
                 <div className="col-md-6">
                   <div className="form-group m-b25">
@@ -383,7 +383,7 @@ export default function ShopCheckout() {
                   </div>
                 </div>
 
-                <div className="col-md-12">
+                {/* <div className="col-md-12">
                   <div className="m-b25 value-select">
                     <label className="label-title">
                       Country / Region <span className="text-danger">*</span>
@@ -400,7 +400,7 @@ export default function ShopCheckout() {
                       className="form-control"
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-12">
                   <div className="form-group m-b25">
                     <label className="label-title">
@@ -437,7 +437,7 @@ export default function ShopCheckout() {
                     />
                   </div>
                 </div>
-                <div className="col-md-12">
+                {/* <div className="col-md-12">
                   <div className="m-b25 value-select">
                     <label className="label-title">
                       Apartment <span className="text-danger">*</span>
@@ -454,7 +454,7 @@ export default function ShopCheckout() {
                       className="form-control"
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-12">
                   <div className="m-b25 value-select">
                     <label className="label-title">
@@ -510,7 +510,7 @@ export default function ShopCheckout() {
                     />
                   </div>
                 </div>
-                <div className="col-md-12 m-b25">
+                {/* <div className="col-md-12 m-b25">
                   <div className="form-group m-b5">
                     <div className="custom-control custom-checkbox">
                       <input
@@ -541,7 +541,7 @@ export default function ShopCheckout() {
                       </label>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-12 m-b25">
                   <div className="form-group">
                     <label className="label-title">
