@@ -59,14 +59,13 @@ export default function ShopGridCard(props: cardType) {
         <Image width={400} height={400} src={props.image} alt="shop" />
         <div className="shop-meta">
           <Link
-            href={"#"}
+            href={`/product-default/${props._id}`}
             className="btn btn-secondary btn-md btn-rounded"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
-            onClick={props.showdetailModal}
           >
             <i className="fa-solid fa-eye d-md-none d-block" />
-            <span className="d-md-block d-none">Quick View</span>
+            <span className="d-md-block d-none"> View</span>
           </Link>
           <div
             className={`btn btn-primary meta-icon dz-wishicon ${
