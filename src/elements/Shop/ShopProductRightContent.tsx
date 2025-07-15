@@ -2,49 +2,38 @@ import Link from "next/link";
 import StarRating from "./StarRating";
 import ProductInputButton from "./ProductInputButton";
 import ShopCardColour from "./ShopCardColour";
-import { useEffect, useState } from "react";
-import NetworkInstance from "@/app/api/NetworkInstance";
-
-interface PopularProduct {
-  description: string;
-  name: string;
-  price: string;
-  category: string;
-  _id: string;
-  size: string;
+interface ProductImage {
+  url: string;
+  public_id: string;
+  filename: string;
 }
 
-export default function ShopProductRightContent() {
-  const [product, setProduct] = useState<PopularProduct | null>(null);
-
-  // const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
-
-  useEffect(() => {
-    const network = NetworkInstance();
-
-    async function fetchProduct() {
-      try {
-        const res = await network.get(
-          "/product/get-product/685e1123bc259461ad56b4ea"
-        );
-
-        console.log(res.data);
-        setProduct(res.data);
-      } catch (error) {
-        console.error("Failed to load product", error);
-      }
-    }
-
-    fetchProduct();
-  }, []);
-
+interface Product {
+  _id: string;
+  name: string;
+  price: any;
+  category: string;
+  productImages: ProductImage[];
+  description: string;
+  color: string;
+  size: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+export interface ShopProductRightContentProps {
+  product: Product;
+}
+export default function ShopProductRightContent({
+  product,
+}: ShopProductRightContentProps) {
   return (
     <div className="dz-product-detail style-2 p-t20 ps-0">
       <div className="dz-content">
         <div className="dz-content-footer">
           <div className="dz-content-start">
             <span className="badge bg-secondary mb-2">SALE 20% Off</span>
-            <h4 className="title mb-1">{product?.name}</h4>
+            <h4 className="title mb-1">{product.name}</h4>
             <div className="review-num">
               <ul className="dz-rating me-2">
                 <StarRating />
@@ -54,7 +43,7 @@ export default function ShopProductRightContent() {
             </div>
           </div>
         </div>
-        <p className="para-text">{product?.description}</p>
+        <p className="para-text">{product.description}</p>
         <div className="meta-content m-b20 d-flex align-items-end">
           <div className="btn-quantity quantity-sm light d-xl-none d-blcok d-sm-block">
             <label className="form-label">Quantity</label>
@@ -118,19 +107,7 @@ export default function ShopProductRightContent() {
               <strong>Category:</strong>
             </li>
             <li>
-              <Link href="/shop-standard">Dresses,</Link>
-            </li>
-            <li>
-              <Link href="/shop-standard">Jeans,</Link>
-            </li>
-            <li>
-              <Link href="/shop-standard">Swimwear,</Link>
-            </li>
-            <li>
-              <Link href="/shop-standard">Summer,</Link>
-            </li>
-            <li>
-              <Link href="/shop-standard">Clothing,</Link>
+              <Link href="/shop-standard">Clothes</Link>
             </li>
           </ul>
           <ul>

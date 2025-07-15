@@ -1,51 +1,85 @@
+"use client";
+import { useContext } from "react";
+import { useRouter } from "next/navigation";
+import { CartContext } from "@/components/CartContext";
+
+import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import IMAGES, { SVGICON } from "../../constant/theme";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import NetworkInstance from "@/app/api/NetworkInstance";
-
-interface PopularProduct {
-  description: string;
-  name: string;
-  price: string;
-  category: string;
-  _id: string;
+interface ProductImage {
+  url: string;
+  public_id: string;
+  filename: string;
 }
 
-export default function BestOfferBlog() {
-  const [product, setProduct] = useState<PopularProduct | null>(null);
+interface Product {
+  _id: string;
+  name: string;
+  price: any;
+  category: string;
+  productImages: ProductImage[];
+  description: string;
+  color: string;
+  size: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+export interface BestOfferBlogProps {
+  product: Product;
+}
+export default function BestOfferBlog({ product }: BestOfferBlogProps) {
+  const { setCartCount, fetchCartCount } = useContext(CartContext);
+  const router = useRouter();
+  const addToCart = async () => {
+    const payload: Record<string, any> = {
+      productId: product._id,
+      categoryId: product.category,
+      quantity: 1,
+    };
 
-  // const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
-
-  useEffect(() => {
-    const network = NetworkInstance();
-
-    async function fetchProduct() {
-      try {
-        const res = await network.get(
-          "/product/get-product/685e1123bc259461ad56b4ea"
-        );
-
-        console.log(res.data);
-        setProduct(res.data);
-      } catch (error) {
-        console.error("Failed to load product", error);
-      }
+    const existingCartId = localStorage.getItem("cartId");
+    if (existingCartId) {
+      payload.cartId = existingCartId;
+    } else {
+      setCartCount((prev: number) => prev + 1);
     }
 
-    fetchProduct();
-  }, []);
+    try {
+      const response = await NetworkInstance().post("/cart/add", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
+      if (response?.status === 200 || response?.status === 201) {
+        fetchCartCount();
+        router.push("/shop-cart");
+        const newCartId = response.data?.cartId;
+
+        if (newCartId) {
+          localStorage.setItem("cartId", newCartId);
+        }
+
+        console.log("product added to cart");
+      }
+    } catch (err: any) {
+      console.error("Not added to cart:", err?.response?.data || err, payload);
+    }
+  };
   return (
     <div className="cart-detail">
-      {/* <Link href={"#"} className="btn btn-outline-secondary w-100 m-b20">Bank Offer 5% Cashback</Link> */}
+      <Link href={"#"} className="btn btn-outline-secondary w-100 m-b20">
+        Bank Offer 5% Cashback
+      </Link>
       <div className="icon-bx-wraper style-4 m-b15">
         <div className="icon-bx">
           <i className="flaticon flaticon-ship" />
         </div>
         <div className="icon-content">
           <span className=" font-14">Easy Returns</span>
-          <h6 className="dz-title">2 Days</h6>
+          <h6 className="dz-title">30 Days</h6>
         </div>
       </div>
       <div className="icon-bx-wraper style-4 m-b30">
@@ -55,15 +89,13 @@ export default function BestOfferBlog() {
         <div className="icon-content">
           <h6 className="dz-title">Enjoy The Product</h6>
           <p>
-            Crafted with passion, designed for comfort, and delivered with care.
-            Your satisfaction means the world to us, and we’re excited to be
-            part of your journey.
+            Lorem Ipsum is simply dummy text of the printing and typesetting
           </p>
         </div>
       </div>
       <div className="save-text">
-        {/* <i className="icon feather icon-check-circle" /> */}
-        {/* <span className="m-l10">You will save ₹504 on this order</span> */}
+        <i className="icon feather icon-check-circle" />
+        <span className="m-l10">You will save ₦504 on this order</span>
       </div>
       <table>
         <tbody>
@@ -71,7 +103,7 @@ export default function BestOfferBlog() {
             <td>
               <h6 className="mb-0">Total</h6>
             </td>
-            <td className="price">&#8358;{product?.price}</td>
+            <td className="price"> ₦{product.price}</td>
           </tr>
         </tbody>
       </table>
@@ -89,9 +121,14 @@ export default function BestOfferBlog() {
         ></svg>
         Add To Wishlist
       </Link>
-      <Link href="/shop-cart" className="btn btn-secondary w-100">
+      <button
+        onClick={() => {
+          addToCart();
+        }}
+        className="btn btn-secondary w-100"
+      >
         ADD TO CART
-      </Link>
+      </button>
     </div>
   );
 }
