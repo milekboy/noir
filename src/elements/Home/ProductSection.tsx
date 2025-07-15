@@ -7,6 +7,7 @@ import ModalSlider from "../../components/ModalSlider";
 import ProductInputButton from "../Shop/ProductInputButton";
 import axios from "axios";
 import Image from "next/image";
+import ShopProductDefault from "@/app/(shop)/product-default/_components/ShopProductDefault";
 
 
 interface MenuItem {
@@ -180,13 +181,13 @@ const ProductSection = () => {
                                         width={200}
                                         height={200}  />
                                     <div className="shop-meta">
-                                        <Link href={"#"} className="btn btn-secondary btn-md btn-rounded" 
-                                            // onClick={()=>setDetailModal(true)}
-                                            onClick={() => dispatch({ type: 'SET_DETAIL_MODAL', value: true })}
-                                        >
+                                        <Link 
+                                            href="/product-default"
+                                            className="btn btn-secondary btn-md btn-rounded"
+                                            >
                                             <i className="fa-solid fa-eye d-md-none d-block" />
-                                            <span className="d-md-block d-none">Quick View</span>
-                                        </Link>
+                                            <span className="d-md-block d-none">View</span>
+                                            </Link>
                                         <div className={`btn btn-primary meta-icon dz-wishicon ${state.heartIcon[ind] ? "active": ""}`}
                                             onClick={()=>{
                                                 toggleHeart(ind);
