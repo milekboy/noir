@@ -18,12 +18,22 @@ export default function OTP({ otp, onVerify, email }: OTPProps) {
     e.preventDefault();
     if (number === otp) {
       await verifyOtp(email, number);
-      toast("Success \n Email verified", { /* ... */ });
+      toast("Success \n Email verified", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
       onVerify();
       router.push('/login');
       console.log("Email verified successfully");
     } else {
-      toast.error("Invalid OTP");
+      toast("Invalid OTP",{
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
     }
   };
 

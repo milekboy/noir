@@ -105,7 +105,7 @@ export default function Login() {
                     type="submit"
                     className="btn btn-secondary btnhover text-uppercase me-2 sign-btn"
                   >
-                    Sign In
+                   
                     {loading ? (
                       <span
                         className="spinner-border spinner-border-sm"
