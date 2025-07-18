@@ -93,7 +93,7 @@ export default function ShopProductGridMedia(){
                                     </Nav>
                                     <Tab.Content>
                                         <Tab.Pane eventKey={"description"}>
-                                            <ProductTabStyleOne image1 = {IMAGES.ProductFeature2Png1} image2={IMAGES.ProductFeature2Png2} image3={IMAGES.ProductFeature2Png3}  />
+                                            <ProductTabStyleOne productImages={[]} description="" name="" price="" category="" _id="" />
                                         </Tab.Pane>
                                         <Tab.Pane eventKey={"review"}>
                                             <Comments />

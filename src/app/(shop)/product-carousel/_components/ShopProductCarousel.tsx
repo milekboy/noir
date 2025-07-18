@@ -175,7 +175,7 @@ export default function ShopProductCarousel(){
                                 </Nav>
                                 <Tab.Content>
                                     <Tab.Pane eventKey={"description"}>
-                                        <ProductTabStyleOne image1 = {IMAGES.ProductFeature3Png1} image2={IMAGES.ProductFeature3Png2} image3={IMAGES.ProductFeature3Png3}  />
+                                        {/* <ProductTabStyleOne image1 = {IMAGES.ProductFeature3Png1} image2={IMAGES.ProductFeature3Png2} image3={IMAGES.ProductFeature3Png3}  /> */}
                                     </Tab.Pane>
                                     <Tab.Pane eventKey={"review"}>
                                         <Comments />

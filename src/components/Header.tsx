@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Offcanvas } from "react-bootstrap";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import Menus from "./Menus";
 import HeadSearchBar from "./HeadSearchBar";
 import HeaderSidbar from "./HeaderSidbar";
 import HeaderSideShoppingCard from "./HeaderSideShopingCard";
+import NetworkInstance from "@/app/api/NetworkInstance";
 
 interface DesignType {
   design: string;
@@ -76,6 +77,26 @@ function reducer(state: State, action: Action): State {
 
 const Header = ({ design }: DesignType) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [cartItems, setCartItems] = useState([]);
+
+  const networkInstance = NetworkInstance();
+  useEffect(() => {
+    async function getCart() {
+      try {
+        const cartId = localStorage.getItem("cartId");
+        if (!cartId) {
+          console.log("No cart ID found.");
+        }
+
+        const res = await networkInstance.get(`/cart/view/${cartId}`);
+
+        setCartItems(res.data.items);
+      } catch (err: any) {
+        console.log("Error fetching cart:", err?.response?.data || err);
+      }
+    }
+    getCart();
+  }, [cartItems]);
 
   const scrollHandler = () => {
     if (window.scrollY > 80) {
@@ -253,7 +274,9 @@ const Header = ({ design }: DesignType) => {
                         }
                       >
                         <i className="iconly-Broken-Buy" />
-                        <span className="badge badge-circle">5</span>
+                        <span className="badge badge-circle">
+                          {cartItems.length}
+                        </span>
                       </Link>
                     </li>
                   </ul>

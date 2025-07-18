@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { useReducer } from "react";
-
+import { useReducer, useEffect, useState } from "react";
+import NetworkInstance from "@/app/api/NetworkInstance";
 import { Modal } from "react-bootstrap";
 import { masonryData, headfilterData } from "../../constant/Alldata";
 import ModalSlider from "../../components/ModalSlider";
 import ProductInputButton from "../Shop/ProductInputButton";
+import axios from "axios";
 import Image from "next/image";
 
 
@@ -16,7 +17,7 @@ interface MenuItem {
     category: string;
     hert: boolean;
     id: number;
-  }
+}
   
 type HeartIconsState = { [key: number]: boolean };
   
@@ -69,10 +70,13 @@ function reducer(state: typeof initialState, action: any) {
 }
 
 const ProductSection = () => {    
+
+
     const [state, dispatch] = useReducer(reducer, initialState);
     const handleHide = () => {
         dispatch({ type: 'SET_DETAIL_MODAL', value: false });
     };
+
 
     const filterCategory = (name: string, ind: number) => {
         document.querySelectorAll(".card-container").forEach((ell) => {
@@ -95,6 +99,48 @@ const ProductSection = () => {
     const toggleBasket = (index: number) => {
         dispatch({ type: 'TOGGLE_BASKET', index });
     };
+
+    
+    interface productImages {
+        url: string;
+    }
+
+
+
+
+    interface PopularProduct {
+        images: productImages[];
+        description: string;
+        name: string;
+        price: string;
+        category: string;
+        _id: number;
+    }
+
+
+         const [product, setProduct] = useState<PopularProduct[]>([]);
+          const networkInstance = NetworkInstance();
+     
+          
+           useEffect(() => { 
+            async function displayProduct() {
+                const res = await networkInstance.get("/product/get-all-products")
+                console.log(res.data);
+                setProduct(res.data)
+            }
+
+            displayProduct()
+           
+           
+            }, []);
+
+          
+        //   useEffect(() => {
+        //     getProducts();
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        //   }, []);
+    
+
     return (
         <>
             <div className="row justify-content-md-between align-items-start">
@@ -122,11 +168,17 @@ const ProductSection = () => {
             </div>
             <div className="clearfix">
                 <ul id="masonry" className="row g-xl-4 g-3">
-                    {state.data.map((item : MenuItem, ind : number)=>(
-                        <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={ind}>
+                    {/* {state.data.map((item : MenuItem, ind : number)=>( */}
+                    {product.map((item, ind)=>(
+                        <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
                             <div className="shop-card">
                                 <div className="dz-media">
-                                    <Image src={item.image} alt="media" />
+                                    <Image src={
+                                        item.images?.[0]?.url ||
+                                        "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                                        } alt={item.name}
+                                        width={200}
+                                        height={200}  />
                                     <div className="shop-meta">
                                         <Link href={"#"} className="btn btn-secondary btn-md btn-rounded" 
                                             // onClick={()=>setDetailModal(true)}
@@ -158,7 +210,7 @@ const ProductSection = () => {
                                     <h5 className="price">&#8358;{item.price}</h5>
                                 </div>
                                 <div className="product-tag">
-                                    <span className="badge ">Get {item.discount}% Off</span>
+                                    <span className="badge ">Get 20% Off</span>
                                 </div>
                             </div>
                         </div>
