@@ -383,7 +383,7 @@ export default function ShopCheckout() {
                   </div>
                 </div>
 
-                {/* <div className="col-md-12">
+                <div className="col-md-12">
                   <div className="m-b25 value-select">
                     <label className="label-title">
                       Country / Region <span className="text-danger">*</span>
@@ -400,7 +400,7 @@ export default function ShopCheckout() {
                       className="form-control"
                     />
                   </div>
-                </div> */}
+                </div>
                 <div className="col-md-12">
                   <div className="form-group m-b25">
                     <label className="label-title">
