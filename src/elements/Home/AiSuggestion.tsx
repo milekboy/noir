@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { use, useEffect, useReducer } from "react";
+import { use, useEffect, useReducer, useState } from "react";
 
 import { Modal } from "react-bootstrap";
 import { masonryData, headfilterData } from "../../constant/Alldata";
@@ -18,6 +18,20 @@ interface MenuItem {
   id: number;
 }
 
+interface Imagee{
+  filename: string;
+  url: string;
+  public_id: string;
+}
+interface RecommendationsResponse {
+  _id: string;
+  category: string;
+  name: string;
+  price: string;
+  productImages: Imagee[];
+  size: number;
+  description: string;
+}
 type HeartIconsState = { [key: number]: boolean };
 
 // Define the initial state
@@ -28,6 +42,7 @@ const initialState = {
   activeMenu: 0,
   data: masonryData,
 };
+
 
 // Define the reducer function
 function reducer(state: typeof initialState, action: any) {
@@ -70,20 +85,21 @@ function reducer(state: typeof initialState, action: any) {
 
 const ProductSection = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [recommendations, setRecommendations] = useState<RecommendationsResponse[]>([]);
   const networkInstance = AiNetworkInstance();
   const cartID = localStorage.getItem('cartId');
+  // 685e1d8e5aeb46d7adfb731f
   useEffect(() => {
-    // Fetch data from the API
 
     const fetchData = async () => {
       try {
-       
         const response = await networkInstance.get(
           `recommendations?cartID=${cartID}`
-        ); // Adjust the endpoint as needed
-        const products = response.data; // Assuming the API returns an array of products
-        console.log("Fetched products:", response);
-        // dispatch({ type: "SET_DATA", data: products });
+        );
+        const products = response.data.recommendations; 
+        setRecommendations(products);
+        console.log("Fetched products:", products);
+        // console.log(response)
       } catch (error: any) {
         console.error("Error fetching products:", error);
       }
@@ -91,6 +107,7 @@ const ProductSection = () => {
 
     fetchData();
   }, []);
+
   const handleHide = () => {
     dispatch({ type: "SET_DETAIL_MODAL", value: false });
   };
@@ -132,15 +149,20 @@ const ProductSection = () => {
       </div>
       <div className="clearfix">
         <ul id="masonry" className="row g-xl-4 g-3">
-          {state.data.map((item: MenuItem, ind: number) => (
+          {recommendations.map((item, ind) => (
             <div
               className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp"
               data-wow-delay="0.6s"
-              key={ind}
+              key={item._id}
             >
               <div className="shop-card">
                 <div className="dz-media">
-                  <Image src={item.image} alt="media" />
+                  <Image
+                    src={item.productImages[0]?.url || "/placeholder.png"}
+                    alt={item.productImages[0]?.filename || "Product image"}
+                    width={300}
+                    height={300}
+                  />
                   <div className="shop-meta">
                     <Link
                       href={"#"}
@@ -184,7 +206,7 @@ const ProductSection = () => {
                   <h5 className="price">&#8358;{item.price}</h5>
                 </div>
                 <div className="product-tag">
-                  <span className="badge ">Get {item.discount}% Off</span>
+                  <span className="badge ">Get 20% Off</span>
                 </div>
               </div>
             </div>
