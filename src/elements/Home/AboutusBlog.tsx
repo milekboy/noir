@@ -23,7 +23,7 @@ const AboutusBlog = () => {
                         <span className="icon-wrapper" dangerouslySetInnerHTML={{__html: SVGICON.ArrowUpSvg}}></span>
                     </Link>                    
                     <div className="row">
-                        <div className="col-lg-6 col-md-6 col-sm-6">
+                        {/* <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="shop-card style-6 wow fadeInUp" data-wow-delay="0.8s">
                                 <div className="dz-media">
                                     <Image src={IMAGES.productmedium1} alt="image" />
@@ -32,7 +32,7 @@ const AboutusBlog = () => {
                                     <Link href="/shop-list" className="btn btn-outline-secondary btn-light btn-md">Child Fashion</Link>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="shop-card style-6 wow fadeInUp" data-wow-delay="1.0s">
                                 <div className="dz-media" style={{height: 400}}>
