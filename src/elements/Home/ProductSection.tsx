@@ -109,7 +109,7 @@ const ProductSection = () => {
 
 
     interface PopularProduct {
-        images: productImages[];
+        productImages: productImages[];
         description: string;
         name: string;
         price: string;
@@ -169,12 +169,12 @@ const ProductSection = () => {
             <div className="clearfix">
                 <ul id="masonry" className="row g-xl-4 g-3">
                     {/* {state.data.map((item : MenuItem, ind : number)=>( */}
-                    {product.map((item, ind)=>(
+                    {product.slice(3).map((item, ind)=>(
                         <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
                             <div className="shop-card">
                                 <div className="dz-media">
                                     <Image src={
-                                        item.images?.[0]?.url ||
+                                        item.productImages[0].url ||
                                         "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                                         } alt={item.name}
                                         width={200}

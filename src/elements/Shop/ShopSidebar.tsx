@@ -1,3 +1,4 @@
+"use client";
 import { Fragment } from "react/jsx-runtime";
 import Link from "next/link";
 import {
@@ -7,6 +8,8 @@ import {
   widgetSize,
 } from "../../constant/Alldata";
 import ShopSidebarPriceSlider from "./ShopSidebarPriceSlider";
+import NetworkInstance from "@/app/api/NetworkInstance";
+import { useEffect, useState } from "react";
 
 interface Props {
   onPriceChange: (range: [number, number]) => void;
@@ -15,6 +18,14 @@ interface Props {
   selectedColor: string | null;
   selectedSize: number | null;
   selectedPriceRange: [number, number];
+}
+const networkInstance = NetworkInstance();
+
+interface Category {
+  _id: string;
+  name: string;
+  image: string[];
+  __v: number;
 }
 
 export default function ShopSidebar({
@@ -25,6 +36,17 @@ export default function ShopSidebar({
   selectedSize,
   selectedPriceRange,
 }: Props) {
+  const [category, setCategory] = useState<Category[]>([]);
+
+useEffect(() => {
+  getCategory();
+}, []);
+
+async function getCategory(){
+  const res = await networkInstance.get("category/get-all-categories");
+  setCategory(res.data);
+  
+}
   return (
     <Fragment>
       <div className="widget widget_search">
@@ -129,9 +151,10 @@ export default function ShopSidebar({
       <div className="widget widget_categories">
         <h6 className="widget-title">Category</h6>
         <ul>
-          {CategoryData.map((elem, i) => (
+          {category.map((elem, i) => (
             <li className="cat-item cat-item-26" key={i}>
-              <Link href="/blog-category">{elem.name}</Link> ({elem.number})
+              <Link href="">{elem.name}</Link>
+               {/* ({elem.number}) */}
             </li>
           ))}
         </ul>

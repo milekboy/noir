@@ -139,7 +139,7 @@ export default function ProductSection() {
 
       <div className="clearfix">
         <ul id="masonry" className="row g-xl-4 g-3">
-          {state.data.map((item, ind) => (
+          {/* {state.data.map((item, ind) => (
             <div
               className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp"
               data-wow-delay="0.6s"
@@ -194,7 +194,7 @@ export default function ProductSection() {
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
         </ul>
       </div>
 

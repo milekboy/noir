@@ -11,6 +11,7 @@ import demo2 from '../../public/assets/images/demo/demo-2.png';
 import demo3 from '../../public/assets/images/demo/demo-3.png';
 import Adv1 from '../../public/assets/images/adv-1.png';
 import Adv2 from '../../public/assets/images/adv-2.png';
+import Genz from '../../public/assets/images/Genz.jpg';
 
 import CompaniesLogo1 from '../../public/assets/images/companies/logo1.png';
 import CompaniesLogo2 from '../../public/assets/images/companies/logo2.png';
@@ -464,6 +465,7 @@ const IMAGES : any = {
     LadyPng : LadyPng,
     Lady3Png: Lady3Png,
     Clothes5 : Clothes5,
+    Genz : Genz,
     productmedium1 : productmedium1,
     productmedium2 : productmedium2,  
     productmedium3 : productmedium3,

@@ -74,16 +74,18 @@ const FeaturedCategorySlider = () => {
         >
             {category.map((item, ind)=>(
                 <SwiperSlide key={ind}>
-                    <div className="shop-box style-1 wow fadeInUp" data-wow-delay="0.2s">
-                        <div className="dz-media">
+                    <div className="shop-box style-1 wow fadeInUp " data-wow-delay="0.2s">
+                        <div className="dz-media ">
                             <Image src={
                                 item.image[0] ||
                                 "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                                 } alt={item.name}
-                                width={200}
-                                height={200} />
+                                width={500}
+                                height={500} className=""  />
+                                 
                         </div>
-                        <h6 className="product-name"><Link href="/shop-with-category">{item.name}</Link></h6>
+                        <h6 className="product-name text-[10px]"><Link href="/shop-with-category">{item.name}</Link></h6>
+                       
                     </div>
                 </SwiperSlide>
             ))}

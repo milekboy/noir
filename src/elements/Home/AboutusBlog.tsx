@@ -25,11 +25,11 @@ const AboutusBlog = () => {
                     <div className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="shop-card style-6 wow fadeInUp" data-wow-delay="0.8s">
-                                <div className="dz-media">
-                                    <Image src={IMAGES.productmedium1} alt="image" />
+                                <div className="dz-media"  style={{height: 400}}>
+                                    <Image src={IMAGES.Genz} alt="image" />
                                 </div>
                                 <div className="dz-content">
-                                    <Link href="/shop-list" className="btn btn-outline-secondary btn-light btn-md">Child Fashion</Link>
+                                    <Link href="/shop-list" className="btn btn-outline-secondary btn-light btn-md">Gen Z Fashion</Link>
                                 </div>
                             </div>
                         </div>

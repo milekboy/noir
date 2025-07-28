@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import NetworkInstance from "@/app/api/NetworkInstance";
 // Sample Data
 import { MainSwiperData, MainSwiperData2 } from "../../constant/Alldata";
+import IMAGES from "@/constant/theme";
 
 const MainBannerSlider2 = () => {
   interface ProductImage {
@@ -121,12 +122,14 @@ const MainBannerSlider2 = () => {
         >
           {products.map((item, i) => (
             <div className="banner-media" key={i} data-name={item.name}>
-              <div className="img-preview">
+              <div className="img-preview ">
                 <Image
                   width={100}
                   height={100}
-                  src={item.productImages[0]?.url || "/fallback.jpg"}
+                  src={item.productImages[0]?.url || IMAGES.productmedium2}
                   alt="banner-media"
+                  quality={100}
+                  className="img-fluid"
                 />
               </div>
             </div>
