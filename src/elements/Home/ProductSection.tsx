@@ -169,7 +169,7 @@ const ProductSection = () => {
             <div className="clearfix">
                 <ul id="masonry" className="row g-xl-4 g-3">
                     {/* {state.data.map((item : MenuItem, ind : number)=>( */}
-                    {product.slice(3).map((item, ind)=>(
+                    {product.map((item, ind)=>(
                         <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
                             <div className="shop-card">
                                 <div className="dz-media">
