@@ -1,6 +1,6 @@
 export default function ProductRollup(){
     return(
-        <>
+        <div className="">
             <span className="text__char" style={{'--char-rotate' :'0deg'} as React.CSSProperties}>a</span>
             <span className="text__char" style={{'--char-rotate' :'12deg'} as React.CSSProperties}>l</span>
             <span className="text__char" style={{'--char-rotate' :'24deg'} as React.CSSProperties}>l</span>
@@ -31,6 +31,6 @@ export default function ProductRollup(){
             <span className="text__char" style={{'--char-rotate' :'324deg'} as React.CSSProperties}> </span>
             <span className="text__char" style={{'--char-rotate' :'336deg'} as React.CSSProperties}>-</span>
             <span className="text__char" style={{'--char-rotate' :'348deg'} as React.CSSProperties}> </span>
-        </>
+        </div>
     )
 }

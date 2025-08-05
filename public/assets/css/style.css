@@ -32573,14 +32573,17 @@ video#video-background {
   border-radius: 0 25% 0 0;
   transition: 0.5s;
   width: 100%;
+  height: 50%;
 }
 .testimonial-swiper .swiper-slide.swiper-slide-active .about-box .about-img img {
   transition: 0.5s;
   border-radius: 25% 0 0 0;
+    height: 50%;  
 }
 .testimonial-swiper .swiper-slide.swiper-slide-next .about-box .about-img img {
   border-radius: 50% 50% 0 0;
   transition: 0.5s;
+    height: 50%;
 }
 
 .about-style2 .section-head .title {

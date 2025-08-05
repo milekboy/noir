@@ -24,6 +24,8 @@ import SummerSaleBlog from "@/elements/Home/SummerSaleBlog";
 import TradingSliderBlog from "@/elements/Home/TradingSliderBlog";
 import Image from "next/image";
 import MoreCollectionBlog from "@/elements/Home/MoreCollectionBlog";
+import ScrollablePreference  from "@/elements/Home/ScrollablePreference";
+import LatestoCollection from "@/elements/Home3/LatestCollection";
 
 
 const MainSection = () =>{
@@ -67,6 +69,12 @@ const MainSection = () =>{
                 <section className="content-inner overflow-hidden">
                     <div className="container">
                         <AboutusBlog />
+                    </div>
+                </section>
+                <section className=" overflow-hidden py-4" style={{background: "#FEEB9D"}}>
+                    <div className="container">
+                        {/* <ScrollablePreference /> */}
+                        <LatestoCollection/>
                     </div>
                 </section>
                 <section className="content-inner-3 overflow-hidden">				

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CartContext } from "@/components/CartContext";
 import Image, { StaticImageData } from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
+
 interface cardType {
   image: string | StaticImageData;
   title: string;
@@ -53,6 +54,43 @@ export default function ShopGridCard(props: cardType) {
       console.error("Not added to cart:", err?.response?.data || err, payload);
     }
   };
+
+  const addToWishlist = async () => {
+    const payload: Record<string, any> = {
+      productId: props._id,
+    };
+
+    const existingSessionId = localStorage.getItem("sessionId");
+    if (existingSessionId) {
+      payload.sessionId = existingSessionId;
+    }
+    try {
+      const response = await NetworkInstance().post("/wishlist", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-session-id": existingSessionId
+        },
+      });
+      if (response?.status === 200 || response?.status === 201) {
+        const sessionId = response.data?.sessionId;
+
+        console.log(response.data.sessionId);
+
+        if (sessionId) {
+          localStorage.setItem("sessionId", sessionId);
+        } else {
+          console.log("No session ID found");
+        }
+      }
+    } catch (err: any) {
+      console.error(
+        "Not added to wishlist:",
+        err?.response?.data || err,
+        payload
+      );
+    }
+  };
+
   return (
     <div className="shop-card style-1">
       <div className="dz-media">
@@ -71,7 +109,10 @@ export default function ShopGridCard(props: cardType) {
             className={`btn btn-primary meta-icon dz-wishicon ${
               heartIcon ? "active" : ""
             }`}
-            onClick={() => setHeartIcon(!heartIcon)}
+            onClick={() => {
+              setHeartIcon(!heartIcon);
+              addToWishlist();
+            }}
           >
             <i className="icon feather icon-heart dz-heart" />
             <i className="icon feather icon-heart-on dz-heart-fill" />

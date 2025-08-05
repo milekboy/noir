@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { useContext } from "react";
 import NetworkInstance from "@/app/api/NetworkInstance";
@@ -121,6 +122,7 @@ export default function ShopListCard(props: varibleType) {
                   className="form-check-input"
                   type="checkbox"
                   id={props.inputtype}
+
                 />
                 <label className="form-check-label" htmlFor={props.inputtype}>
                   <i className="fa-solid fa-heart" />

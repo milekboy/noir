@@ -124,12 +124,12 @@ const MainBannerSlider2 = () => {
             <div className="banner-media" key={i} data-name={item.name}>
               <div className="img-preview ">
                 <Image
-                  width={100}
-                  height={100}
+                  width={1000}
+                  height={1000}
                   src={item.productImages[0]?.url || IMAGES.productmedium2}
                   alt="banner-media"
                   quality={100}
-                  className="img-fluid"
+                  className=""
                 />
               </div>
             </div>

@@ -10,8 +10,21 @@ interface propType {
   tabactive: string;
 }
 
+interface Images {
+  url: string;
+  public_id: string;
+  filename: string;
+}
+interface WishlistType {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  productImages: Images[];
+}
 export default function HeaderSideShoppingCard(props: propType) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   interface ProductImage {
     url: string;
     public_id: string;
@@ -127,6 +140,37 @@ export default function HeaderSideShoppingCard(props: propType) {
     0
   );
 
+  const getWishlist = async () => {
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+      const res = await NetworkInstance().get("/wishlist", {
+        headers: {
+          "x-session-id": sessionId,
+        },
+      });
+
+      setWishlist(res.data.wishlist);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  async function handleDelete(productId: string, index: number) {
+    setWishlist((prev) => prev.filter((_, i) => i !== index));
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+      await NetworkInstance().delete(`/wishlist/${productId}`, {
+        headers: {
+          "x-session-id": sessionId,
+        },
+      });
+    } catch (err: any) {
+      console.log("error: ", err);
+    }
+  }
+  useEffect(() => {
+    getWishlist();
+  }, []);
   return (
     <div className="dz-tabs">
       <Tab.Container defaultActiveKey={props.tabactive}>
@@ -134,13 +178,13 @@ export default function HeaderSideShoppingCard(props: propType) {
           <Nav.Item as="li">
             <Nav.Link as="button" className="nav-link" eventKey="ShoppingCart">
               Shopping Cart
-              <span className="badge badge-light">5</span>
+              <span className="badge badge-light">{cartItems.length}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as="li">
             <Nav.Link as="button" eventKey="Wishlist">
               Wishlist
-              <span className="badge badge-light">2</span>
+              <span className="badge badge-light">{wishlist.length}</span>
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -259,15 +303,15 @@ export default function HeaderSideShoppingCard(props: propType) {
           <Tab.Pane eventKey="Wishlist">
             <div className="shop-sidebar-cart">
               <ul className="sidebar-cart-list">
-                {shoppingItem.map((elem, index) => (
+                {wishlist.map((elem, index) => (
                   <li key={index}>
                     <div className="cart-widget">
                       <div className="dz-media me-3">
-                        <Image src={elem.image} alt="media" />
+                        <Image src={elem.productImages[0].url} width={1000} height={1000} alt="media" />
                       </div>
                       <div className="cart-content">
                         <h6 className="title">
-                          <Link href="/product-thumbnail">{elem.title}</Link>
+                          <Link href="/product-thumbnail">{elem.name}</Link>
                         </h6>
                         <div className="d-flex align-items-center">
                           <h6 className="dz-price  mb-0">${elem.price}.00</h6>
@@ -276,7 +320,7 @@ export default function HeaderSideShoppingCard(props: propType) {
                       <Link
                         href="#"
                         className="dz-close"
-                        onClick={() => handlePrice(index)}
+                        onClick={() => handleDelete(elem._id,index)}
                       >
                         <i className="ti-close" />
                       </Link>
