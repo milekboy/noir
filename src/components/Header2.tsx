@@ -185,7 +185,7 @@ export default function Header2() {
                                             <span></span>
                                         </div>
                                         <span className="category-btn-title">
-                                            Browse Categories
+                                            Browse Collections
                                         </span>
                                         <span className="toggle-arrow ms-auto">
                                             <i className="icon feather icon-chevron-down"/>

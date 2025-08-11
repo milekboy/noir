@@ -40,25 +40,47 @@ const AllProduction = () => {
                         </Link>
                     </div>	
                 </div>
-                <div className="row">
-                    {singleProductData.map(({name, image},ind)=>(
-                        <div className="col-lg-4 col-md-4 col-sm-6 m-b15" key={ind}>
-                            <div className="shop-card style-5">
-                                <div className="dz-media"><Image src={image} alt="shop" /></div>
-                                <div className="dz-content">
-                                    <div>
-                                        <span className="sale-title">up to 79% off</span>
-                                        <h6 className="title"><Link href="/shop-list">{name}</Link></h6>
-                                    </div>
-                                    <h6 className="price">
-                                        &#8358;80
-                                        <del>&#8358;95</del>
-                                    </h6>
-                                </div>
-                            </div>
-                        </div>
-                    ))}                    
-                </div>	
+  <div className="row">
+  {singleProductData.map(({ name, image }, ind) => (
+    <div className="col-lg-4 col-md-4 col-sm-6 m-b15" key={ind}>
+      <div className="shop-card style-5">
+        <div
+          className="dz-media"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "250px",
+            overflow: "hidden"
+          }}
+        >
+          <Image
+            src={image}
+            alt="shop"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover"
+            }}
+          />
+        </div>
+        <div className="dz-content">
+          <div>
+            <span className="sale-title">up to 79% off</span>
+            <h6 className="title">
+              <Link href="/shop-list">{name}</Link>
+            </h6>
+          </div>
+          <h6 className="price">
+            &#8358;80
+            <del>&#8358;95</del>
+          </h6>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
             </div>
         </div>
     );

@@ -44,9 +44,9 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down auto-width menu-left ${state.openMenu === 0 ? 'open' : ''}`}                
                 onClick={() => dispatch({ type: 'toggleMenu', index: 0 })}
             >
-                <Link href="#"><span>Home</span><i className="fas fa-chevron-down tabindex" /></Link>
-                <div className="mega-menu ">
-                    <ul className="demo-menu mb-0">
+                <Link href="#"><span>Home</span></Link>
+                {/* <div className="mega-menu "> */}
+                    {/* <ul className="demo-menu mb-0">
                         <li>
                             <Link href="/">
                                 <Image src={IMAGES.demo1} alt="/" />
@@ -65,14 +65,14 @@ export default function Header2Menus(){
                                 <span className="menu-title">03 Home Page</span>
                             </Link>
                         </li>
-                    </ul>
-                </div>
+                    </ul> */}
+                {/* </div> */}
             </li>
             <li className={`has-mega-menu sub-menu-down ${state.openMenu === 1 ? 'open' : ''}`}                
                 onClick={() => dispatch({ type: 'toggleMenu', index: 1 })}
             >
-                <Link href="#"><span>Shop</span><i className="fas fa-chevron-down tabindex" /></Link>                      
-                <div className="mega-menu shop-menu">
+                <Link href="/shop-standard"><span>Shop</span><i className="fas fa-chevron-down tabindex" /></Link>                      
+                {/* <div className="mega-menu shop-menu">
                     <ul>
                         <li className="side-left">
                             <ul>
@@ -105,13 +105,13 @@ export default function Header2Menus(){
                             </div>
                         </li>
                     </ul>
-                </div>     
+                </div>      */}
             </li>
             <li className={`has-mega-menu sub-menu-down auto-width ${state.openMenu === 2 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 2 })}
             >
-                <Link href="#"><span>Blog</span><i className="fas fa-chevron-down tabindex"/></Link>
-                <div className="mega-menu">
+                <Link href="/shop-with-category"><span>Category</span><i className="fas fa-chevron-down tabindex"/></Link>
+                {/* <div className="mega-menu">
                     <ul>                       
                         {menuData2.map((item, index) => (
                             <li key={index}>
@@ -173,13 +173,13 @@ export default function Header2Menus(){
                             </div>
                         </li>
                     </ul>
-                </div>
+                </div> */}
             </li>
             <li className={`has-mega-menu sub-menu-down auto-width ${state.openMenu === 3 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 3 })}
             >
-                <Link href="#"><span>Post Layout</span><i className="fas fa-chevron-down tabindex"/></Link>
-                <div className="mega-menu">
+                <Link href="/contact-us-1"><span>Contact Us</span><i className="fas fa-chevron-down tabindex"/></Link>
+                {/* <div className="mega-menu">
                     <ul>
                         {menuData3.map((item, index) => (
                             <li key={index}>
@@ -198,13 +198,13 @@ export default function Header2Menus(){
                             </li>
                         ))}    
                     </ul>                   
-                </div>
+                </div> */}
             </li>
             <li className={`has-mega-menu sub-menu-down ${state.openMenu === 4 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 4 })}
             >
-                <Link href="#"><span>Portfolio</span><i className="fas fa-chevron-down tabindex"/></Link>
-                <div className="mega-menu portfolio-menu">
+                <Link href="/registration"><span>Registration</span><i className="fas fa-chevron-down tabindex"/></Link>
+                {/* <div className="mega-menu portfolio-menu">
                     <ul>
                         <li className="side-left">
                             <ul className="portfolio-nav-link">
@@ -229,16 +229,16 @@ export default function Header2Menus(){
                             </ul>
                         </li>
                     </ul>
-                </div>
+                </div> */}
             </li>
             <li className={`has-mega-menu sub-menu-down wide-width ${state.openMenu === 5 ? "open" : ""}`}
                onClick={() => dispatch({ type: 'toggleMenu', index: 5 })}
             >
-                <Link href="#" >
-                    <span>Pages</span>
+                <Link href="/login" >
+                    <span>Login</span>
                     <i className="fas fa-chevron-down tabindex"/>
                 </Link>
-                <div className="mega-menu">
+                {/* <div className="mega-menu">
                     <ul>             
                         {menuData4.map((data, ind)=>(
                             <li key={ind}>
@@ -260,8 +260,39 @@ export default function Header2Menus(){
                             </li>
                         ))}          
                     </ul>
-                </div>
-            </li>           
+                </div> */}
+            </li>    
+             <li className={`has-mega-menu sub-menu-down wide-width ${state.openMenu === 5 ? "open" : ""}`}
+               onClick={() => dispatch({ type: 'toggleMenu', index: 5 })}
+            >
+                <Link href="/shop-checkout" >
+                    <span>Checkout</span>
+                    <i className="fas fa-chevron-down tabindex"/>
+                </Link>
+                {/* <div className="mega-menu">
+                    <ul>             
+                        {menuData4.map((data, ind)=>(
+                            <li key={ind}>
+                                {data.mainMenu && data.mainMenu.map((item, index)=>(
+                                    <Fragment key={index}>
+                                        <Link href={item.link} className="menu-title">{item.title}</Link>                                        
+                                        <ul>
+                                            {item.subMenu && item.subMenu.map((elem, i)=>(                                                
+                                                <Fragment key={i}>
+                                                    <li ><Link href={`${elem.path}`}>{elem.name}</Link></li>
+                                                    {elem.outerlink &&
+                                                        <li className="w3menulink"><Link href="https://xmenu.indiankoder.com/react/" target="_blank">Menu Styles</Link></li>
+                                                    }
+                                                </Fragment>
+                                            ))}                                                                                       
+                                        </ul>
+                                    </Fragment>
+                                ))}
+                            </li>
+                        ))}          
+                    </ul>
+                </div> */}
+            </li>            
         </ul>
     )
 }

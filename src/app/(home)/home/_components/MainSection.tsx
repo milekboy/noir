@@ -26,7 +26,9 @@ import Image from "next/image";
 import MoreCollectionBlog from "@/elements/Home/MoreCollectionBlog";
 import ScrollablePreference  from "@/elements/Home/ScrollablePreference";
 import LatestoCollection from "@/elements/Home3/LatestCollection";
-
+import { Virtual } from "swiper/modules";
+import { Images } from "lucide-react";
+import { color } from "three/src/nodes/TSL.js";
 
 const MainSection = () =>{
     const [openVideo, setOpenVideo] = useState(false);
@@ -51,8 +53,12 @@ const MainSection = () =>{
                         <svg className="star-2" xmlns="http://www.w3.org/2000/svg" width="82" height="94" viewBox="0 0 82 94" fill="none">
                             <path d="M41 0L45.277 39.592L81.7032 23.5L49.554 47L81.7032 70.5L45.277 54.408L41 94L36.723 54.408L0.296806 70.5L32.446 47L0.296806 23.5L36.723 39.592L41 0Z" fill="black" />
                         </svg>
-                        <Link href={"#"} className="animation-btn popup-youtube" 
+                        {/* <Link href={"#"} className="animation-btn popup-youtube" 
                             onClick={()=>setOpenVideo(true)}
+                        > */}
+
+                        <Link href={"#"} className="animation-btn popup-youtube" 
+                          
                         >
                             <div className="text-row word-rotate-box c-black">
                                 <MoreCollectionBlog />
@@ -218,6 +224,98 @@ const MainSection = () =>{
                     <TradingSliderBlog />
                 </section> */}
                 {/*  collection-bx */}
+             <section
+  className="content-inner overflow-hidden p-b0"
+  style={{
+    backgroundColor: "#FEEB9D",
+    paddingLeft: "100px",
+    height: "550px",
+    marginTop: "50px",
+  }}
+>
+  <div className="container">
+    <div className="row">
+      {/* Text Column */}
+      <div className="col-lg-6 col-md-12 m-b30">
+        <div className="about-box style-1 clearfix h-100">
+          <h1
+            style={{
+              color: "#222",
+              fontSize: "38px",
+              lineHeight: "1.8",
+              fontWeight: "bold",
+              marginTop: "50px",
+            }}
+          >
+            VIRTUAL TRY-ON NOW IS LIVE
+          </h1>
+          <p
+            style={{
+              color: "#222",
+              fontSize: "16px",
+              lineHeight: "1.8",
+              marginTop: "20px",
+            }}
+          >
+           The wait is over – our Virtual Try-On is here! 
+           Now you can explore our latest styles, see exactly 
+           how they look on you in real time, and shop with total 
+           confidence — all from the comfort of your home. Try bold 
+           new looks, mix and match your favorites, and find your perfect 
+           fit without stepping into a store. No guesswork, no hesitation — 
+           just effortless, confident shopping. Start your Virtual Try-On 
+           experience today and see yourself in your next style before you buy!
+          </p>
+         <button
+          style={{
+            backgroundColor: "#000",
+            color: "#fff",
+            border: "none",
+            padding: "12px 28px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            letterSpacing: "1px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            marginTop: "20px",
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.backgroundColor = "#fff";
+            target.style.color = "#000";
+            target.style.border = "2px solid #000";
+          }}
+          onMouseOut={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.backgroundColor = "#000";
+            target.style.color = "#fff";
+            target.style.border = "none";
+          }}
+        >
+          Try it out
+        </button>
+        </div>
+      </div>
+
+      {/* Image Column */}
+      <div className="col-lg-6 col-md-12 align-self-center">
+        <img
+          src="https://res.cloudinary.com/dbpjskran/image/upload/v1754929226/a01eabf2-d486-42a0-a618-bdff0482eff7_oly2fu.jpg"
+          alt="Virtual Try-On"
+          style={{
+            width: "500px",
+            height: "auto",
+            borderRadius: "10px",
+          }}
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+
+                
                 <section className=" collection-bx content-inner-3 overflow-hidden">
                     <CollectionBlog />
                 </section>
