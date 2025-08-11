@@ -110,7 +110,7 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down auto-width ${state.openMenu === 2 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 2 })}
             >
-                <Link href="#"><span>Category</span><i className="fas fa-chevron-down tabindex"/></Link>
+                <Link href="/shop-with-category"><span>Category</span><i className="fas fa-chevron-down tabindex"/></Link>
                 {/* <div className="mega-menu">
                     <ul>                       
                         {menuData2.map((item, index) => (
@@ -178,7 +178,7 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down auto-width ${state.openMenu === 3 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 3 })}
             >
-                <Link href="#"><span>Contact Us</span><i className="fas fa-chevron-down tabindex"/></Link>
+                <Link href="/contact-us-1"><span>Contact Us</span><i className="fas fa-chevron-down tabindex"/></Link>
                 {/* <div className="mega-menu">
                     <ul>
                         {menuData3.map((item, index) => (
@@ -203,7 +203,7 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down ${state.openMenu === 4 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 4 })}
             >
-                <Link href="#"><span>Registration</span><i className="fas fa-chevron-down tabindex"/></Link>
+                <Link href="/registration"><span>Registration</span><i className="fas fa-chevron-down tabindex"/></Link>
                 {/* <div className="mega-menu portfolio-menu">
                     <ul>
                         <li className="side-left">
@@ -234,7 +234,7 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down wide-width ${state.openMenu === 5 ? "open" : ""}`}
                onClick={() => dispatch({ type: 'toggleMenu', index: 5 })}
             >
-                <Link href="#" >
+                <Link href="/login" >
                     <span>Login</span>
                     <i className="fas fa-chevron-down tabindex"/>
                 </Link>
@@ -265,7 +265,7 @@ export default function Header2Menus(){
              <li className={`has-mega-menu sub-menu-down wide-width ${state.openMenu === 5 ? "open" : ""}`}
                onClick={() => dispatch({ type: 'toggleMenu', index: 5 })}
             >
-                <Link href="#" >
+                <Link href="/shop-checkout" >
                     <span>Checkout</span>
                     <i className="fas fa-chevron-down tabindex"/>
                 </Link>

@@ -229,7 +229,7 @@ const MainSection = () =>{
   style={{
     backgroundColor: "#FEEB9D",
     paddingLeft: "100px",
-    height: "500px",
+    height: "550px",
     marginTop: "50px",
   }}
 >
@@ -257,16 +257,44 @@ const MainSection = () =>{
               marginTop: "20px",
             }}
           >
-            We’re taking your shopping experience to the next level! Our Virtual
-            Try-On feature is finally here, and it’s designed to put you in control
-            of your style choices like never before. Browse our collections, select
-            your favorites, and instantly see how they look on you — right from the
-            comfort of your home. Whether you’re exploring bold new trends or
-            sticking to timeless classics, Virtual Try-On makes it easy to find the
-            perfect fit and style. No more second-guessing. No more wondering. Just
-            a smarter, more confident way to shop. Try it today and see yourself in
-            your next look before you buy!
+           The wait is over – our Virtual Try-On is here! 
+           Now you can explore our latest styles, see exactly 
+           how they look on you in real time, and shop with total 
+           confidence — all from the comfort of your home. Try bold 
+           new looks, mix and match your favorites, and find your perfect 
+           fit without stepping into a store. No guesswork, no hesitation — 
+           just effortless, confident shopping. Start your Virtual Try-On 
+           experience today and see yourself in your next style before you buy!
           </p>
+         <button
+          style={{
+            backgroundColor: "#000",
+            color: "#fff",
+            border: "none",
+            padding: "12px 28px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            letterSpacing: "1px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            marginTop: "20px",
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.backgroundColor = "#fff";
+            target.style.color = "#000";
+            target.style.border = "2px solid #000";
+          }}
+          onMouseOut={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.backgroundColor = "#000";
+            target.style.color = "#fff";
+            target.style.border = "none";
+          }}
+        >
+          Try it out
+        </button>
         </div>
       </div>
 
