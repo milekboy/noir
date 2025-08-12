@@ -44,7 +44,7 @@ export default function Categorydropdown(){
                 {category.map((item, ind)=>( <Dropdown.Item onClick={()=>setSelectCat(item.name)} key={ind}>
                     <span><Link href="/shop-with-category">{item.name}</Link></span>
                 </Dropdown.Item> ))}
-                <Dropdown.Item onClick={()=>setSelectCat("UrbanSkirt")}><span><Link href="/shop-with-category">UrbanSkirt</Link></span></Dropdown.Item>
+                {/* <Dropdown.Item onClick={()=>setSelectCat("UrbanSkirt")}><span><Link href="/shop-with-category">UrbanSkirt</Link></span></Dropdown.Item>
                 <Dropdown.Item onClick={()=>setSelectCat("VelvetGown")}><span><Link href="/shop-with-category">VelvetGown</Link></span></Dropdown.Item>                        
                 <Dropdown.Item onClick={()=>setSelectCat("LushShorts")}><span><Link href="/shop-with-category">LushShorts</Link></span></Dropdown.Item>                        
                 <Dropdown.Item onClick={()=>setSelectCat("Vintage")}><span><Link href="/shop-with-category">Vintage</Link></span></Dropdown.Item>                        
@@ -54,7 +54,7 @@ export default function Categorydropdown(){
                 <Dropdown.Item onClick={()=>setSelectCat("Smart Casual Staples")}><span><Link href="/shop-with-category">Smart Casual Staples</Link></span></Dropdown.Item>                        
                 <Dropdown.Item onClick={()=>setSelectCat("Back to Campus")}><span><Link href="/shop-with-category">Back to Campus</Link></span></Dropdown.Item>                        
                 <Dropdown.Item onClick={()=>setSelectCat("Accessories Corner")}><span><Link href="/shop-with-category">Accessories Corner</Link></span></Dropdown.Item>                        
-                <Dropdown.Item onClick={()=>setSelectCat("Layered Looks")}><span><Link href="/shop-with-category">Layered Looks</Link></span></Dropdown.Item>                        
+                <Dropdown.Item onClick={()=>setSelectCat("Layered Looks")}><span><Link href="/shop-with-category">Layered Looks</Link></span></Dropdown.Item>                         */}
             </Dropdown.Menu>
         </Dropdown> 
     )

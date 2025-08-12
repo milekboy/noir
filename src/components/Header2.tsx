@@ -128,7 +128,7 @@ export default function Header2() {
                                             </div>
                                             <div className="info-content">
                                                 <span>24/7 SUPPORT</span>
-                                                <h6 className="title mb-0">+123 456 789</h6>
+                                                <h6 className="title mb-0">0813 564 9821</h6>
                                             </div>
                                         </div>
                                     </li>

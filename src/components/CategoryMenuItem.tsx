@@ -1,11 +1,44 @@
+"use client"
 import Link from "next/link";
+import { Dropdown } from "react-bootstrap";
+import NetworkInstance from "@/app/api/NetworkInstance";
+import { useState, useEffect } from "react";
+
+
+interface Category {
+    _id: string;
+    name: string;
+  }
+
+
 export default function CategoryMenuItem(){
+
+     const [category, setCategory] = useState<Category[]>([]);
+      const networkInstance = NetworkInstance();
+      useEffect(() => {
+        getProducts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+
+
+    
+      const getProducts = async () => {
+        try {
+          const res = await networkInstance.get("category/get-all-categories");
+    
+          setCategory(res.data);
+          console.log(res.data);
+          console.log(category);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
     return(
         <ul className="nav navbar-nav">
-            <li className="has-mega-menu cate-drop">
-                <Link href="#">
+          {category.map((item, ind)=>(   <li className="has-mega-menu cate-drop">
+                <Link href="/shop-standard">
                     <i className="icon feather icon-arrow-right"/>
-                    <span>Men</span>
+                   <span>{item.name}</span>
                     <span className="menu-icon">
                         <i className="icon feather icon-chevron-right"/>
                     </span>
@@ -73,8 +106,8 @@ export default function CategoryMenuItem(){
                         
                     </div>
                 </div>
-            </li>
-            <li className="cate-drop">
+            </li> ))}
+            {/* <li className="cate-drop">
                 <Link href={"#"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Women Casual</span>
@@ -149,9 +182,9 @@ export default function CategoryMenuItem(){
                         
                     </div>
                 </div>
-            </li>
+            </li> */}
             
-            <li>
+            {/* <li>
                 <Link href={"/shop-standard"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Smart Casual Staples</span>
@@ -171,8 +204,8 @@ export default function CategoryMenuItem(){
                     <li><Link href={"/shop-standard"}>Water Monitors</Link></li>
                     <li><Link href={"/shop-standard"}>Gardening Systems</Link></li>
                 </ul>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
                 <Link href={"/shop-standard"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Men Casual</span>
@@ -235,7 +268,7 @@ export default function CategoryMenuItem(){
                         <i className="icon feather icon-chevron-right"/>
                     </span>
                 </Link>
-            </li>
+            </li> */}
             {/* <li className="menu-items">
                 <Link href={"#"}>
                     <i className="flaticon-blocks me-3"/>
