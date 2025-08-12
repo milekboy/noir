@@ -178,7 +178,7 @@ export default function Header2Menus(){
             <li className={`has-mega-menu sub-menu-down auto-width ${state.openMenu === 3 ? "open" : ""}`}
                 onClick={() => dispatch({ type: 'toggleMenu', index: 3 })}
             >
-                <Link href="/contact-us-1"><span>Contact Us</span><i className="fas fa-chevron-down tabindex"/></Link>
+                {/* <Link href="/contact-us-1"><span>Contact Us</span><i className="fas fa-chevron-down tabindex"/></Link> */}
                 {/* <div className="mega-menu">
                     <ul>
                         {menuData3.map((item, index) => (
