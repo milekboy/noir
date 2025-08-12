@@ -42,23 +42,28 @@ const MainSection = () =>{
                             <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76" fill="none">
                                 <path d="M52.6617 37.6496L58.7381 40.0325L75.0609 49.0874L66.6016 63.7422L49.9214 54.6872L45.1557 50.7554L46.1088 57.1892V75.18H28.952V57.1892L30.0243 50.5171L24.9011 54.6872L8.45924 63.7422L0 49.0874L16.3228 39.7942L22.3991 37.6496L16.3228 35.1475L0 26.2117L8.45924 11.557L25.1394 20.4928L30.0243 24.6629L28.952 18.3482V0H46.1088V18.3482L45.1557 24.4246L49.9214 20.4928L66.6016 11.557L75.0609 26.2117L58.7381 35.3858L52.6617 37.6496Z" fill="black" />
                             </svg>
-                          <div
-                                style={{
-                                    cursor: "pointer",
-                                    transition: "all 0.3s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "scale(1.05)";
-                                    e.currentTarget.style.color = "#555";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "scale(1)";
-                                    e.currentTarget.style.color = "#000";
-                                }}
-                                >
-                                <h5 className="sub-title" style={{ margin: "0", fontWeight: "bold" }}>NOIR</h5>
-                                <h4 style={{ margin: "0" }}>Black and bold</h4>
-                        </div>
+                <div
+                            style={{
+                                cursor: "pointer",
+                                transition: "all 0.3s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "scale(1.05)";
+                                e.currentTarget.style.color = "#555";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                e.currentTarget.style.color = "#000";
+                            }}
+                            >
+                            <h5
+                                style={{ margin: "0", fontWeight: "bold", fontSize: "26px" }}
+                            >
+                                NOIR
+                            </h5>
+                            <h4 style={{ margin: "0", fontSize: "22px" }}>Black & bold</h4>
+                    </div>
+
 
                         </div>
                         <svg className="star-1" xmlns="http://www.w3.org/2000/svg" width="94" height="94" viewBox="0 0 94 94" fill="none">
