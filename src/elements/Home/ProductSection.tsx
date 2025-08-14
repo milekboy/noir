@@ -172,39 +172,71 @@ const ProductSection = () => {
                     {product.map((item, ind)=>(
                         <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
                             <div className="shop-card">
-                                <div className="dz-media">
-                                    <Image src={
+                                <div
+                                    className="dz-media"
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "300px",        
+                                        overflow: "hidden",
+                                        position: "relative",   
+                                        zIndex: -10
+                                    }}
+                                    >
+                                    <Image
+                                        src={
                                         item.productImages[0].url ||
                                         "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                                        } alt={item.name}
+                                        }
+                                        alt={item.name}
                                         width={200}
-                                        height={200}  />
+                                        height={200}
+                                        style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover"
+                                        }}
+                                    />
+
                                     <div className="shop-meta">
-                                        <Link href={"#"} className="btn btn-secondary btn-md btn-rounded" 
-                                            // onClick={()=>setDetailModal(true)}
-                                            onClick={() => dispatch({ type: 'SET_DETAIL_MODAL', value: true })}
+                                        <Link
+                                        href={"#"}
+                                        className="btn btn-secondary btn-md btn-rounded"
+                                        onClick={() =>
+                                            dispatch({ type: "SET_DETAIL_MODAL", value: true })
+                                        }
                                         >
-                                            <i className="fa-solid fa-eye d-md-none d-block" />
-                                            <span className="d-md-block d-none">Quick View</span>
+                                        <i className="fa-solid fa-eye d-md-none d-block" />
+                                        <span className="d-md-block d-none">Quick View</span>
                                         </Link>
-                                        <div className={`btn btn-primary meta-icon dz-wishicon ${state.heartIcon[ind] ? "active": ""}`}
-                                            onClick={()=>{
-                                                toggleHeart(ind);
-                                            }}
+
+                                        <div
+                                        className={`btn btn-primary meta-icon dz-wishicon ${
+                                            state.heartIcon[ind] ? "active" : ""
+                                        }`}
+                                        onClick={() => {
+                                            toggleHeart(ind);
+                                        }}
                                         >
-                                            <i className="icon feather icon-heart dz-heart"/>
-                                            <i className="icon feather icon-heart-on dz-heart-fill"/>
+                                        <i className="icon feather icon-heart dz-heart" />
+                                        <i className="icon feather icon-heart-on dz-heart-fill" />
                                         </div>
-                                        <div className={`btn btn-primary meta-icon dz-carticon ${state.basketIcon[ind] ? "active": ""}`}
-                                            onClick={()=>{
-                                                toggleBasket(ind);
-                                            }}
+
+                                        <div
+                                        className={`btn btn-primary meta-icon dz-carticon ${
+                                            state.basketIcon[ind] ? "active" : ""
+                                        }`}
+                                        onClick={() => {
+                                            toggleBasket(ind);
+                                        }}
                                         >
-                                            <i className="flaticon flaticon-basket"/>
-                                            <i className="flaticon flaticon-basket-on dz-heart-fill"/>
-                                        </div>
-                                    </div>							
+                                        <i className="flaticon flaticon-basket" />
+                                        <i className="flaticon flaticon-basket-on dz-heart-fill" />
+                                    </div>
                                 </div>
+                            </div>
+
                                 <div className="dz-content">
                                     <h5 className="title"><Link href="/shop-list">{item.name}</Link></h5>
                                     <h5 className="price">&#8358;{item.price}</h5>

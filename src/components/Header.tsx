@@ -239,7 +239,7 @@ const Header = ({ design }: DesignType) => {
                   <ul className="header-right">
                     <li className="nav-item login-link">
                       <Link className="nav-link" href="/login">
-                        Login / Register
+                        Login / Registers
                       </Link>
                     </li>
                     <li className="nav-item search-link">
