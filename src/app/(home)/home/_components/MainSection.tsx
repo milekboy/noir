@@ -91,7 +91,7 @@ const MainSection = () =>{
                         <AboutusBlog />
                     </div>
                 </section>
-                <section className=" overflow-hidden py-4" style={{background: "#FEEB9D"}}>
+                <section className=" overflow-hidden py-4 " style={{background: "#FEEB9D"}}>
                     <div className="container">
                         {/* <ScrollablePreference /> */}
                         <LatestoCollection/>

@@ -45,6 +45,7 @@ export default function SwiperTestimonial() {
   useEffect(() => {
     getAllProduct();
   }, []);
+
   return (
     <>
       <Swiper
@@ -78,8 +79,12 @@ export default function SwiperTestimonial() {
           1200: {
             slidesPerView: 3,
           },
+          1100: {
+            slidesPerView: 2,
+          },
           1024: {
             slidesPerView: 2,
+            
           },
           991: {
             slidesPerView: 2,
@@ -96,10 +101,10 @@ export default function SwiperTestimonial() {
         }}
       >
         {products?.map((item, ind) => (
-          <SwiperSlide key={ind}>
+          <SwiperSlide key={ind} className="">
             <div className="about-box" >
               <div className="about-img " >
-                <Image src={item.productImages[0].url} alt="product"  width={1000} height={1000} />
+                <Image src={item.productImages[0].url} alt="product"  width={1000} height={1000} className="imagee object-cover bg-white" />
               </div>
               <div className="about-btn">
                 <Link className="btn btn-white btn-md" href="/shop-list">
@@ -110,7 +115,7 @@ export default function SwiperTestimonial() {
           </SwiperSlide>
         ))}
       </Swiper>
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-end align-items-center">
         <div className="d-flex gap-3">
           <div className="testimonial-button-prev c-pointer">
             <svg
@@ -141,7 +146,7 @@ export default function SwiperTestimonial() {
             </svg>
           </div>
         </div>
-        <div className="swiper-pagination style-1 text-end swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
+        {/* <div className="swiper-pagination style-1 text-end swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
           <span className="swiper-pagination-bullet" tabIndex={0}>
             01
           </span>
@@ -154,7 +159,7 @@ export default function SwiperTestimonial() {
           <span className="swiper-pagination-bullet" tabIndex={0}>
             03
           </span>
-        </div>
+        </div> */}
       </div>
     </>
   );
