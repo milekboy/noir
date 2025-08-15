@@ -11,7 +11,7 @@ export default function LatestoCollection() {
         <div className="dz-medi style-2 wow fadeInUp" data-wow-delay="0.2s">
           {/* <Image src={IMAGES.ShopPorductPng3} alt="about"/> */}
           <h1 className="title align-self-start m-b30 display-2 font-bold">
-            Smart Wardrope{" "}
+            Smart Wardrobe{" "}
           </h1>
           <p>
             We’ve reimagined the way you dress for every occasion. Our AI learns
