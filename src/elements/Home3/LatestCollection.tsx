@@ -6,12 +6,12 @@ import ProductRollup from "@/components/ProductRollup";
 
 export default function LatestoCollection() {
   return (
-    <div className="row align-items-center">
-      <div className="col-lg-4 col-md-12 m-b30 d-flex justify-content-start ">
+    <div className="row align-items-center g- " >
+      <div className="col-lg-5 col-md-12 col-sm-12 m-b3 d-flex justify-content-start ">
         <div className="dz-medi style-2 wow fadeInUp" data-wow-delay="0.2s">
           {/* <Image src={IMAGES.ShopPorductPng3} alt="about"/> */}
           <h1 className="title align-self-start m-b30 display-2 font-bold">
-            Smart Wardrope{" "}
+            Smart Wardrobe{" "}
           </h1>
           <p>
             We’ve reimagined the way you dress for every occasion. Our AI learns
@@ -24,7 +24,7 @@ export default function LatestoCollection() {
           {/* <button className="btn btn-white btn-md">See more..</button> */}
         </div>
       </div>
-      <div className="col-lg-8 col-md-12 m-b30">
+      <div className="col-lg-7 col-md-12 col-sm-12 m-b30 ">
         <div className="about-wraper   position-relative">
           <div
             className="section-head style-1 wow fadeInUp d-lg-flex justify-content-between align-items-center"

@@ -32202,11 +32202,31 @@ video#video-background {
   position: relative;
   z-index: 1;
 }
+/* .swiper{
+  padding: 0 120px;
+} */
+ .imagee{
+  height: 400px;
+   width:800px !important;
+   object-fit: cover
+  
+}
 @media only screen and (max-width: 575px) {
   .about-box {
     margin-bottom: 0;
+    
   }
 }
+@media only screen and (max-width: 1200px) and (min-width: 1080px) {
+
+   .imagee{
+  height: 500px !important;
+   /* width:800px !important; */
+   object-fit: cover
+  
+}
+}
+
 .about-box .btn, .about-box .woocommerce #respond input#submit, .woocommerce #respond .about-box input#submit,
 .about-box .woocommerce a.button,
 .woocommerce .about-box a.button,
@@ -50135,7 +50155,7 @@ table.wishlist_table {
 }
 @media only screen and (max-width: 1480px) and (min-width: 992px) {
   .site-header .extra-nav .extra-cell .login-link {
-    display: none;
+    /* display: none; */
   }
 }
 @media only screen and (max-width: 1480px) {
