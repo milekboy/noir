@@ -44,6 +44,27 @@ export default function ShopProductRightContent({
           </div>
         </div>
         <p className="para-text">{product.description}</p>
+        {/* <></> */}
+        <Link
+          href={"/try-on"}
+          className="btn btn-secondary"
+          style={{
+            animation: "zooming 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          Try It On
+        </Link>
+        <style jsx>{`
+          @keyframes zooming {
+            0%,
+            100% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.08);
+            }
+          }
+        `}</style>
         <div className="meta-content m-b20 d-flex align-items-end">
           <div className="btn-quantity quantity-sm light d-xl-none d-blcok d-sm-block">
             <label className="form-label">Quantity</label>
