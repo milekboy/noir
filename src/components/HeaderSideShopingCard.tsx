@@ -174,7 +174,7 @@ export default function HeaderSideShoppingCard(props: propType) {
   return (
     <div className="dz-tabs">
       <Tab.Container defaultActiveKey={props.tabactive}>
-        <Nav as="ul" className="nav nav-tabs center">
+        <Nav as="ul" className="nav nav-tabs cente">
           <Nav.Item as="li">
             <Nav.Link as="button" className="nav-link" eventKey="ShoppingCart">
               Shopping Cart
@@ -187,6 +187,7 @@ export default function HeaderSideShoppingCard(props: propType) {
               <span className="badge badge-light">{wishlist.length}</span>
             </Nav.Link>
           </Nav.Item>
+        
         </Nav>
         <Tab.Content className="pt-4" id="dz-shopcart-sidebar">
           <Tab.Pane eventKey="ShoppingCart">
@@ -338,6 +339,8 @@ export default function HeaderSideShoppingCard(props: propType) {
               </div>
             </div>
           </Tab.Pane>
+
+          
         </Tab.Content>
       </Tab.Container>
     </div>

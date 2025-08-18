@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FeaturedSliderData } from '../../constant/Alldata';
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { useState, useEffect } from "react";

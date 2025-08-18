@@ -10,16 +10,18 @@ export default function LatestoCollection() {
       <div className="col-lg-4 col-md-12 m-b30 d-flex justify-content-start ">
         <div className="dz-medi style-2 wow fadeInUp" data-wow-delay="0.2s">
           {/* <Image src={IMAGES.ShopPorductPng3} alt="about"/> */}
-          <h1 className="title align-self-start m-b30 display-1 font-bolder">AI Outfit suggestion</h1>
+          <h1 className="title align-self-start m-b30 display-2 font-bold">
+            Smart Wardrope{" "}
+          </h1>
           <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rerum,
-            soluta atque ut totam facere ducimus magnam incidunt eos voluptatem
-            quia, nulla assumenda aspernatur. Voluptatem sapiente quidem maxime
-            velit porro ad, ullam amet aliquid quo possimus facere commodi quod
-            mollitia culpa magnam obcaecati, inventore recusandae voluptates
-            atque sed! Reiciendin.
+            We’ve reimagined the way you dress for every occasion. Our AI learns
+            your unique style preferences, favorite colors, fits, and trends —
+            so every suggestion feels like it was handpicked by your personal
+            stylist. No more endless scrolling or decision fatigue. Just open
+            Smart Wardrobe, choose your category, and discover full-outfit ideas
+            that match your mood, personality, and occasion — instantly.
           </p>
-          <button className="btn btn-white btn-md">See more..</button>
+          {/* <button className="btn btn-white btn-md">See more..</button> */}
         </div>
       </div>
       <div className="col-lg-8 col-md-12 m-b30">

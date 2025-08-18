@@ -1,11 +1,26 @@
 import Link from "next/link";
 import FeaturedCategorySlider from "../elements/Home/FeaturedCategorySlider";
 import MoreCollectionBlog from "../elements/Home/MoreCollectionBlog";
+import Background from "three/src/renderers/common/Background.js";
 
 const FeaturedBlog = () => {
     return (
         <div className="row">
             <div className="col-lg-8 left-box">
+                <div>
+                    <h5 style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "600",
+                        marginBottom: "20px",
+                        color: "#000"
+                    }}>New In</h5>
+                    <Link href={"#"} className="animation-btn popup-youtube">
+                                <div className="text-row word-rotate-box c-black">
+                                    <MoreCollectionBlog />
+                                    <i className="fa-solid fa-play text-dark badge__emoji" />
+                                </div>
+                            </Link>
+                    </div>
                 <FeaturedCategorySlider />
                 <Link className="icon-button" href="/shop-standard">
                     <div className="text-row word-rotate-box c-black border-secondary">
