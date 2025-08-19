@@ -65,7 +65,7 @@ export default function ShopProductRightContent({
             }
           }
         `}</style>
-        <div className="meta-content m-b20 d-flex align-items-end">
+        <div className="meta-content mt-5 m-b20 d-flex align-items-end">
           <div className="btn-quantity quantity-sm light d-xl-none d-blcok d-sm-block">
             <label className="form-label">Quantity</label>
             <ProductInputButton />
