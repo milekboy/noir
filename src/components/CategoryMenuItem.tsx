@@ -35,15 +35,25 @@ export default function CategoryMenuItem(){
       };
     return(
         <ul className="nav navbar-nav">
-          {category.map((item, ind)=>(   <li className="has-mega-menu cate-drop">
+          {category.filter(item => item.name !== "Owambe ready\n" && item.name !== "Try-on Ready Picks\n\n\n").map((item, ind)=>(   <li className="has-mega-menu cate-drop " key={ind}>
                 <Link href="/shop-standard">
                     <i className="icon feather icon-arrow-right"/>
                    <span>{item.name}</span>
-                    <span className="menu-icon">
+                    {
+                        (item.name === "Women") ? (
+                            <span className="menu-icon">
+                        <i className="icon feather icon-chevron-right"/>
+                    </span>)  :  item.name === "Men\n\n" ? (
+                          <span className="menu-icon">
                         <i className="icon feather icon-chevron-right"/>
                     </span>
+                        ) : null
+                    
+                    }
                 </Link>
-                <div className="mega-menu">
+                {
+                    item.name === "Women" ? (
+                                      <div className="mega-menu">
                     <div className="row">
                         <div className="col-md-3 col-sm-4 col-6"><Link href={"#"} className="menu-title">Clothing</Link>
                             <ul>
@@ -106,6 +116,8 @@ export default function CategoryMenuItem(){
                         
                     </div>
                 </div>
+                    ) : null
+                }
             </li> ))}
             {/* <li className="cate-drop">
                 <Link href={"#"}>

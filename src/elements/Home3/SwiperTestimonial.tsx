@@ -26,16 +26,23 @@ interface ProductImages {
 }
 
 interface Product {
-  _id: string;
-  name: string;
-  productImages: ProductImages[];
+  id: string;
+  eventName: string;
+  lagacyId: number
+  eventCategoryImage: ProductImages[];
 }
 export default function SwiperTestimonial() {
   const [products, setProducts] = useState<Product[]>();
 
   async function getAllProduct() {
     try {
-      const res = await networkInstance.get("/product/get-all-products");
+
+      const res = await networkInstance.get("/event-categories", {
+        headers: {
+          "x-session-id": localStorage.getItem("sessionId") || "",
+        }
+      });
+
       setProducts(res.data);
     } catch (err) {
       console.log(err);
@@ -45,6 +52,7 @@ export default function SwiperTestimonial() {
   useEffect(() => {
     getAllProduct();
   }, []);
+
 
   return (
     <>
@@ -57,6 +65,7 @@ export default function SwiperTestimonial() {
           nextEl: ".testimonial-button-next",
           prevEl: ".testimonial-button-prev",
         }}
+        
         spaceBetween={30}
         loop={true}
         autoplay={{
@@ -80,10 +89,13 @@ export default function SwiperTestimonial() {
             slidesPerView: 3,
           },
           1100: {
-            slidesPerView: 2,
+            slidesPerView: 3,
           },
           1024: {
-            slidesPerView: 2,
+
+            slidesPerView: 3,
+            
+
           },
           991: {
             slidesPerView: 2,
@@ -101,25 +113,22 @@ export default function SwiperTestimonial() {
       >
         {products?.map((item, ind) => (
           <SwiperSlide key={ind} className="">
-            <div className="about-box">
-              <div className="about-img ">
-                <Image
-                  src={item.productImages?.[0]?.url ?? "/fallback.png"}
-                  alt="product"
-                  width={1000}
-                  height={1000}
-                  className="imagee object-cover bg-white"
-                />
+
+            <div className="about-box" >
+              <div className="about-img " >
+                <Image src={item.eventCategoryImage[0].url} alt="product"  width={1000} height={1000} className="imagee bg-white" />
+
               </div>
               <div className="about-btn">
                 <Link className="btn btn-white btn-md" href="/shop-list">
-                  {item.name}
+                  {item.eventName}
                 </Link>
               </div>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className="d-flex justify-content-end align-items-center">
       <div className="d-flex justify-content-end align-items-center">
         <div className="d-flex gap-3">
           <div className="testimonial-button-prev c-pointer">
@@ -152,6 +161,7 @@ export default function SwiperTestimonial() {
           </div>
         </div>
         {/* <div className="swiper-pagination style-1 text-end swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
+        {/* <div className="swiper-pagination style-1 text-end swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
           <span className="swiper-pagination-bullet" tabIndex={0}>
             01
           </span>
@@ -165,6 +175,7 @@ export default function SwiperTestimonial() {
             03
           </span>
         </div> */}
+        </div> 
       </div>
     </>
   );

@@ -12,8 +12,9 @@ const MainLayout = ({children} : Props) =>{
     return(
         <Fragment>
             <div className="page-wraper">
-            {/*  <Header design="style-1 header-transparent"/> */}    
-             <Header2 /> 
+            {/*  <Header design="style-1 header-transparent"/> */}   
+         
+             <Header2/> 
              {children}
                 <Footer />
             </div>

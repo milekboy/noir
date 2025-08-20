@@ -3,20 +3,58 @@ import FeaturedCategorySlider from "../elements/Home/FeaturedCategorySlider";
 import MoreCollectionBlog from "../elements/Home/MoreCollectionBlog";
 
 const FeaturedBlog = () => {
-    return (
-        <div className="row">
-            <div className="col-lg-8 left-box">
-                <FeaturedCategorySlider />
-                <Link className="icon-button" href="/shop-standard">
-                    <div className="text-row word-rotate-box c-black border-secondary">
-                        <MoreCollectionBlog />                        
-                        <svg className="badge__emoji" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 35 35" fill="none">
-                            <path d="M32.2645 16.9503H4.08145L10.7508 10.4669C11.2604 9.97176 10.5046 9.1837 9.98813 9.68289C9.98815 9.68286 2.35193 17.1063 2.35193 17.1063C2.12911 17.3092 2.14686 17.6755 2.35196 17.8903C2.35193 17.8903 9.98815 25.3169 9.98815 25.3169C10.5021 25.81 11.2622 25.0367 10.7508 24.5328C10.7508 24.5329 4.07897 18.0441 4.07897 18.0441H32.2645C32.9634 18.0375 32.9994 16.9636 32.2645 16.9503Z" fill="#000"></path>
-                        </svg>
-                    </div>
-                </Link>
+  return (
+    <div className="row">
+      <div className="col-lg-12 left-bo ">
+        <div
+          // style={{ paddingLeft: "20px" }}
+          className="d-flex justify-content-between align-items-center fadeInUp mb-4"
+          data-wow-delay="0.2s"
+        >
+          <h5
+            style={{
+              fontSize: "38px",
+              fontWeight: "500",
+              // marginTop: "140px", // reset margin so it aligns nicely
+              // marginLeft: "95px",
+              color: "#000",
+            }}
+          >
+            New In
+          </h5>
+          {/* <Link
+            href={"#"}
+            className="animation-btn popup-youtube"
+            style={{ marginTop: "-310px", marginLeft: "600px" }}
+          > */}
+            <div className="text-row word-rotate-box c-black">
+              <MoreCollectionBlog />
+              <i className="fa-solid fa-play text-dark badge__emoji" />
             </div>
-            <div className="col-lg-4 right-box">
+          {/* </Link> */}
+        </div>
+
+        <FeaturedCategorySlider />
+        {/* <Link className="icon-button" href="/shop-standard">
+            <div className="text-row word-rotate-box c-black border-secondary">
+              <MoreCollectionBlog />
+              <svg
+                className="badge__emoji"
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="40"
+                viewBox="0 0 35 35"
+                fill="none"
+              >
+                <path
+                  d="M32.2645 16.9503H4.08145L10.7508 10.4669C11.2604 9.97176 10.5046 9.1837 9.98813 9.68289C9.98815 9.68286 2.35193 17.1063 2.35193 17.1063C2.12911 17.3092 2.14686 17.6755 2.35196 17.8903C2.35193 17.8903 9.98815 25.3169 9.98815 25.3169C10.5021 25.81 11.2622 25.0367 10.7508 24.5328C10.7508 24.5329 4.07897 18.0441 4.07897 18.0441H32.2645C32.9634 18.0375 32.9994 16.9636 32.2645 16.9503Z"
+                  fill="#000"
+                ></path>
+              </svg>
+            </div>
+          </Link> */}
+      </div>
+      {/* <div className="col-lg-4 right-box">
                 <div>
                     <h3 className="title wow fadeInUp" data-wow-delay="1.2s">Featured Categories</h3>
                     <p className="text wow fadeInUp" data-wow-delay="1.4s">Discover the most trending products in Noir.</p>
@@ -41,9 +79,9 @@ const FeaturedBlog = () => {
                         </svg> 
                     </div>
                 </Link>
-            </div>
-        </div>
-    );
+            </div> */}
+    </div>
+  );
 };
 
 export default FeaturedBlog;

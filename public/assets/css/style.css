@@ -279,7 +279,9 @@
     scroll-behavior: smooth;
   }
 }
-
+.overr{
+  background:black!important;
+}
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
@@ -32211,12 +32213,32 @@ video#video-background {
    object-fit: cover
   
 }
+/* .swiper{
+  padding: 0 120px;
+} */
+ .imagee{
+  height: 400px;
+   width:800px !important;
+   object-fit: cover
+  
+}
 @media only screen and (max-width: 575px) {
   .about-box {
     margin-bottom: 0;
     
+    
   }
 }
+@media only screen and (max-width: 1200px) and (min-width: 1080px) {
+
+   .imagee{
+  height: 500px !important;
+   /* width:800px !important; */
+   object-fit: cover
+  
+}
+}
+
 @media only screen and (max-width: 1200px) and (min-width: 1080px) {
 
    .imagee{
@@ -32592,18 +32614,18 @@ video#video-background {
 .testimonial-swiper .swiper-slide .about-box .about-img img {
   border-radius: 0 25% 0 0;
   transition: 0.5s;
-  width: 100%;
-  height: 50%;
+  width: 250px !important;
+  height:400px !important;
 }
 .testimonial-swiper .swiper-slide.swiper-slide-active .about-box .about-img img {
   transition: 0.5s;
   border-radius: 25% 0 0 0;
-    height: 50%;  
+    /* height: 50%;   */
 }
 .testimonial-swiper .swiper-slide.swiper-slide-next .about-box .about-img img {
   border-radius: 50% 50% 0 0;
   transition: 0.5s;
-    height: 50%;
+    /* height: 50%; */
 }
 
 .about-style2 .section-head .title {
@@ -34768,11 +34790,13 @@ video#video-background {
 .shop-box.style-1 .dz-media {
   margin-bottom: 30px;
   text-align: center;
+  /* border-radius:50px; */
 }
 .shop-box.style-1 .dz-media img {
-  width: 160px;
-  height: 170px;
-  object-fit: contain;
+  width: 260px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 20px
 }
 .shop-box.style-1 .product-name {
   font-size: 16px;
@@ -34802,7 +34826,7 @@ video#video-background {
 .shop-section .left-box {
   padding-right: 100px;
   padding-left: 100px;
-  background-color: #FEEB9D;
+  background-color: #FFF;
 }
 @media only screen and (max-width: 991px) {
   .shop-section .left-box {
@@ -50155,7 +50179,7 @@ table.wishlist_table {
 }
 @media only screen and (max-width: 1480px) and (min-width: 992px) {
   .site-header .extra-nav .extra-cell .login-link {
-    /* display: none; */
+    display: block;
   }
 }
 @media only screen and (max-width: 1480px) {
@@ -51367,14 +51391,26 @@ a {
     height: 24px;
   }
 }
+@media only screen and (max-width: 775px) {
+  .browse-category-menu{
+    display:none;
+  }
+}
+@media only screen and (max-width: 975px) {
+  .logs{
+    padding:20px 40px;
+  }
+}
+
 
 .browse-category-menu .category-btn {
-  background-color: #f5f5f5;
-  height: 80px;
-  padding: 10px 15px 10px 25px;
+  /* background-color: #f5f5f5; */
+  /* height: 80px; */
+  /* padding: 10px 15px 10px 25px; */
+  /* background-color:blue !important; */
   display: flex;
   align-items: center;
-  min-width: 300px;
+  min-width: 0px !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 400;
@@ -51384,13 +51420,14 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
+  gap: 10px;
 }
 .browse-category-menu .category-btn .category-menu span {
   background-color: #fff;
-  height: 1px;
+  height: 1.5px;
+  
   display: block;
-  width: 20px;
+  width: 30px;
 }
 .browse-category-menu .category-btn .toggle-arrow {
   -webkit-transition: all 0.5s;
@@ -51576,7 +51613,7 @@ a {
 }
 .main-bar.dark .browse-category-menu .category-btn {
   color: #fff;
-  background-color: #3E4043;
+  /* background-color: #3E4043; */
 }
 @media only screen and (min-width: 991px) {
   .main-bar.dark .header-nav .nav > li > a {
@@ -52562,7 +52599,7 @@ a {
 }
 .site-header.style-2 .main-bar .browse-category-menu .category-btn {
   height: 50px;
-  background-color: var(--light-dark);
+  /* background-color: var(--light-dark); */
   border-radius: 10px;
 }
 .site-header.style-2 .main-bar .browse-category-menu .category-btn .category-menu span {
@@ -52573,9 +52610,9 @@ a {
   font-weight: 600;
 }
 @media only screen and (max-width: 1199px) {
-  .site-header.style-2 .main-bar .browse-category-menu {
+  /* .site-header.style-2 .main-bar .browse-category-menu {
     display: none;
-  }
+  } */
 }
 @media only screen and (min-width: 991px) {
   .site-header.style-2 .main-bar .header-nav .nav > li > a {
