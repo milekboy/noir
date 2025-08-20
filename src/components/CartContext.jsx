@@ -19,7 +19,6 @@ export const CartProvider = ({ children }) => {
       const res = await networkInstance.get(`/cart/view/${cartId}`);
       const cartItems = res.data.items || [];
       setCartCount(cartItems.length);
-      console.log("Fetched cart count:", cartId);
     } catch (err) {
       console.log("Error fetching cart:", err?.response?.data || err);
     }

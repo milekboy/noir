@@ -1,125 +1,217 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { Dropdown } from "react-bootstrap";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { useState, useEffect } from "react";
 
-
 interface Category {
-    _id: string;
-    name: string;
-  }
+  _id: string;
+  name: string;
+}
 
+export default function CategoryMenuItem() {
+  const [category, setCategory] = useState<Category[]>([]);
+  const networkInstance = NetworkInstance();
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-export default function CategoryMenuItem(){
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("category/get-all-categories");
 
-     const [category, setCategory] = useState<Category[]>([]);
-      const networkInstance = NetworkInstance();
-      useEffect(() => {
-        getProducts();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+      setCategory(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  return (
+    <ul className="nav navbar-nav">
+      {category
+        .filter(
+          (item) =>
+            item.name !== "Owambe ready\n" &&
+            item.name !== "Try-on Ready Picks\n\n\n"
+        )
+        .map((item, ind) => (
+          <li className="has-mega-menu cate-drop " key={ind}>
+            <Link href="/shop-standard">
+              <i className="icon feather icon-arrow-right" />
+              <span>{item.name}</span>
+              {item.name === "Women" ? (
+                <span className="menu-icon">
+                  <i className="icon feather icon-chevron-right" />
+                </span>
+              ) : item.name === "Men\n\n" ? (
+                <span className="menu-icon">
+                  <i className="icon feather icon-chevron-right" />
+                </span>
+              ) : null}
+            </Link>
+            {item.name === "Women" ? (
+              <div className="mega-menu">
+                <div className="row">
+                  <div className="col-md-3 col-sm-4 col-6">
+                    <Link href={"#"} className="menu-title">
+                      Clothing
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>New in Clothing</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Chinos</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>
+                          Sweatshirts
+                          <span className="badge bg-primary">NEW</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Holiday Shop</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Jackets and Coats</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Jeans</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Joggers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Polo Shirts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Shorts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Trousers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>T-Shirts</Link>
+                      </li>
+                    </ul>{" "}
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Suits & Formalwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>Blazers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Formal Shirts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Smart Trousers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Suits</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Ties</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Waistcoats</Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Footwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}> All Footwear</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Casual Shoes</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Sandals</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Slippers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Smart Shoes</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Trainers</Link>
+                      </li>
+                    </ul>
+                  </div>
 
-
-    
-      const getProducts = async () => {
-        try {
-          const res = await networkInstance.get("category/get-all-categories");
-    
-          setCategory(res.data);
-          console.log(res.data);
-          console.log(category);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      };
-    return(
-        <ul className="nav navbar-nav">
-          {category.filter(item => item.name !== "Owambe ready\n" && item.name !== "Try-on Ready Picks\n\n\n").map((item, ind)=>(   <li className="has-mega-menu cate-drop " key={ind}>
-                <Link href="/shop-standard">
-                    <i className="icon feather icon-arrow-right"/>
-                   <span>{item.name}</span>
-                    {
-                        (item.name === "Women") ? (
-                            <span className="menu-icon">
-                        <i className="icon feather icon-chevron-right"/>
-                    </span>)  :  item.name === "Men\n\n" ? (
-                          <span className="menu-icon">
-                        <i className="icon feather icon-chevron-right"/>
-                    </span>
-                        ) : null
-                    
-                    }
-                </Link>
-                {
-                    item.name === "Women" ? (
-                                      <div className="mega-menu">
-                    <div className="row">
-                        <div className="col-md-3 col-sm-4 col-6"><Link href={"#"} className="menu-title">Clothing</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}>New in Clothing</Link></li>
-                                <li><Link href={"/shop-standard"}>Chinos</Link></li>
-                                <li><Link href={"/shop-standard"}>Sweatshirts<span className="badge bg-primary">NEW</span></Link></li>
-                                <li><Link href={"/shop-standard"}>Holiday Shop</Link></li>
-                                <li><Link href={"/shop-standard"}>Jackets and Coats</Link></li>
-                                <li><Link href={"/shop-standard"}>Jeans</Link></li>
-                                <li><Link href={"/shop-standard"}>Joggers</Link></li>
-                                <li><Link href={"/shop-standard"}>Polo Shirts</Link></li>
-                                <li><Link href={"/shop-standard"}>Shorts</Link></li>
-                                <li><Link href={"/shop-standard"}>Trousers</Link></li>
-                                <li><Link href={"/shop-standard"}>T-Shirts</Link></li>
-                            </ul>              </div>
-                        <div className="col-md-3 col-sm-4 col-6"><Link href={"/shop-standard"} className="menu-title">Suits & Formalwear</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}>Blazers</Link></li>
-                                <li><Link href={"/shop-standard"}>Formal Shirts</Link></li>
-                                <li><Link href={"/shop-standard"}>Smart Trousers</Link></li>
-                                <li><Link href={"/shop-standard"}>Suits</Link></li>
-                                <li><Link href={"/shop-standard"}>Ties</Link></li>
-                                <li><Link href={"/shop-standard"}>Waistcoats</Link></li>
-                                
-                            </ul>            
-                            </div>
-                        <div className="col-md-3 col-sm-4 col-6"> <Link href={"/shop-standard"} className="menu-title">Footwear</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}> All Footwear</Link></li>
-                                <li><Link href={"/shop-standard"}>Casual Shoes</Link></li>
-                                <li><Link href={"/shop-standard"}>Sandals</Link></li>
-                                <li><Link href={"/shop-standard"}>Slippers</Link></li>
-                                <li><Link href={"/shop-standard"}>Smart Shoes</Link></li>
-                                <li><Link href={"/shop-standard"}>Trainers</Link></li>
-                            </ul>
-              </div>
-    
-                        <div className="col-md-3 col-sm-4 col-6"><Link href={"/shop-standard"} className="menu-title">Underwear & Socks</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}> Socks</Link></li>
-                                <li><Link href={"/shop-standard"}>Underwear<span className="badge bg-orange">Feture</span></Link></li>
-                                <li><Link href={"/shop-standard"}>Vests</Link></li>
-                      </ul>
-                        </div>
-                        <div className="col-md-3 col-sm-4 col-6"> <Link href={"/shop-standard"} className="menu-title">Accessories</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}>All Accessories</Link></li>
-                                <li><Link href={"/shop-standard"}>Belts</Link></li>
-                                <li><Link href={"/shop-standard"}>Hats</Link></li>
-                                <li><Link href={"/shop-standard"}>Sunglasses<span className="badge bg-purple">SALE</span></Link></li>
-                            </ul>
-                        </div>
-                        <div className="col-md-3 col-sm-4 col-6"> <Link href={"/shop-standard"} className="menu-title">Nightwear</Link>
-                            <ul>
-                                <li><Link href={"/shop-standard"}>All Nightwear</Link></li>
-                                <li><Link href={"/shop-standard"}>Dressing Gowns</Link></li>
-                                <li><Link href={"/shop-standard"}>Pyjamas</Link></li>
-                            </ul>
-                        </div>
-                        
-                    </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Underwear & Socks
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}> Socks</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>
+                          Underwear
+                          <span className="badge bg-orange">Feture</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Vests</Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Accessories
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>All Accessories</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Belts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Hats</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>
+                          Sunglasses
+                          <span className="badge bg-purple">SALE</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Nightwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>All Nightwear</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Dressing Gowns</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Pyjamas</Link>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-                    ) : null
-                }
-            </li> ))}
-            {/* <li className="cate-drop">
+              </div>
+            ) : null}
+          </li>
+        ))}
+      {/* <li className="cate-drop">
                 <Link href={"#"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Women Casual</span>
@@ -195,8 +287,8 @@ export default function CategoryMenuItem(){
                     </div>
                 </div>
             </li> */}
-            
-            {/* <li>
+
+      {/* <li>
                 <Link href={"/shop-standard"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Smart Casual Staples</span>
@@ -217,7 +309,7 @@ export default function CategoryMenuItem(){
                     <li><Link href={"/shop-standard"}>Gardening Systems</Link></li>
                 </ul>
             </li> */}
-            {/* <li>
+      {/* <li>
                 <Link href={"/shop-standard"}>
                     <i className="icon feather icon-arrow-right"/>
                     <span>Men Casual</span>
@@ -281,12 +373,12 @@ export default function CategoryMenuItem(){
                     </span>
                 </Link>
             </li> */}
-            {/* <li className="menu-items">
+      {/* <li className="menu-items">
                 <Link href={"#"}>
                     <i className="flaticon-blocks me-3"/>
                     <span>More</span>
                 </Link>
             </li> */}
-        </ul>
-    )
+    </ul>
+  );
 }
