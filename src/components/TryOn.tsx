@@ -1,138 +1,138 @@
-// app/components/TryOn.tsx
 "use client";
-
-/* ── 1 · silence TF-Lite info in prod ── */
-if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
-  console.info = () => {};
-}
-
 import { useEffect, useRef } from "react";
-import type {
-  PoseLandmarker as PoseLM,
-  FilesetResolver as FSResolver,
-  PoseLandmarkerResult,
-} from "@mediapipe/tasks-vision"; // type-only import
+import * as THREE from "three";
 
-/* BlazePose landmark indices */
-const L_SHOULDER = 11,
-  R_SHOULDER = 12,
-  L_HIP = 23,
-  R_HIP = 24;
-
-export default function TryOn({ garmentUrl }: { garmentUrl: string }) {
+export default function TryOn() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    let landmarker: PoseLM;
-    let raf = 0;
+    let stream: MediaStream | null = null;
+    let rafId = 0;
 
-    /* hidden <video> as camera source */
-    const video = document.createElement("video");
-    video.playsInline = true;
-    video.muted = true;
+    // ---- 1) Start selfie camera ----
+    (async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user", // selfie camera
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play().catch(() => {});
+        }
+      } catch (err) {
+        console.error("Camera access error:", err);
+      }
+    })();
 
-    const start = async () => {
-      /* ① dynamic import AFTER console.info muted */
-      const { PoseLandmarker, FilesetResolver } = (await import(
-        "@mediapipe/tasks-vision"
-      )) as {
-        PoseLandmarker: typeof PoseLM;
-        FilesetResolver: typeof FSResolver;
-      };
+    // ---- 2) Three.js setup (transparent overlay) ----
+    const scene = new THREE.Scene();
 
-      /* ② load WASM + model */
-      const fs = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-      );
-      landmarker = await PoseLandmarker.createFromOptions(fs, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-        },
-        runningMode: "VIDEO",
-      });
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+    camera.position.set(0, 0, 3);
 
-      /* ③ open webcam */
-      video.srcObject = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      await video.play();
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current!,
+      antialias: true,
+      alpha: true, // keep background transparent over video
+      preserveDrawingBuffer: false,
+    });
+    renderer.setClearAlpha(0);
 
-      /* ④ fix canvas to 320 × 320 px (20 rem = w-80) */
-      const canvas = canvasRef.current!;
-      canvas.width = 320;
-      canvas.height = 320;
+    // Lights
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x222233, 1.0));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    dir.position.set(2, 3, 4);
+    scene.add(dir);
 
-      /* ⑤ preload garment */
-      const shirt = new Image();
-      shirt.src = garmentUrl;
+    // Test cube (performance check)
+    const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMat = new THREE.MeshStandardMaterial({
+      color: 0x00aaff,
+      metalness: 0.2,
+      roughness: 0.6,
+    });
+    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+    scene.add(cube);
 
-      /* ⑥ render loop */
-      const loop = () => {
-        const res = landmarker.detectForVideo(video, performance.now());
-        draw(res, shirt, video);
-        raf = requestAnimationFrame(loop);
-      };
-      loop();
+    // Handle resize
+    const resize = () => {
+      const el = containerRef.current!;
+      const w = el.clientWidth || window.innerWidth;
+      const h = el.clientHeight || window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     };
+    resize();
+    window.addEventListener("resize", resize);
 
-    start();
+    // Animate
+    const tick = () => {
+      rafId = requestAnimationFrame(tick);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.015;
+      renderer.render(scene, camera);
+    };
+    tick();
 
-    /* cleanup */
+    // Cleanup on unmount
     return () => {
-      cancelAnimationFrame(raf);
-      (video.srcObject as MediaStream | null)
-        ?.getTracks()
-        .forEach((t) => t.stop());
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resize);
+      renderer.dispose();
+      cubeGeo.dispose();
+      cubeMat.dispose();
+      if (stream) stream.getTracks().forEach((t) => t.stop());
     };
-  }, [garmentUrl]);
+  }, []);
 
-  /* draw frame */
-  function draw(
-    res: PoseLandmarkerResult,
-    shirt: HTMLImageElement,
-    video: HTMLVideoElement
-  ) {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    /* mirror camera */
-    ctx.save();
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-    ctx.restore();
-
-    if (!res.landmarks?.length) return;
-    const lm = res.landmarks[0];
-
-    const Ls = lm[L_SHOULDER],
-      Rs = lm[R_SHOULDER];
-    const Lh = lm[L_HIP],
-      Rh = lm[R_HIP];
-
-    const w = Math.hypot(Rs.x - Ls.x, Rs.y - Ls.y) * canvas.width * 1.4;
-    const h = Math.hypot(Rh.y - Rs.y, Rh.x - Rs.x) * canvas.height * 1.6;
-
-    const cx = (1 - (Ls.x + Rs.x) / 2) * canvas.width;
-    const cy = ((Ls.y + Rs.y) / 2) * canvas.height;
-
-    const angle = Math.atan2(Rs.y - Ls.y, Ls.x - Rs.x);
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(angle);
-    ctx.drawImage(shirt, -w / 2, -h * 0.15, w, h);
-    ctx.restore();
-  }
-
-  /* ── UI ───────────────────────────────────────────────────────────── */
   return (
-    <div className="d-flex align-items-center justify-content-center bg-black">
-      {/* 20-rem square, centred, with black background */}
+    <div
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "80vh",
+        background: "black",
+        overflow: "hidden",
+      }}
+    >
+      {/* Live camera underlay */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: 1,
+        }}
+      />
 
-      <canvas ref={canvasRef} />
+      {/* Three.js transparent overlay */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 2,
+          pointerEvents: "none", // let UI clicks pass through
+        }}
+      />
     </div>
   );
 }

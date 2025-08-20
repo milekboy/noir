@@ -1,5 +1,6 @@
+
 "use client";
-"use client";
+
 
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -26,15 +27,13 @@ import TradingSliderBlog from "@/elements/Home/TradingSliderBlog";
 import Image from "next/image";
 import MoreCollectionBlog from "@/elements/Home/MoreCollectionBlog";
 import ScrollablePreference from "@/elements/Home/ScrollablePreference";
+
 // import ScrollablePreference from "@/elements/Home/ScrollablePreference";
-import LatestoCollection from "@/elements/Home3/LatestCollection";
-import { Virtual } from "swiper/modules";
-import { Images } from "lucide-react";
-import { color } from "three/src/nodes/TSL.js";
-import { useEffect } from "react";
+
 
 const MainSection = () => {
   const [openVideo, setOpenVideo] = useState(false);
+
   // Fade between two images every 4s in a loop
 
   const heroImages = [IMAGES.herobg, IMAGES.herobg2]; // Replace IMAGES.herobg2 with your second image
@@ -176,6 +175,7 @@ const MainSection = () => {
           <div className="container">
             <ProductSection />
           </div>
+
         </section>
         <section className=" adv-area">
           <div className="container-fluid px-0">
@@ -201,24 +201,12 @@ const MainSection = () => {
 
         {/*  Blockbuster deal Start */}
         {/* <section className="content-inner-2 overflow-hidden">
+
         {/*  Blockbuster deal Start */}
-        {/* <section className="content-inner-2 overflow-hidden">
-                    <div className="container">
-                        <div className="section-head style-1 wow fadeInUp d-lg-flex justify-content-between" data-wow-delay="0.2s">
-                            <div className="left-content">
-                                <h2 className="title">Blockbuster deals</h2>
-                            </div>
-                            <Link href="/shop-list" className="text-secondary font-14 d-flex align-items-center gap-1">See all deals 
-                                <i className="icon feather icon-chevron-right font-18" />
-                            </Link>
-                        </div>
-                       <BlockbusterDeal />
-                    </div>
-                </section> */}
+        
         {/*  Offer Section Start */}
         {/* <section className="content-inner-2">
-        {/*  Offer Section Start */}
-        {/* <section className="content-inner-2">
+
                     <div className="container">	
                         <div className="section-head style-1 wow fadeInUp d-flex justify-content-between m-b30" data-wow-delay="0.2s">
                             <div className="left-content">
@@ -268,6 +256,7 @@ const MainSection = () => {
                       <Link href="/shop-list" className="btn btn-white">
                         Shop Now
                       </Link>
+
                     </div>
                     <svg
                       className="title animation-text"
@@ -323,6 +312,7 @@ const MainSection = () => {
                       <Link href="/shop-list" className="btn btn-white">
                         Shop Now
                       </Link>
+
                     </div>
                     <svg
                       className="title animation-text"
@@ -355,36 +345,8 @@ const MainSection = () => {
                         <SponsoredSlider />
                     </div>
                 </section> */}
-        {/*  Trading Start  */}
-        {/* <section className="content-inner-3 overflow-hidden p-b0">
-        {/*  Trading Start  */}
-        {/* <section className="content-inner-3 overflow-hidden p-b0">
-                    <div className="container">
-                        <div className="row justify-content-between align-items-center">
-                            <div className="col-lg-6 col-md-8 col-sm-12">
-                                <div className="section-head style-2 m-0 wow fadeInUp" data-wow-delay="0.1s" >
-                                    <div className="left-content">
-                                        <h2 className="title">Discover the most trending Post in Pixio.</h2>
-                                    </div>
-                                </div>	
-                            </div>
-                            <div className="col-lg-6 col-md-4 col-sm-12 text-md-end m-b30 wow fadeInUp" data-wow-delay="0.2s" >	
-                                <Link className="icon-button d-md-inline-block d-none" href="/shop-standard">
-                                    <div className="text-row word-rotate-box c-black">                                        
-                                        <LatestNewsRollup />                                        
-                                        <svg className="badge__emoji" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none"
-                                            dangerouslySetInnerHTML={{__html :  SVGICON.ArrowRightSvg}}
-                                        >
-                                        </svg>                                        
-                                    </div>
-                                </Link>
-                            </div>	
-                        </div>
-                    </div>
-                    <TradingSliderBlog />
-                </section> */}
-        {/*  collection-bx */}
-        {/*  collection-bx */}
+
+
 
         <section
           className="content-inner overflow-hidden p-b0"
@@ -478,6 +440,7 @@ const MainSection = () => {
                   </button>
                 </div>
               </div>
+
             {/* Image Column */}
             <div
               className="col-lg-6 col-md-12 col-sm-12 align-self-center"
@@ -557,5 +520,4 @@ const MainSection = () => {
 //     </Fragment>
 //   );
 // };
-export default MainSection;
-
+export default MainSection

@@ -192,8 +192,10 @@ export default function Header2() {
                   {/* </Link> */}
                 </div>
 
+
                 {/* ---------------------------------------- */}
                 <ul className="nav navbar-nav  w-100 d-md-none d-sm-none">
+
                   <Header2Menus />
                 </ul>
                 <div className="dz-social-icon">

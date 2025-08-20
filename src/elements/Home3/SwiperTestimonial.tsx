@@ -36,11 +36,13 @@ export default function SwiperTestimonial() {
 
   async function getAllProduct() {
     try {
+
       const res = await networkInstance.get("/event-categories", {
         headers: {
           "x-session-id": localStorage.getItem("sessionId") || "",
         }
       });
+
       setProducts(res.data);
     } catch (err) {
       console.log(err);
@@ -90,8 +92,10 @@ export default function SwiperTestimonial() {
             slidesPerView: 3,
           },
           1024: {
+
             slidesPerView: 3,
             
+
           },
           991: {
             slidesPerView: 2,
@@ -109,9 +113,11 @@ export default function SwiperTestimonial() {
       >
         {products?.map((item, ind) => (
           <SwiperSlide key={ind} className="">
+
             <div className="about-box" >
               <div className="about-img " >
                 <Image src={item.eventCategoryImage[0].url} alt="product"  width={1000} height={1000} className="imagee bg-white" />
+
               </div>
               <div className="about-btn">
                 <Link className="btn btn-white btn-md" href="/shop-list">
