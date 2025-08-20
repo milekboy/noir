@@ -233,7 +233,7 @@ export default function Header2() {
                       transition: "all 0.5s ease",
                     }}
                   >
-                    <CategoryMenuItem />
+                    {/* <CategoryMenuItem /> */}
                   </div>
                 </div>
                 <ul className="nav navbar-nav ms-5 d-flex align-items-center justify-content-center w-100">
