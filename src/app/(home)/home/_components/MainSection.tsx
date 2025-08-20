@@ -1,9 +1,7 @@
-
 "use client";
 
-
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 
 import IMAGES, { SVGICON } from "@/constant/theme";
@@ -27,9 +25,9 @@ import TradingSliderBlog from "@/elements/Home/TradingSliderBlog";
 import Image from "next/image";
 import MoreCollectionBlog from "@/elements/Home/MoreCollectionBlog";
 import ScrollablePreference from "@/elements/Home/ScrollablePreference";
+import LatestoCollection from "@/elements/Home3/LatestCollection";
 
 // import ScrollablePreference from "@/elements/Home/ScrollablePreference";
-
 
 const MainSection = () => {
   const [openVideo, setOpenVideo] = useState(false);
@@ -175,7 +173,6 @@ const MainSection = () => {
           <div className="container">
             <ProductSection />
           </div>
-
         </section>
         <section className=" adv-area">
           <div className="container-fluid px-0">
@@ -203,7 +200,7 @@ const MainSection = () => {
         {/* <section className="content-inner-2 overflow-hidden">
 
         {/*  Blockbuster deal Start */}
-        
+
         {/*  Offer Section Start */}
         {/* <section className="content-inner-2">
 
@@ -256,7 +253,6 @@ const MainSection = () => {
                       <Link href="/shop-list" className="btn btn-white">
                         Shop Now
                       </Link>
-
                     </div>
                     <svg
                       className="title animation-text"
@@ -312,7 +308,6 @@ const MainSection = () => {
                       <Link href="/shop-list" className="btn btn-white">
                         Shop Now
                       </Link>
-
                     </div>
                     <svg
                       className="title animation-text"
@@ -345,8 +340,6 @@ const MainSection = () => {
                         <SponsoredSlider />
                     </div>
                 </section> */}
-
-
 
         <section
           className="content-inner overflow-hidden p-b0"
@@ -441,28 +434,28 @@ const MainSection = () => {
                 </div>
               </div>
 
-            {/* Image Column */}
-            <div
-              className="col-lg-6 col-md-12 col-sm-12 align-self-center"
-              style={{
-                flex: "1 1 50%",
-                maxWidth: "50%",
-                textAlign: "center",
-                // padding: "20px",
-              }}
-            >
-              <img
-                src="https://res.cloudinary.com/dbpjskran/image/upload/v1754929226/a01eabf2-d486-42a0-a618-bdff0482eff7_oly2fu.jpg"
-                alt="Virtual Try-On"
+              {/* Image Column */}
+              <div
+                className="col-lg-6 col-md-12 col-sm-12 align-self-center"
                 style={{
-                  width: "100%",
-                  maxWidth: "500px",
-                  height: "auto",
-                  borderRadius: "10px",
+                  flex: "1 1 50%",
+                  maxWidth: "50%",
+                  textAlign: "center",
+                  // padding: "20px",
                 }}
-              />
+              >
+                <img
+                  src="https://res.cloudinary.com/dbpjskran/image/upload/v1754929226/a01eabf2-d486-42a0-a618-bdff0482eff7_oly2fu.jpg"
+                  alt="Virtual Try-On"
+                  style={{
+                    width: "100%",
+                    maxWidth: "500px",
+                    height: "auto",
+                    borderRadius: "10px",
+                  }}
+                />
+              </div>
             </div>
-          </div>
           </div>
         </section>
 
@@ -492,7 +485,9 @@ const MainSection = () => {
     </Fragment>
   );
 };
-        {/* </section> */}
+{
+  /* </section> */
+}
 
 //         <section className=" collection-bx content-inner-3 overflow-hidden">
 //           <CollectionBlog />
@@ -520,4 +515,4 @@ const MainSection = () => {
 //     </Fragment>
 //   );
 // };
-export default MainSection
+export default MainSection;
