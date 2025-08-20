@@ -1,6 +1,8 @@
 "use client";
+"use client";
 
 import Link from "next/link";
+import { Fragment, useState } from "react";
 import { Fragment, useState } from "react";
 import { Modal } from "react-bootstrap";
 
@@ -24,6 +26,7 @@ import SummerSaleBlog from "@/elements/Home/SummerSaleBlog";
 import TradingSliderBlog from "@/elements/Home/TradingSliderBlog";
 import Image from "next/image";
 import MoreCollectionBlog from "@/elements/Home/MoreCollectionBlog";
+import ScrollablePreference from "@/elements/Home/ScrollablePreference";
 import ScrollablePreference from "@/elements/Home/ScrollablePreference";
 import LatestoCollection from "@/elements/Home3/LatestCollection";
 import { Virtual } from "swiper/modules";
@@ -199,6 +202,8 @@ const MainSection = () => {
 
         {/*  Blockbuster deal Start */}
         {/* <section className="content-inner-2 overflow-hidden">
+        {/*  Blockbuster deal Start */}
+        {/* <section className="content-inner-2 overflow-hidden">
                     <div className="container">
                         <div className="section-head style-1 wow fadeInUp d-lg-flex justify-content-between" data-wow-delay="0.2s">
                             <div className="left-content">
@@ -211,6 +216,8 @@ const MainSection = () => {
                        <BlockbusterDeal />
                     </div>
                 </section> */}
+        {/*  Offer Section Start */}
+        {/* <section className="content-inner-2">
         {/*  Offer Section Start */}
         {/* <section className="content-inner-2">
                     <div className="container">	
@@ -282,6 +289,61 @@ const MainSection = () => {
         </section>
         {/*  company sponsored Start */}
         {/* <section className="content-inner-2">
+        <section className="content-inner  overflow-hidden">
+          <div className="container">
+            <div
+              className="section-head style-1 wow fadeInUp d-flex justify-content-between"
+              data-wow-delay="0.2s"
+            >
+              <div className="left-content">
+                <h2 className="title">Featured now </h2>
+              </div>
+              <Link
+                href="/shop-list"
+                className="text-secondary font-14 d-flex align-items-center gap-1"
+              >
+                See All
+                <i className="icon feather icon-chevron-right font-18" />
+              </Link>
+            </div>
+            <FeaturedNowSlider />
+          </div>
+        </section>
+        {/* Short List Slider --> */}
+        <section className="content-inner overflow-hidden p-b0">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 col-md-12 m-b30">
+                <div className="about-box style-1 clearfix h-100">
+                  <div className="dz-media h-100">
+                    <Image src={IMAGES.AboutPic2} alt="" />
+                    <div className="media-contant">
+                      <h2 className="title">
+                        Recent Additions to Your Shortlist
+                      </h2>
+                      <Link href="/shop-list" className="btn btn-white">
+                        Shop Now
+                      </Link>
+                    </div>
+                    <svg
+                      className="title animation-text"
+                      viewBox="0 0 1320 300"
+                    >
+                      <text x="0" y="">
+                        Shortlist
+                      </text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-6 col-md-12 align-self-center">
+                <ShortListBlog />
+              </div>
+            </div>
+          </div>
+        </section>
+        {/*  company sponsored Start */}
+        {/* <section className="content-inner-2">
                     <div className="container">	
                         <div className="section-head style-1 wow fadeInUp d-flex  justify-content-between" data-wow-delay="0.2s">
                             <div className="left-content">
@@ -294,6 +356,8 @@ const MainSection = () => {
                         <SponsoredSlider />
                     </div>
                 </section> */}
+        {/*  Trading Start  */}
+        {/* <section className="content-inner-3 overflow-hidden p-b0">
         {/*  Trading Start  */}
         {/* <section className="content-inner-3 overflow-hidden p-b0">
                     <div className="container">
@@ -321,7 +385,100 @@ const MainSection = () => {
                     <TradingSliderBlog />
                 </section> */}
         {/*  collection-bx */}
+        {/*  collection-bx */}
 
+        <section
+          className="content-inner overflow-hidden p-b0"
+          style={{
+            backgroundColor: "#FEEB9D",
+            // padding: "40px 2px",
+            // paddingBottom: "-10000px",
+            marginTop: "50px",
+          }}
+        >
+          <div className="container">
+            <div
+              className="row"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              {/* Text Column */}
+              <div
+                className="col-lg-6 col-md-12 col-sm-12 m-b30"
+                style={{
+                  flex: "1 1 50%",
+                  maxWidth: "50%",
+                  padding: "20px",
+                }}
+              >
+                <div
+                  className="about-box style-1 clearfix h-100"
+                  style={{
+                    textAlign: "left",
+                  }}
+                >
+                  <h1
+                    style={{
+                      color: "#222",
+                      fontSize: "38px",
+                      lineHeight: "1.4",
+                      fontWeight: "bold",
+                      marginTop: "20px",
+                    }}
+                  >
+                    VIRTUAL TRY-ON NOW IS LIVE
+                  </h1>
+                  <p
+                    style={{
+                      color: "#222",
+                      fontSize: "16px",
+                      lineHeight: "1.6",
+                      marginTop: "20px",
+                    }}
+                  >
+                    The wait is over – our Virtual Try-On is here! Now you can
+                    explore our latest styles, see exactly how they look on you
+                    in real time, and shop with total confidence — all from the
+                    comfort of your home. Try bold new looks, mix and match your
+                    favorites, and find your perfect fit without stepping into a
+                    store. No guesswork, no hesitation — just effortless,
+                    confident shopping. Start your Virtual Try-On experience
+                    today and see yourself in your next style before you buy!
+                  </p>
+                  <button
+                    style={{
+                      backgroundColor: "#000",
+                      color: "#fff",
+                      border: "none",
+                      padding: "12px 28px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      letterSpacing: "1px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      marginTop: "20px",
+                      transition: "all 0.3s ease",
+                      width: "100%",
+                      maxWidth: "200px",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fff";
+                      e.currentTarget.style.color = "#000";
+                      e.currentTarget.style.border = "2px solid #000";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "#000";
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.border = "none";
+                    }}
+                  >
+                    Try it out
+                  </button>
+                </div>
+              </div>
         <section
           className="content-inner overflow-hidden p-b0"
           style={{
@@ -438,7 +595,32 @@ const MainSection = () => {
               </div>
             </div>
           </div>
+              {/* Image Column */}
+              <div
+                className="col-lg-6 col-md-12 col-sm-12 align-self-center"
+                style={{
+                  flex: "1 1 50%",
+                  maxWidth: "50%",
+                  textAlign: "center",
+                  // padding: "20px",
+                }}
+              >
+                <img
+                  src="https://res.cloudinary.com/dbpjskran/image/upload/v1754929226/a01eabf2-d486-42a0-a618-bdff0482eff7_oly2fu.jpg"
+                  alt="Virtual Try-On"
+                  style={{
+                    width: "100%",
+                    maxWidth: "500px",
+                    height: "auto",
+                    borderRadius: "10px",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
 
+          {/* Responsive Media Queries */}
+          {/* <style>
           {/* Responsive Media Queries */}
           {/* <style>
                     {`
@@ -491,4 +673,33 @@ const MainSection = () => {
     </Fragment>
   );
 };
+        </section>
+
+        <section className=" collection-bx content-inner-3 overflow-hidden">
+          <CollectionBlog />
+        </section>
+        <Modal
+          className="quick-view-modal"
+          show={openVideo}
+          onHide={() => setOpenVideo(false)}
+          centered
+        >
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setOpenVideo(false)}
+          >
+            <i className="icon feather icon-x" />
+          </button>
+          <div className="modal-body">
+            <video width="100%" height="100%" controls autoPlay>
+              <source src="/assets/images/video.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </Modal>
+      </div>
+    </Fragment>
+  );
+};
 export default MainSection;
+

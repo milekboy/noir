@@ -32213,12 +32213,32 @@ video#video-background {
    object-fit: cover
   
 }
+/* .swiper{
+  padding: 0 120px;
+} */
+ .imagee{
+  height: 400px;
+   width:800px !important;
+   object-fit: cover
+  
+}
 @media only screen and (max-width: 575px) {
   .about-box {
     margin-bottom: 0;
     
+    
   }
 }
+@media only screen and (max-width: 1200px) and (min-width: 1080px) {
+
+   .imagee{
+  height: 500px !important;
+   /* width:800px !important; */
+   object-fit: cover
+  
+}
+}
+
 @media only screen and (max-width: 1200px) and (min-width: 1080px) {
 
    .imagee{
@@ -34804,7 +34824,7 @@ video#video-background {
 .shop-section .left-box {
   padding-right: 100px;
   padding-left: 100px;
-  background-color: #FEEB9D;
+  background-color: #FFF;
 }
 @media only screen and (max-width: 991px) {
   .shop-section .left-box {

@@ -134,7 +134,6 @@ export default function Header2() {
         dispatch({ type: "SET_PREVIOUS_SCROLL", payload: currentScroll });
       }
     };
-
     const combinedHandler = () => {
       scrollHandler();
       handleScroll();
