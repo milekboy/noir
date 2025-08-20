@@ -35,7 +35,7 @@ export default function CategoryMenuItem(){
       };
     return(
         <ul className="nav navbar-nav">
-          {category.map((item, ind)=>(   <li className="has-mega-menu cate-drop">
+          {category.map((item, ind)=>(   <li className="has-mega-menu cate-drop" key={ind}>
                 <Link href="/shop-standard">
                     <i className="icon feather icon-arrow-right"/>
                    <span>{item.name}</span>

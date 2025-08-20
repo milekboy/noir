@@ -104,7 +104,7 @@ export default function SwiperTestimonial() {
           <SwiperSlide key={ind} className="">
             <div className="about-box" >
               <div className="about-img " >
-                <Image src={item.productImages[0].url} alt="product"  width={1000} height={1000} className="imagee object-cover bg-white" />
+                <Image src={item.productImages[0]?.url} alt="product"  width={1000} height={1000} className="imagee object-cover bg-white" />
               </div>
               <div className="about-btn">
                 <Link className="btn btn-white btn-md" href="/shop-list">

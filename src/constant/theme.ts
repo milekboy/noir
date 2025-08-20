@@ -3,6 +3,8 @@ import BackBg2 from '../../public/assets/images/background/bg2.jpg';
 // import BgVideoMp4 from '../../public/assets/images/background/bg-video.mp4';
 // import BgVideoMp4 from '../../public/assets/images/background/video.mp4';
 import logo from '../../public/assets/images/logo.svg';
+import herobg from '../../public/assets/images/hero-banner.jpg';
+import herobg2 from '../../public/assets/images/hero-banner2.png';
 import logopng from '../../public/assets/images/logo.png';
 import LogoWhite from '../../public/assets/images/logo-white.png';
 import LogoWhiteSvg from '../../public/assets/images/logo-white.svg';
@@ -423,6 +425,8 @@ import ShopCardPic6 from '../../public/assets/images/shop/shop-cart/pic6.jpg'
 
 const IMAGES : any = {
     // BgVideoMp4: BgVideoMp4,
+    herobg: herobg,
+    herobg2: herobg2,
     BgShape: BgShape,
     BackBg2: BackBg2,
     logopng: logopng,

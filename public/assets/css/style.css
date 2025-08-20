@@ -279,7 +279,9 @@
     scroll-behavior: smooth;
   }
 }
-
+.overr{
+  background:black!important;
+}
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
@@ -50155,7 +50157,7 @@ table.wishlist_table {
 }
 @media only screen and (max-width: 1480px) and (min-width: 992px) {
   .site-header .extra-nav .extra-cell .login-link {
-    /* display: none; */
+    display: block;
   }
 }
 @media only screen and (max-width: 1480px) {
@@ -51367,14 +51369,26 @@ a {
     height: 24px;
   }
 }
+@media only screen and (max-width: 775px) {
+  .browse-category-menu{
+    display:none;
+  }
+}
+@media only screen and (max-width: 975px) {
+  .logs{
+    padding:20px 40px;
+  }
+}
+
 
 .browse-category-menu .category-btn {
-  background-color: #f5f5f5;
-  height: 80px;
-  padding: 10px 15px 10px 25px;
+  /* background-color: #f5f5f5; */
+  /* height: 80px; */
+  /* padding: 10px 15px 10px 25px; */
+  /* background-color:blue !important; */
   display: flex;
   align-items: center;
-  min-width: 300px;
+  min-width: 0px !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 400;
@@ -51384,13 +51398,14 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
+  gap: 10px;
 }
 .browse-category-menu .category-btn .category-menu span {
   background-color: #fff;
-  height: 1px;
+  height: 1.5px;
+  
   display: block;
-  width: 20px;
+  width: 30px;
 }
 .browse-category-menu .category-btn .toggle-arrow {
   -webkit-transition: all 0.5s;
@@ -51576,7 +51591,7 @@ a {
 }
 .main-bar.dark .browse-category-menu .category-btn {
   color: #fff;
-  background-color: #3E4043;
+  /* background-color: #3E4043; */
 }
 @media only screen and (min-width: 991px) {
   .main-bar.dark .header-nav .nav > li > a {
@@ -52562,7 +52577,7 @@ a {
 }
 .site-header.style-2 .main-bar .browse-category-menu .category-btn {
   height: 50px;
-  background-color: var(--light-dark);
+  /* background-color: var(--light-dark); */
   border-radius: 10px;
 }
 .site-header.style-2 .main-bar .browse-category-menu .category-btn .category-menu span {
@@ -52573,9 +52588,9 @@ a {
   font-weight: 600;
 }
 @media only screen and (max-width: 1199px) {
-  .site-header.style-2 .main-bar .browse-category-menu {
+  /* .site-header.style-2 .main-bar .browse-category-menu {
     display: none;
-  }
+  } */
 }
 @media only screen and (min-width: 991px) {
   .site-header.style-2 .main-bar .header-nav .nav > li > a {
