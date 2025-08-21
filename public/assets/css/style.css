@@ -13287,7 +13287,7 @@ h6 a,
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
   font-family: var(--font-family-title);
   font-weight: 600;
-  color: var(--title);
+  color: #fff;
   line-height: 1.4;
 }
 
@@ -54120,14 +54120,14 @@ footer .widget-address li {
   padding: 4px 0;
   font-size: 15px;
   font-weight: 500;
-  color: var(--title);
+  color: #fff;
 }
 footer .widget-address li p {
   margin-bottom: 0;
   font-weight: 500;
 }
 footer .widget-address li span {
-  color: var(--title);
+  color: #fff;
   font-weight: 500;
 }
 footer.footer-dark {

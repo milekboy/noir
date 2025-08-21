@@ -247,27 +247,29 @@ export const TradingSliderBlogdata = [
 ];
 
 //Footer data start
+
 export const WidgetData = [
-  { image: IMAGES.ProductSmall1, name: "Cozy Knit Cardigan Sweater" },
-  { image: IMAGES.ProductSmall2, name: "Sophisticated Swagger Suit" },
-  { image: IMAGES.ProductSmall3, name: "Athletic Mesh Sports Leggings" },
+  { name: "Customer Care" },
+  { name: "Shipping" },
+  { name: "Orders & Payments" },
+  { name: "Returns" },
+  { name: "FAQ" },
 ];
 
-export const UsefulLinks = [
-  { name: "Privacy Policy" },
-  { name: "Returns" },
-  { name: "Terms & Conditions" },
+
+export const Company = [
+  { name: "About Us" },
+  { name: "Careers" },
   { name: "Contact Us" },
-  { name: "Latest News" },
-  { name: "Our Sitemap" },
+  { name: "Editorial" },
 ];
 
 export const FooterMenu = [
-  { name: "Instagram profile" },
-  { name: "New Collection" },
-  { name: "Woman Dress" },
-  { name: "Contact Us" },
-  { name: "Latest News" },
+  { name: "New Arrivals" },
+  { name: "Men" },
+  { name: "Women" },
+  { name: "T-shirts" },
+  { name: "Pants" },
 ];
 
 export const OurStores = [
