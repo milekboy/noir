@@ -65,6 +65,11 @@ export default function TryOn() {
     let rafId: number | null = null;
     let stopRaf = false;
 
+    // Detect iOS once (iPhone/iPad)
+    const isIOS =
+      typeof navigator !== "undefined" &&
+      /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     const startCamera = async () => {
       try {
         if (
@@ -73,16 +78,29 @@ export default function TryOn() {
         ) {
           console.warn("[CAM] HTTPS recommended for getUserMedia");
         }
+        // Lower the requested size a bit on iOS to keep things snappy
+        const idealW = isIOS ? 960 : 1280;
+        const idealH = isIOS ? 540 : 720;
+
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
+            width: { ideal: idealW },
+            height: { ideal: idealH },
+            // resizeMode: "crop-and-scale" as any, // optional; some Safari versions accept it
           },
           audio: false,
         });
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          // Critical on iOS: set real attributes too
+          videoRef.current.setAttribute("playsinline", "");
+          videoRef.current.setAttribute("autoplay", "");
+          videoRef.current.muted = true;
+          // @ts-ignore (some Safari builds honor this)
+          videoRef.current.disablePictureInPicture = true;
+
           await videoRef.current.play().catch(() => {});
         }
       } catch (e) {
@@ -171,36 +189,36 @@ export default function TryOn() {
         }
       };
 
-      const processFrame = async (tsMs: number) => {
+      // Always use a monotonic timestamp on iOS; in fact it’s safe everywhere
+      const processFrame = async () => {
         if (!runningRef.current || !poseRef.current) return;
-        const res = await poseRef.current.detectForVideo(video, tsMs);
-        const lm = res?.landmarks?.[0];
-        if (lm) draw(lm);
+        const tsMs = performance.now(); // <= monotonic, avoids iOS rVFC mediaTime issues
+        try {
+          const res = await poseRef.current.detectForVideo(video, tsMs);
+          const lm = res?.landmarks?.[0];
+          if (lm) draw(lm);
+        } catch (e) {
+          // swallow intermittent detect errors
+        }
       };
 
-      // Prefer requestVideoFrameCallback for best pacing
-      // @ts-ignore
-      const hasRVFC = typeof video.requestVideoFrameCallback === "function";
+      // Force RAF loop on iOS (skip rVFC). rVFC can report stale mediaTime on iOS.
+      const hasRVFC =
+        !isIOS &&
+        typeof (video as any).requestVideoFrameCallback === "function";
 
       if (hasRVFC) {
-        // @ts-ignore
-        const loopRVFC = (
-          _now: number,
-          metadata: VideoFrameCallbackMetadata
-        ) => {
+        const loopRVFC = () => {
           if (!runningRef.current) return;
-          processFrame(metadata.mediaTime * 1000).finally(() => {
-            // @ts-ignore
-            video.requestVideoFrameCallback(loopRVFC);
+          processFrame().finally(() => {
+            (video as any).requestVideoFrameCallback(loopRVFC);
           });
         };
-        // @ts-ignore
-        video.requestVideoFrameCallback(loopRVFC);
+        (video as any).requestVideoFrameCallback(loopRVFC);
       } else {
         const loopRAF = () => {
           if (!runningRef.current || stopRaf) return;
-          const ts = performance.now();
-          processFrame(ts).finally(() => {
+          processFrame().finally(() => {
             rafId = requestAnimationFrame(loopRAF);
           });
         };
@@ -224,9 +242,24 @@ export default function TryOn() {
       const onResize = () => fitCanvas();
       window.addEventListener("resize", onResize);
 
+      // Pause/resume when tab is backgrounded (saves battery on iOS)
+      const onVisibility = () => {
+        if (document.hidden) runningRef.current = false;
+        else if (!runningRef.current) {
+          // resume
+          stopRaf = false;
+          runningRef.current = true;
+          // restart loop quickly
+          const video = videoRef.current;
+          if (video) requestAnimationFrame(() => startLoop());
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+
       // full cleanup on unmount
       cleanupRef.current = () => {
         window.removeEventListener("resize", onResize);
+        document.removeEventListener("visibilitychange", onVisibility);
         runningRef.current = false;
         stopRaf = true;
         if (rafId) cancelAnimationFrame(rafId);
@@ -239,13 +272,18 @@ export default function TryOn() {
     };
   }, []);
 
+  // Slightly smaller canvas on iOS helps FPS
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   return (
     <div
       ref={containerRef}
       style={{
         position: "relative",
         width: "100%",
-        height: "80vh",
+        height: isIOS ? "60vh" : "80vh", // smaller on iOS
         background: "black",
         overflow: "hidden",
       }}
