@@ -32614,8 +32614,8 @@ video#video-background {
 .testimonial-swiper .swiper-slide .about-box .about-img img {
   border-radius: 0 25% 0 0;
   transition: 0.5s;
-  width: 250px !important;
-  height:400px !important;
+  width: 100% !important;
+  height:430px !important;
 }
 .testimonial-swiper .swiper-slide.swiper-slide-active .about-box .about-img img {
   transition: 0.5s;
@@ -33342,6 +33342,7 @@ video#video-background {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  filter: grayscale(50%);
 }
 .product-box.style-1 {
   height: 590px;

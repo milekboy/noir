@@ -169,7 +169,7 @@ const ProductSection = () => {
             <div className="clearfix">
                 <ul id="masonry" className="row g-xl-4 g-3">
                     {/* {state.data.map((item : MenuItem, ind : number)=>( */}
-                    {product.map((item, ind)=>(
+                    {product.slice(0,8).map((item, ind)=>(
                         <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
                             <div className="shop-card">
                                 <div
@@ -178,7 +178,7 @@ const ProductSection = () => {
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
-                                        height: "300px",        
+                                        height: "350px",        
                                         overflow: "hidden",
                                         position: "relative",   
                                         zIndex: -10
@@ -201,14 +201,14 @@ const ProductSection = () => {
 
                                     <div className="shop-meta">
                                         <Link
-                                        href={"#"}
+                                        href={"/shop-standard" }
                                         className="btn btn-secondary btn-md btn-rounded"
                                         onClick={() =>
                                             dispatch({ type: "SET_DETAIL_MODAL", value: true })
                                         }
                                         >
                                         <i className="fa-solid fa-eye d-md-none d-block" />
-                                        <span className="d-md-block d-none">Quick View</span>
+                                        <span className="d-md-block d-none">View</span>
                                         </Link>
 
                                         <div
