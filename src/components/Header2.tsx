@@ -1,7 +1,7 @@
 "use client";
 import { Offcanvas } from "react-bootstrap";
 import IMAGES from "../constant/theme";
-import { Fragment, useEffect, useReducer } from "react";
+import { Fragment, useEffect, useReducer, useState } from "react";
 import Link from "next/link";
 import HeadSearchBar from "./HeadSearchBar";
 import HeaderSideShoppingCard from "./HeaderSideShopingCard";
@@ -11,6 +11,7 @@ import Categorydropdown from "./CategoryDropdown";
 import Image from "next/image";
 import { IoMenuOutline } from "react-icons/io5";
 import { TbMenuDeep } from "react-icons/tb";
+import NetworkInstance from "@/app/api/NetworkInstance";
 
 interface State {
   headerFix: boolean;
@@ -106,11 +107,14 @@ export const CategoryMenu = ({ state, handleToggleClick }: any) => {
 
 export default function Header2() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [transparent, setTransparent] = useState(true);
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
+      setTransparent(false);
     } else {
       dispatch({ type: "FIX_HEADER", payload: false });
+      setTransparent(true);
     }
   };
   const handleToggleClick = () => {
@@ -143,6 +147,28 @@ export default function Header2() {
       window.removeEventListener("scroll", combinedHandler);
     };
   }, [state.previousScroll]);
+
+  const [cartItems, setCartItems] = useState([]);
+
+  const networkInstance = NetworkInstance();
+  useEffect(() => {
+    async function getCart() {
+      try {
+        const cartId = localStorage.getItem("cartId");
+        if (!cartId) {
+          console.log("No cart ID found.");
+        }
+
+        const res = await networkInstance.get(`/cart/view/${cartId}`);
+
+        setCartItems(res.data.items);
+      } catch (err: any) {
+        console.log("Error fetching cart:", err?.response?.data || err);
+      }
+    }
+    getCart();
+  }, [cartItems]);
+
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
@@ -153,15 +179,15 @@ export default function Header2() {
             state.headerFix ? "is-fixed" : ""
           }`}
         >
-          <div className="main-bar clearfix bg-transparent">
+          <div className={`main-bar clearfix ${transparent ? "bg-transparent" : ""}`} style={{boxShadow : transparent ? "none" : "0 2px 10px rgba(0,0,0,0.1)"}}>
             <div className="container clearfix d-lg-flex d-block">
               {/* <!-- Website Logo --> */}
               {/* <CategoryMenu state={state} handleToggleClick={handleToggleClick} /> */}
               <div className="logo-header  d-md-flex justify-content-start flex-row logo-dark d-lg-none">
                  <CategoryMenu state={state} handleToggleClick={handleToggleClick} />
-                {/* <Link href="/"> */}
+                <Link href="/">
                 <Image src={IMAGES.logo} alt="logo" className=""  />
-                {/* </Link> */}
+                </Link>
               </div>
 
               {/* <!-- Nav Toggle Button --> */}
@@ -187,9 +213,9 @@ export default function Header2() {
                   handleToggleClick={handleToggleClick}
                 />
                 <div className="logo-heade logs">
-                  {/* <Link href="/"> */}
+                  <Link href="/">
                   <Image src={IMAGES.logo} alt="logo" className="w-md-100"/>
-                  {/* </Link> */}
+                  </Link>
                 </div>
 
 
@@ -274,7 +300,7 @@ export default function Header2() {
                         }
                       >
                         <i className="iconly-Broken-Buy" />
-                        <span className="badge badge-circle">5</span>
+                        <span className="badge badge-circle">{cartItems.length}</span>
                       </Link>
                     </li>
                   </ul>

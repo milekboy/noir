@@ -72,8 +72,8 @@ const MainSection = () => {
                   Discover the latest trends in fashion and style with our
                   exclusive collections.
                 </p>
-                <Link href="/shop-list" className="btn btn-primary w-50">
-                  Shop Now
+                <Link href="/try-on" className="btn btn-primary w-50">
+                  Try Now
                 </Link>
               </div>
             </div>
@@ -144,7 +144,7 @@ const MainSection = () => {
                         </Link>
                     </div>
                 </div> */}
-        <section className="shop-section overflow-hidden mb-5">
+        <section className="shop-section overflow-hidden m-b30" style={{ marginBottom: "150px"   }}>
           <div className="container">
             <FeaturedBlog />
           </div>
@@ -155,31 +155,31 @@ const MainSection = () => {
           </div>
         </section> */}
         <section
-          className=" overflow-hidden py-4 mt-5"
-          style={{ background: "black" }}
+          className=" overflow-hidden py-4 mt-5 m-b30 "
+          style={{ background: "#1F1F1F", marginBottom: "150px" }}
         >
           <div className="container">
             {/* <ScrollablePreference /> */}
             <LatestoCollection />
           </div>
         </section>
-        <section className="content-inner-3 overflow-hidden">
+        <section className="content-inner-3 overflow-hidden m-b30 mb-5">
           <div className="dz-features-wrapper overflow-hidden">
             <DzTextSlider />
           </div>
         </section>
         {/*  Products  Section Start */}
-        <section className="content-inner">
+        <section className="content-inner m-b30 mb-5">
           <div className="container">
             <ProductSection />
           </div>
         </section>
         <section className=" adv-area">
-          <div className="container-fluid px-0">
+          <div className="container " >
             <SummerSaleBlog />
           </div>
         </section>
-        <section className="content-inner-2 overflow-hidden">
+        {/* <section className="content-inner-2 overflow-hidden">
           <div className="container">
             <AllProduction />
           </div>
@@ -188,7 +188,7 @@ const MainSection = () => {
           <div className="container">
             <GreatSaving />
           </div>
-        </section>
+        </section> */}
         {/* Map Area Start
                 <section className="content-inner-3 overflow-hidden " id="Maping">
 			        <div className="container-fluid p-0">
@@ -218,7 +218,7 @@ const MainSection = () => {
                         <OffersectionSlider />
                     </div>
                 </section> */}
-        <section className="content-inner  overflow-hidden">
+        {/* <section className="content-inner  overflow-hidden">
           <div className="container">
             <div
               className="section-head style-1 wow fadeInUp d-flex justify-content-between"
@@ -239,7 +239,7 @@ const MainSection = () => {
           </div>
         </section>
         {/* Short List Slider --> */}
-        <section className="content-inner overflow-hidden p-b0">
+        {/* <section className="content-inner overflow-hidden p-b0">
           <div className="container">
             <div className="row">
               <div className="col-lg-6 col-md-12 m-b30">
@@ -270,7 +270,7 @@ const MainSection = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section>  */}
         {/*  company sponsored Start */}
         {/* <section className="content-inner-2">
         <section className="content-inner  overflow-hidden">
@@ -294,7 +294,7 @@ const MainSection = () => {
           </div>
         </section>
         {/* Short List Slider --> */}
-        <section className="content-inner overflow-hidden p-b0">
+        {/* <section className="content-inner overflow-hidden p-b0">
           <div className="container">
             <div className="row">
               <div className="col-lg-6 col-md-12 m-b30">
@@ -325,7 +325,7 @@ const MainSection = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/*  company sponsored Start */}
         {/* <section className="content-inner-2">
                     <div className="container">	
@@ -341,123 +341,7 @@ const MainSection = () => {
                     </div>
                 </section> */}
 
-        <section
-          className="content-inner overflow-hidden p-b0"
-          style={{
-            backgroundColor: "#FEEB9D",
-            // padding: "40px 2px",
-            // paddingBottom: "-10000px",
-            marginTop: "50px",
-          }}
-        >
-          <div className="container">
-            <div
-              className="row"
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-              }}
-            >
-              {/* Text Column */}
-              <div
-                className="col-lg-6 col-md-12 col-sm-12 m-b30"
-                style={{
-                  flex: "1 1 50%",
-                  maxWidth: "50%",
-                  padding: "20px",
-                }}
-              >
-                <div
-                  className="about-box style-1 clearfix h-100"
-                  style={{
-                    textAlign: "left",
-                  }}
-                >
-                  <h1
-                    style={{
-                      color: "#222",
-                      fontSize: "38px",
-                      lineHeight: "1.4",
-                      fontWeight: "bold",
-                      marginTop: "20px",
-                    }}
-                  >
-                    VIRTUAL TRY-ON NOW IS LIVE
-                  </h1>
-                  <p
-                    style={{
-                      color: "#222",
-                      fontSize: "16px",
-                      lineHeight: "1.6",
-                      marginTop: "20px",
-                    }}
-                  >
-                    The wait is over – our Virtual Try-On is here! Now you can
-                    explore our latest styles, see exactly how they look on you
-                    in real time, and shop with total confidence — all from the
-                    comfort of your home. Try bold new looks, mix and match your
-                    favorites, and find your perfect fit without stepping into a
-                    store. No guesswork, no hesitation — just effortless,
-                    confident shopping. Start your Virtual Try-On experience
-                    today and see yourself in your next style before you buy!
-                  </p>
-                  <button
-                    style={{
-                      backgroundColor: "#000",
-                      color: "#fff",
-                      border: "none",
-                      padding: "12px 28px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      letterSpacing: "1px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      marginTop: "20px",
-                      transition: "all 0.3s ease",
-                      width: "100%",
-                      maxWidth: "200px",
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#fff";
-                      e.currentTarget.style.color = "#000";
-                      e.currentTarget.style.border = "2px solid #000";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "#000";
-                      e.currentTarget.style.color = "#fff";
-                      e.currentTarget.style.border = "none";
-                    }}
-                  >
-                    Try it out
-                  </button>
-                </div>
-              </div>
-
-              {/* Image Column */}
-              <div
-                className="col-lg-6 col-md-12 col-sm-12 align-self-center"
-                style={{
-                  flex: "1 1 50%",
-                  maxWidth: "50%",
-                  textAlign: "center",
-                  // padding: "20px",
-                }}
-              >
-                <img
-                  src="https://res.cloudinary.com/dbpjskran/image/upload/v1754929226/a01eabf2-d486-42a0-a618-bdff0482eff7_oly2fu.jpg"
-                  alt="Virtual Try-On"
-                  style={{
-                    width: "100%",
-                    maxWidth: "500px",
-                    height: "auto",
-                    borderRadius: "10px",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+       
 
         <section className=" collection-bx content-inner-3 overflow-hidden">
           <CollectionBlog />

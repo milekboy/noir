@@ -112,10 +112,10 @@ export default function SwiperTestimonial() {
         }}
       >
         {products?.map((item, ind) => (
-          <SwiperSlide key={ind} className="">
+          <SwiperSlide key={ind} className="bg-primar ">
 
-            <div className="about-box" >
-              <div className="about-img " >
+            <div className="about-box d-flex justify-content-center" >
+              <div className="about-img bg-whit w-100" >
                 <Image src={item.eventCategoryImage[0].url} alt="product"  width={1000} height={1000} className="imagee bg-white" />
 
               </div>
