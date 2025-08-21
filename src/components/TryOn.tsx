@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-// Draw these connections between named joints
+// Pose connections
 const POSE_CONNECTIONS: [string, string][] = [
   ["left_shoulder", "right_shoulder"],
   ["left_shoulder", "left_elbow"],
@@ -24,7 +24,7 @@ const POSE_CONNECTIONS: [string, string][] = [
   ["right_ear", "right_shoulder"],
 ];
 
-// Map some of MediaPipe’s 33 indices to human‑readable names
+// Pose indices → names
 const MP_INDEX_TO_NAME: Record<number, string> = {
   0: "nose",
   2: "left_eye",
@@ -49,6 +49,31 @@ const MP_INDEX_TO_NAME: Record<number, string> = {
   32: "right_foot_index",
 };
 
+// Simple hand connections (21 landmarks)
+const HAND_CONNECTIONS: [number, number][] = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4], // thumb
+  [0, 5],
+  [5, 6],
+  [6, 7],
+  [7, 8], // index
+  [5, 9],
+  [9, 10],
+  [10, 11],
+  [11, 12], // middle
+  [9, 13],
+  [13, 14],
+  [14, 15],
+  [15, 16], // ring
+  [13, 17],
+  [17, 18],
+  [18, 19],
+  [19, 20], // pinky
+  [0, 17], // palm base
+];
+
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 export default function TryOn() {
@@ -57,6 +82,9 @@ export default function TryOn() {
   const overlayRef = useRef<HTMLCanvasElement>(null);
 
   const poseRef = useRef<any | null>(null);
+  const faceRef = useRef<any | null>(null);
+  const handRef = useRef<any | null>(null);
+
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
 
@@ -65,20 +93,12 @@ export default function TryOn() {
     let rafId: number | null = null;
     let stopRaf = false;
 
-    // Detect iOS once (iPhone/iPad)
     const isIOS =
       typeof navigator !== "undefined" &&
       /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     const startCamera = async () => {
       try {
-        if (
-          location.protocol !== "https:" &&
-          location.hostname !== "localhost"
-        ) {
-          console.warn("[CAM] HTTPS recommended for getUserMedia");
-        }
-        // Lower the requested size a bit on iOS to keep things snappy
         const idealW = isIOS ? 960 : 1280;
         const idealH = isIOS ? 540 : 720;
 
@@ -87,20 +107,17 @@ export default function TryOn() {
             facingMode: "user",
             width: { ideal: idealW },
             height: { ideal: idealH },
-            // resizeMode: "crop-and-scale" as any, // optional; some Safari versions accept it
           },
           audio: false,
         });
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          // Critical on iOS: set real attributes too
           videoRef.current.setAttribute("playsinline", "");
           videoRef.current.setAttribute("autoplay", "");
           videoRef.current.muted = true;
-          // @ts-ignore (some Safari builds honor this)
+          // @ts-ignore
           videoRef.current.disablePictureInPicture = true;
-
           await videoRef.current.play().catch(() => {});
         }
       } catch (e) {
@@ -118,17 +135,19 @@ export default function TryOn() {
       cv.height = h;
     };
 
-    const initPose = async () => {
-      // Dynamic import to avoid SSR issues in Next.js
+    const initModels = async () => {
       const vision = await import("@mediapipe/tasks-vision");
-      const FilesetResolver = vision.FilesetResolver;
-      const PoseLandmarker = vision.PoseLandmarker;
+      const {
+        FilesetResolver,
+        PoseLandmarker,
+        FaceLandmarker,
+        HandLandmarker,
+      } = vision;
 
       const fileset = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
       );
 
-      // Use the lite model for realtime speed; swap to full later if needed
       poseRef.current = await PoseLandmarker.createFromOptions(fileset, {
         baseOptions: {
           modelAssetPath:
@@ -138,7 +157,25 @@ export default function TryOn() {
         numPoses: 1,
       });
 
-      console.log("[LOCAL] MediaPipe Pose ready");
+      faceRef.current = await FaceLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+        },
+        runningMode: "VIDEO",
+        numFaces: 1,
+      });
+
+      handRef.current = await HandLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        },
+        runningMode: "VIDEO",
+        numHands: 2,
+      });
+
+      console.log("[LOCAL] Pose, Face, and Hand models ready");
     };
 
     const startLoop = () => {
@@ -149,60 +186,95 @@ export default function TryOn() {
       runningRef.current = true;
       const ctx = canvas.getContext("2d")!;
 
-      const draw = (landmarks: MPPoint[]) => {
-        const W = canvas.width,
-          H = canvas.height;
-        ctx.clearRect(0, 0, W, H);
-
-        // Build a dictionary name -> point (from normalized coords)
-        const dict: Record<string, MPPoint> = {};
-        for (const [idxStr, name] of Object.entries(MP_INDEX_TO_NAME)) {
-          const idx = Number(idxStr);
-          const L = landmarks[idx];
-          if (L) dict[name] = L;
-        }
-
-        const toPx = (p: MPPoint) => ({ x: p.x * W, y: p.y * H });
-
-        // Lines
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
-        for (const [a, b] of POSE_CONNECTIONS) {
-          const pa = dict[a],
-            pb = dict[b];
-          if (!pa || !pb) continue;
-          const A = toPx(pa),
-            B = toPx(pb);
-          ctx.beginPath();
-          ctx.moveTo(A.x, A.y);
-          ctx.lineTo(B.x, B.y);
-          ctx.stroke();
-        }
-
-        // Dots
-        ctx.fillStyle = "rgba(0, 200, 255, 0.9)";
-        for (const name in dict) {
-          const P = toPx(dict[name]);
-          ctx.beginPath();
-          ctx.arc(P.x, P.y, 3.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      };
-
-      // Always use a monotonic timestamp on iOS; in fact it’s safe everywhere
       const processFrame = async () => {
-        if (!runningRef.current || !poseRef.current) return;
-        const tsMs = performance.now(); // <= monotonic, avoids iOS rVFC mediaTime issues
+        if (!runningRef.current) return;
+        const tsMs = performance.now();
+
         try {
-          const res = await poseRef.current.detectForVideo(video, tsMs);
-          const lm = res?.landmarks?.[0];
-          if (lm) draw(lm);
+          // Pose
+          const poseRes = await poseRef.current.detectForVideo(video, tsMs);
+          const poseLm = poseRes?.landmarks?.[0];
+
+          // Face
+          const faceRes = await faceRef.current.detectForVideo(video, tsMs);
+          const faceLm = faceRes?.faceLandmarks?.[0];
+
+          // Hands
+          const handRes = await handRef.current.detectForVideo(video, tsMs);
+          const handsLm = handRes?.landmarks || [];
+
+          const W = canvas.width,
+            H = canvas.height;
+          ctx.clearRect(0, 0, W, H);
+
+          // --- Draw Pose
+          if (poseLm) {
+            const dict: Record<string, MPPoint> = {};
+            for (const [idxStr, name] of Object.entries(MP_INDEX_TO_NAME)) {
+              const idx = Number(idxStr);
+              const L = poseLm[idx];
+              if (L) dict[name] = L;
+            }
+            const toPx = (p: MPPoint) => ({ x: p.x * W, y: p.y * H });
+
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
+            for (const [a, b] of POSE_CONNECTIONS) {
+              const pa = dict[a],
+                pb = dict[b];
+              if (!pa || !pb) continue;
+              const A = toPx(pa),
+                B = toPx(pb);
+              ctx.beginPath();
+              ctx.moveTo(A.x, A.y);
+              ctx.lineTo(B.x, B.y);
+              ctx.stroke();
+            }
+            ctx.fillStyle = "rgba(0, 200, 255, 0.9)";
+            for (const name in dict) {
+              const P = toPx(dict[name]);
+              ctx.beginPath();
+              ctx.arc(P.x, P.y, 3, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // --- Draw Face
+          if (faceLm) {
+            ctx.fillStyle = "rgba(0,255,0,0.7)";
+            for (let i = 0; i < faceLm.length; i += 2) {
+              // skip half points for perf
+              const pt = faceLm[i];
+              ctx.beginPath();
+              ctx.arc(pt.x * W, pt.y * H, 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // --- Draw Hands
+          for (const lm of handsLm) {
+            ctx.strokeStyle = "rgba(255,255,255,0.9)";
+            ctx.fillStyle = "rgba(0,150,255,0.9)";
+            for (const [a, b] of HAND_CONNECTIONS) {
+              const A = lm[a],
+                B = lm[b];
+              if (!A || !B) continue;
+              ctx.beginPath();
+              ctx.moveTo(A.x * W, A.y * H);
+              ctx.lineTo(B.x * W, B.y * H);
+              ctx.stroke();
+            }
+            for (const pt of lm) {
+              ctx.beginPath();
+              ctx.arc(pt.x * W, pt.y * H, 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
         } catch (e) {
-          // swallow intermittent detect errors
+          // swallow detection errors
         }
       };
 
-      // Force RAF loop on iOS (skip rVFC). rVFC can report stale mediaTime on iOS.
       const hasRVFC =
         !isIOS &&
         typeof (video as any).requestVideoFrameCallback === "function";
@@ -225,7 +297,6 @@ export default function TryOn() {
         rafId = requestAnimationFrame(loopRAF);
       }
 
-      // per-loop cleanup
       cleanupRef.current = () => {
         runningRef.current = false;
         stopRaf = true;
@@ -236,30 +307,24 @@ export default function TryOn() {
     (async () => {
       await startCamera();
       fitCanvas();
-      await initPose();
+      await initModels();
       startLoop();
 
       const onResize = () => fitCanvas();
       window.addEventListener("resize", onResize);
 
-      // Pause/resume when tab is backgrounded (saves battery on iOS)
-      const onVisibility = () => {
+      document.addEventListener("visibilitychange", () => {
         if (document.hidden) runningRef.current = false;
         else if (!runningRef.current) {
-          // resume
           stopRaf = false;
           runningRef.current = true;
-          // restart loop quickly
           const video = videoRef.current;
           if (video) requestAnimationFrame(() => startLoop());
         }
-      };
-      document.addEventListener("visibilitychange", onVisibility);
+      });
 
-      // full cleanup on unmount
       cleanupRef.current = () => {
         window.removeEventListener("resize", onResize);
-        document.removeEventListener("visibilitychange", onVisibility);
         runningRef.current = false;
         stopRaf = true;
         if (rafId) cancelAnimationFrame(rafId);
@@ -267,12 +332,9 @@ export default function TryOn() {
       };
     })();
 
-    return () => {
-      cleanupRef.current?.();
-    };
+    return () => cleanupRef.current?.();
   }, []);
 
-  // Slightly smaller canvas on iOS helps FPS
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -283,12 +345,11 @@ export default function TryOn() {
       style={{
         position: "relative",
         width: "100%",
-        height: isIOS ? "60vh" : "80vh", // smaller on iOS
+        height: isIOS ? "60vh" : "80vh",
         background: "black",
         overflow: "hidden",
       }}
     >
-      {/* Live camera */}
       <video
         ref={videoRef}
         autoPlay
@@ -303,7 +364,6 @@ export default function TryOn() {
           zIndex: 1,
         }}
       />
-      {/* Skeleton overlay */}
       <canvas
         ref={overlayRef}
         style={{
