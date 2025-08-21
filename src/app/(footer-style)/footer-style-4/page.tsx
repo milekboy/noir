@@ -3,7 +3,7 @@ import { Fragment } from "react/jsx-runtime";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import Header from "@/components/Header";
-import { FooterMenu, FooterStyleCode4, OurStores, UsefulLinks, WidgetData } from "@/constant/Alldata";
+import { FooterMenu, FooterStyleCode4, OurStores, WidgetData } from "@/constant/Alldata";
 import CopySectionText from "@/constant/CopySectionText";
 import SubscribeNewsletter from "@/components/SubscribeNewsletter";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export default function FooterStyle4(){
                                 <div className="code-copy">
                                     <CopySectionText code={FooterStyleCode4} />
                                     <pre className="code-box" id="copyTarget">
-{FooterStyleCode4}
+                                        {FooterStyleCode4}
                                     </pre>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@ export default function FooterStyle4(){
                                         <ul>
                                             {WidgetData.map((item, ind)=>(
                                                 <li key={ind}>
-                                                    <div className="dz-media"><Image src={item.image} alt="" /></div>
+                                                    {/* <div className="dz-media"><Image src={item.image} alt="" /></div> */}
                                                     <div className="dz-content">
                                                         <h6 className="name"><Link href="/post-standard">{item.name}</Link></h6>
                                                         <span className="time">April 23, 2024</span>
@@ -91,11 +91,11 @@ export default function FooterStyle4(){
                                 <div className="col-xl-2 col-md-4 col-sm-4 col-6">
                                     <div className="widget widget_services">
                                         <h5 className="footer-title">Useful Links</h5>
-                                        <ul>
+                                        {/* <ul>
                                             {UsefulLinks.map((item, i)=>(
                                                 <li key={i}><Link href="#">{item.name}</Link></li>
                                             ))}                                    
-                                        </ul>
+                                        </ul> */}
                                     </div>
                                 </div>
                                 <div className="col-xl-2 col-md-4 col-sm-4">

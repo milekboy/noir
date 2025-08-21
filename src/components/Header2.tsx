@@ -9,8 +9,6 @@ import Header2Menus from "./Header2Menus";
 import CategoryMenuItem from "./CategoryMenuItem";
 import Categorydropdown from "./CategoryDropdown";
 import Image from "next/image";
-import { IoMenuOutline } from "react-icons/io5";
-import { TbMenuDeep } from "react-icons/tb";
 import NetworkInstance from "@/app/api/NetworkInstance";
 
 interface State {
