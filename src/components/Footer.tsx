@@ -1,7 +1,6 @@
 // import {motion} from 'framer-motion'
 import IMAGES from "../constant/theme";
-import { Company, FooterMenu, OurStores, 
-    WidgetData 
+import { Company, FooterMenu, WidgetData 
 } 
 from "../constant/Alldata";
 import SubscribeNewsletter from "./SubscribeNewsletter";

@@ -3,7 +3,7 @@ import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import Header from "@/components/Header";
 import Link from "next/link";
-import { FooterMenu, FooterStyleCode6, UsefulLinks } from "@/constant/Alldata";
+import { FooterMenu, FooterStyleCode6} from "@/constant/Alldata";
 import CopySectionText from "@/constant/CopySectionText";
 import SubscribeNewsletter from "@/components/SubscribeNewsletter";
 import Image from "next/image";
@@ -74,11 +74,11 @@ export default function FooterStyle6(){
                                         <div className="col-xl-3 col-6">
                                             <div className="widget widget_services">
                                                 <h5 className="footer-title">Useful Links</h5>
-                                                <ul>
+                                                {/* <ul>
                                                     {UsefulLinks.map((item, i)=>(
                                                         <li key={i}><Link href="#">{item.name}</Link></li>
                                                     ))} 
-                                                </ul>
+                                                </ul> */}
                                             </div>
                                         </div>
                                         <div className="col-xl-3 col-6">
