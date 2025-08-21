@@ -5,6 +5,11 @@ import BackBg2 from '../../public/assets/images/background/bg2.jpg';
 import logo from '../../public/assets/images/logo.svg';
 import herobg from '../../public/assets/images/hero-banner.jpg';
 import herobg2 from '../../public/assets/images/hero-banner2.png';
+import summer1 from '../../public/assets/images/summer1.jpg';
+import summer2 from '../../public/assets/images/summer2.jpg';
+import summer3 from '../../public/assets/images/summer3.jpg';
+import summer4 from '../../public/assets/images/summer4.jpg';
+import summer5 from '../../public/assets/images/summer5.jpg';
 import logopng from '../../public/assets/images/logo.png';
 import LogoWhite from '../../public/assets/images/logo-white.png';
 import LogoWhiteSvg from '../../public/assets/images/logo-white.svg';
@@ -432,6 +437,11 @@ const IMAGES : any = {
     logopng: logopng,
     logo : logo,
     LogoWhite: LogoWhite,
+    summer1:summer1,
+    summer2:summer2,
+    summer3:summer3,
+    summer4:summer4,
+    summer5:summer5,
     LogoWhiteSvg : LogoWhiteSvg,
     demo1 : demo1,
     demo2 : demo2,

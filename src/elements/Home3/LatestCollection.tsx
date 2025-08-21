@@ -6,7 +6,7 @@ import ProductRollup from "@/components/ProductRollup";
 
 export default function LatestoCollection() {
   return (
-    <div className="row align-items-center " >
+    <div className="row align-items-center mt-2" >
       <div className="col-lg-12 col-md-12 col-sm-12 m-b3 d-flex justify-content-start ">
         <div className="dz-medi style-2 wow fadeInUp text-center w-100" data-wow-delay="0.2s">
           {/* <Image src={IMAGES.ShopPorductPng3} alt="about"/> */}
@@ -22,7 +22,7 @@ export default function LatestoCollection() {
           {/* <button className="btn btn-white btn-md">See more..</button> */}
         </div>
       </div>
-      <div className="col-lg-12 col-md-12 col-sm-12 m-b30 ">
+      <div className="col-lg-12 col-md-12 col-sm-12 m-b3 ">
         <div className="about-wraper   position-relative ">
           <div
             className="section-head style-1 wow fadeInUp d-lg-flex justify-content-between align-items-center"
