@@ -1,10 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-const WS_URL = "wss://noirtryon-api.onrender.com/ws/pose";
-const HEALTH_URL = "https://noirtryon-api.onrender.com/health";
-
-// Skeleton connections (expand as needed)
+// Draw these connections between named joints
 const POSE_CONNECTIONS: [string, string][] = [
   ["left_shoulder", "right_shoulder"],
   ["left_shoulder", "left_elbow"],
@@ -27,122 +24,54 @@ const POSE_CONNECTIONS: [string, string][] = [
   ["right_ear", "right_shoulder"],
 ];
 
-type Point = {
-  x?: number;
-  y?: number;
-  z?: number;
-  x_px?: number;
-  y_px?: number;
+// Map some of MediaPipe’s 33 indices to human‑readable names
+const MP_INDEX_TO_NAME: Record<number, string> = {
+  0: "nose",
+  2: "left_eye",
+  5: "right_eye",
+  7: "left_ear",
+  8: "right_ear",
+  11: "left_shoulder",
+  12: "right_shoulder",
+  13: "left_elbow",
+  14: "right_elbow",
+  15: "left_wrist",
+  16: "right_wrist",
+  23: "left_hip",
+  24: "right_hip",
+  25: "left_knee",
+  26: "right_knee",
+  27: "left_ankle",
+  28: "right_ankle",
+  29: "left_heel",
+  30: "right_heel",
+  31: "left_foot_index",
+  32: "right_foot_index",
 };
-type Landmarks = Record<string, Point>;
+
+type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 export default function TryOn() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
-  const offscreenRef = useRef<HTMLCanvasElement | null>(null);
 
-  const wsRef = useRef<WebSocket | null>(null);
-  const resizeObsRef = useRef<ResizeObserver | null>(null);
-
-  const videoReadyRef = useRef(false);
-  const wsReadyRef = useRef(false);
-  const inflightRef = useRef(false);
-
-  // Adaptive pacing
-  const rttMsRef = useRef(80);
-  const targetFpsRef = useRef(15);
-
-  // Initialize last-send timestamp safely in the browser
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      (window as any).__lastSendTs = performance.now();
-    }
-  }, []);
+  const poseRef = useRef<any | null>(null);
+  const runningRef = useRef(false);
+  const cleanupRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let rafId: number | null = null;
+    let stopRaf = false;
 
-    // Health ping (helps debug connectivity)
-    (async () => {
-      try {
-        const r = await fetch(HEALTH_URL);
-        console.log("[HEALTH]", r.status, await r.text());
-      } catch (e) {
-        console.error("[HEALTH] failed:", e);
-      }
-    })();
-
-    // WebSocket
-    const ws = new WebSocket(WS_URL);
-    ws.binaryType = "arraybuffer"; // we send binary
-    wsRef.current = ws;
-
-    ws.addEventListener("open", () => {
-      console.log("[WS] open");
-      wsReadyRef.current = true;
-      if (videoReadyRef.current && typeof window !== "undefined") {
-        (window as any).__lastSendTs = performance.now();
-        sendNextFrame();
-      }
-    });
-
-    ws.addEventListener("message", (e) => {
-      // RTT estimate
-      const t1 =
-        typeof performance !== "undefined" ? performance.now() : Date.now();
-      const last =
-        (typeof window !== "undefined" && (window as any).__lastSendTs) || t1;
-      const measured = Math.max(1, t1 - last);
-      rttMsRef.current = rttMsRef.current * 0.8 + measured * 0.2;
-
-      // Adapt target FPS between 8 and 20 based on RTT (+ small budget)
-      const budget = 25;
-      const nextFps = Math.min(
-        20,
-        Math.max(8, 1000 / (rttMsRef.current + budget))
-      );
-      targetFpsRef.current = nextFps;
-
-      // Draw overlay
-      try {
-        const payload =
-          typeof e.data === "string"
-            ? JSON.parse(e.data)
-            : JSON.parse(new TextDecoder().decode(e.data));
-        drawOverlay(payload);
-      } catch {
-        // ignore non-JSON (if any)
-      }
-
-      // Schedule next send
-      inflightRef.current = false;
-      const pauseMs = Math.max(1, 1000 / targetFpsRef.current);
-      setTimeout(() => {
-        if (typeof window !== "undefined") {
-          (window as any).__lastSendTs = performance.now();
-        }
-        sendNextFrame();
-      }, pauseMs);
-    });
-
-    ws.addEventListener("error", (e) => console.error("[WS] error:", e));
-    ws.addEventListener("close", (e) => {
-      console.warn("[WS] close:", e.code, e.reason);
-      wsReadyRef.current = false;
-    });
-
-    // Camera
     const startCamera = async () => {
       try {
         if (
           location.protocol !== "https:" &&
           location.hostname !== "localhost"
         ) {
-          console.warn(
-            "[CAM] needs HTTPS or localhost. Current:",
-            location.protocol
-          );
+          console.warn("[CAM] HTTPS recommended for getUserMedia");
         }
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -155,165 +84,160 @@ export default function TryOn() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch(() => {});
-          const markReady = () => {
-            if (!videoRef.current) return;
-            const vw = videoRef.current.videoWidth;
-            const vh = videoRef.current.videoHeight;
-            if (vw && vh) {
-              console.log("[CAM] video metadata:", vw, vh);
-              fitCanvases();
-              videoReadyRef.current = true;
-              if (wsReadyRef.current && typeof window !== "undefined") {
-                (window as any).__lastSendTs = performance.now();
-                sendNextFrame();
-              }
-            }
-          };
-          videoRef.current.addEventListener("loadedmetadata", markReady, {
-            once: true,
-          });
-          videoRef.current.addEventListener("canplay", markReady, {
-            once: true,
-          });
-          setTimeout(markReady, 300);
-          setTimeout(markReady, 1000);
         }
-        console.log("[CAM] started");
-      } catch (err) {
-        console.error("[CAM] access error:", err);
+      } catch (e) {
+        console.error("[CAM] error:", e);
       }
     };
 
-    // Size + encoder setup
-    const fitCanvases = () => {
+    const fitCanvas = () => {
       const el = containerRef.current;
-      const overlay = overlayRef.current;
-      if (!el || !overlay) return;
+      const cv = overlayRef.current;
+      if (!el || !cv) return;
       const w = el.clientWidth || window.innerWidth;
       const h = el.clientHeight || window.innerHeight;
-      overlay.width = w;
-      overlay.height = h;
+      cv.width = w;
+      cv.height = h;
+    };
 
-      if (!offscreenRef.current)
-        offscreenRef.current = document.createElement("canvas");
-      const enc = offscreenRef.current;
-      // Smaller encoder for low latency
-      const encW = 224;
-      const encH = Math.max(
-        160,
-        Math.round(h > 0 && w > 0 ? (h / w) * encW : 224)
+    const initPose = async () => {
+      // Dynamic import to avoid SSR issues in Next.js
+      const vision = await import("@mediapipe/tasks-vision");
+      const FilesetResolver = vision.FilesetResolver;
+      const PoseLandmarker = vision.PoseLandmarker;
+
+      const fileset = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
       );
-      enc.width = encW;
-      enc.height = encH;
 
-      console.log("[CANVAS] overlay:", w, h, "encoder:", encW, encH);
+      // Use the lite model for realtime speed; swap to full later if needed
+      poseRef.current = await PoseLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+        },
+        runningMode: "VIDEO",
+        numPoses: 1,
+      });
+
+      console.log("[LOCAL] MediaPipe Pose ready");
     };
 
-    // Observe container for responsive overlay
-    if (containerRef.current) {
-      const ro = new ResizeObserver(() => fitCanvases());
-      ro.observe(containerRef.current);
-      resizeObsRef.current = ro;
-    }
+    const startLoop = () => {
+      const video = videoRef.current;
+      const canvas = overlayRef.current;
+      if (!video || !poseRef.current || !canvas) return;
 
-    startCamera();
+      runningRef.current = true;
+      const ctx = canvas.getContext("2d")!;
 
-    // Cleanup
+      const draw = (landmarks: MPPoint[]) => {
+        const W = canvas.width,
+          H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        // Build a dictionary name -> point (from normalized coords)
+        const dict: Record<string, MPPoint> = {};
+        for (const [idxStr, name] of Object.entries(MP_INDEX_TO_NAME)) {
+          const idx = Number(idxStr);
+          const L = landmarks[idx];
+          if (L) dict[name] = L;
+        }
+
+        const toPx = (p: MPPoint) => ({ x: p.x * W, y: p.y * H });
+
+        // Lines
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
+        for (const [a, b] of POSE_CONNECTIONS) {
+          const pa = dict[a],
+            pb = dict[b];
+          if (!pa || !pb) continue;
+          const A = toPx(pa),
+            B = toPx(pb);
+          ctx.beginPath();
+          ctx.moveTo(A.x, A.y);
+          ctx.lineTo(B.x, B.y);
+          ctx.stroke();
+        }
+
+        // Dots
+        ctx.fillStyle = "rgba(0, 200, 255, 0.9)";
+        for (const name in dict) {
+          const P = toPx(dict[name]);
+          ctx.beginPath();
+          ctx.arc(P.x, P.y, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      };
+
+      const processFrame = async (tsMs: number) => {
+        if (!runningRef.current || !poseRef.current) return;
+        const res = await poseRef.current.detectForVideo(video, tsMs);
+        const lm = res?.landmarks?.[0];
+        if (lm) draw(lm);
+      };
+
+      // Prefer requestVideoFrameCallback for best pacing
+      // @ts-ignore
+      const hasRVFC = typeof video.requestVideoFrameCallback === "function";
+
+      if (hasRVFC) {
+        // @ts-ignore
+        const loopRVFC = (
+          _now: number,
+          metadata: VideoFrameCallbackMetadata
+        ) => {
+          if (!runningRef.current) return;
+          processFrame(metadata.mediaTime * 1000).finally(() => {
+            // @ts-ignore
+            video.requestVideoFrameCallback(loopRVFC);
+          });
+        };
+        // @ts-ignore
+        video.requestVideoFrameCallback(loopRVFC);
+      } else {
+        const loopRAF = () => {
+          if (!runningRef.current || stopRaf) return;
+          const ts = performance.now();
+          processFrame(ts).finally(() => {
+            rafId = requestAnimationFrame(loopRAF);
+          });
+        };
+        rafId = requestAnimationFrame(loopRAF);
+      }
+
+      // per-loop cleanup
+      cleanupRef.current = () => {
+        runningRef.current = false;
+        stopRaf = true;
+        if (rafId) cancelAnimationFrame(rafId);
+      };
+    };
+
+    (async () => {
+      await startCamera();
+      fitCanvas();
+      await initPose();
+      startLoop();
+
+      const onResize = () => fitCanvas();
+      window.addEventListener("resize", onResize);
+
+      // full cleanup on unmount
+      cleanupRef.current = () => {
+        window.removeEventListener("resize", onResize);
+        runningRef.current = false;
+        stopRaf = true;
+        if (rafId) cancelAnimationFrame(rafId);
+        if (stream) stream.getTracks().forEach((t) => t.stop());
+      };
+    })();
+
     return () => {
-      console.log("[CLEANUP]");
-      resizeObsRef.current?.disconnect();
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.close(1000, "component unmount");
-      }
-      if (stream) stream.getTracks().forEach((t) => t.stop());
-      wsReadyRef.current = false;
-      videoReadyRef.current = false;
+      cleanupRef.current?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Send the next frame only when the previous one has been answered
-  const sendNextFrame = async () => {
-    const enc = offscreenRef.current;
-    const video = videoRef.current;
-    const sock = wsRef.current;
-    if (!enc || !video || !sock || sock.readyState !== WebSocket.OPEN) return;
-    if (inflightRef.current) return;
-
-    inflightRef.current = true;
-    const ctx = enc.getContext("2d");
-    if (!ctx) {
-      inflightRef.current = false;
-      return;
-    }
-
-    ctx.drawImage(video, 0, 0, enc.width, enc.height);
-
-    // JPEG blob (~0.5 quality) for speed
-    const blob: Blob = await new Promise((resolve) =>
-      enc.toBlob((b) => resolve(b as Blob), "image/jpeg", 0.5)
-    );
-
-    try {
-      sock.send(blob);
-    } catch (e) {
-      console.error("[WS] send failed:", e);
-      inflightRef.current = false;
-    }
-  };
-
-  // Draw skeleton using pose.landmarks
-  const drawOverlay = (payload: any) => {
-    const canvas = overlayRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-
-    const W = canvas.width;
-    const H = canvas.height;
-
-    ctx.clearRect(0, 0, W, H);
-    ctx.lineWidth = 2.5; // lighter to draw on mobile
-
-    const landmarks: Landmarks = payload?.pose?.landmarks || {};
-
-    const srcW = payload?.meta?.width || W;
-    const srcH = payload?.meta?.height || H;
-    const sx = W / srcW;
-    const sy = H / srcH;
-
-    const toPx = (p: Point | undefined) => {
-      if (!p) return null;
-      if (typeof p.x_px === "number" && typeof p.y_px === "number") {
-        return { x: p.x_px * sx, y: p.y_px * sy };
-      }
-      if (typeof p.x === "number" && typeof p.y === "number") {
-        return { x: p.x * W, y: p.y * H };
-      }
-      return null;
-    };
-
-    // Lines
-    ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
-    for (const [a, b] of POSE_CONNECTIONS) {
-      const pa = toPx(landmarks[a]);
-      const pb = toPx(landmarks[b]);
-      if (!pa || !pb) continue;
-      ctx.beginPath();
-      ctx.moveTo(pa.x, pa.y);
-      ctx.lineTo(pb.x, pb.y);
-      ctx.stroke();
-    }
-
-    // Dots
-    ctx.fillStyle = "rgba(0, 200, 255, 0.9)";
-    for (const name in landmarks) {
-      const pt = toPx(landmarks[name]);
-      if (!pt) continue;
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
 
   return (
     <div
@@ -326,6 +250,7 @@ export default function TryOn() {
         overflow: "hidden",
       }}
     >
+      {/* Live camera */}
       <video
         ref={videoRef}
         autoPlay
@@ -340,6 +265,7 @@ export default function TryOn() {
           zIndex: 1,
         }}
       />
+      {/* Skeleton overlay */}
       <canvas
         ref={overlayRef}
         style={{
@@ -347,7 +273,7 @@ export default function TryOn() {
           inset: 0,
           width: "100%",
           height: "100%",
-          zIndex: 3,
+          zIndex: 2,
           pointerEvents: "none",
         }}
       />
