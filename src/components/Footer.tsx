@@ -101,7 +101,7 @@ const Footer = (props : footertype) => {
                                 <h5 className="footer-title">Categories</h5>
                                 <ul>
                                     {FooterMenu.map((item,ind)=>(
-                                        <li key={ind}><Link style={{color: "#fff"}} href={"#"}>{item.name}</Link></li>
+                                        <li key={ind}><Link style={{color: "#fff"}} href={"/shop-with-category"}>{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>
