@@ -6,7 +6,7 @@ import Link from "next/link";
 import HeadSearchBar from "./HeadSearchBar";
 import HeaderSideShoppingCard from "./HeaderSideShopingCard";
 import Header2Menus from "./Header2Menus";
-import CategoryMenuItem from "./CategoryMenuItem";
+// import CategoryMenuItem from "./CategoryMenuItem";
 import Categorydropdown from "./CategoryDropdown";
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
