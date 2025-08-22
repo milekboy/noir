@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-
+import { useRouter } from "next/navigation";
 // Pose connections
 const POSE_CONNECTIONS: [string, string][] = [
   ["left_shoulder", "right_shoulder"],
@@ -79,6 +79,8 @@ type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 export default function TryOn() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const router = useRouter(); // ✅ initialize router
+
   const overlayRef = useRef<HTMLCanvasElement>(null);
 
   const poseRef = useRef<any | null>(null);
@@ -350,6 +352,28 @@ export default function TryOn() {
         overflow: "hidden",
       }}
     >
+      <button
+        onClick={() => router.push("/shop-standard")}
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "10px",
+          zIndex: 10,
+          padding: "8px 14px",
+          borderRadius: "6px",
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          border: "1px solid white",
+          cursor: "pointer",
+          marginLeft:
+            typeof window !== "undefined" && window.innerWidth >= 1024
+              ? "100px"
+              : "0",
+        }}
+      >
+        ← Back
+      </button>
+
       <video
         ref={videoRef}
         autoPlay
