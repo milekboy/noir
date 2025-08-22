@@ -92,7 +92,7 @@ const MainSection = () => {
             height: "100%",
             width: "100%",
             opacity: fade ? 1 : 0,
-            transition: "opacity 0.5s ease",
+            transition: "opacity 2s ease",
           }}
         />
         {/* <div className="bg-black   position-absolute h-100 w-100" style={{top: 0, opacity:0.3}}></div> */}
