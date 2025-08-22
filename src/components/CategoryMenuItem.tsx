@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-// import { Dropdown } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { useState, useEffect } from "react";
 
@@ -9,23 +9,23 @@ interface Category {
   name: string;
 }
 
-// export default function CategoryMenuItem() {
-//   // const [category, setCategory] = useState<Category[]>([]);
-//   const networkInstance = NetworkInstance();
-//   useEffect(() => {
-//     getProducts();
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
+export default function CategoryMenuItem() {
+  const [category, setCategory] = useState<Category[]>([]);
+  const networkInstance = NetworkInstance();
+  useEffect(() => {
+    getProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // const getProducts = async () => {
-  //   try {
-  //     const res = await networkInstance.get("category/get-all-categories");
+  const getProducts = async () => {
+    try {
+      const res = await networkInstance.get("category/get-all-categories");
 
-  //     setCategory(res.data);
-  //   } catch (error) {
-  //     console.error("Error fetching products:", error);
-  //   }
-  // };
+      setCategory(res.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
   return (
     <ul className="nav navbar-nav">
       {/* {category
@@ -1435,7 +1435,7 @@ interface Category {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu">
+        <div className="mega-menu" style={{marginTop: '-50px'}}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
@@ -2449,7 +2449,7 @@ interface Category {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu">
+        <div className="mega-menu" style={{marginTop: '-50px'}}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
