@@ -40,7 +40,7 @@ const FeaturedCategorySlider = () => {
       slidesPerView={5}
       spaceBetween={0}
       autoplay={{
-        delay: 3000,
+        delay: 100,
       }}
       speed={2000}
       parallax={true}
