@@ -52,12 +52,12 @@ const MainSection = () => {
   return (
     <Fragment>
       <div
-        className="h-100vh"
+        className="h-100vh mb-5"
         style={{
           zIndex: 1,
           width: "100%",
-          height: "110vh",
-          transform: "translateY(-100px)",
+          height: "100vh",
+          // transform: "translateY(-100px)",
         }}
       >
         <div className="hero-banner d-flex justify-content-start align-items-center  h-100 ">
@@ -100,7 +100,7 @@ const MainSection = () => {
         />
         {/* <div className="bg-black   position-absolute h-100 w-100" style={{top: 0, opacity:0.3}}></div> */}
       </div>
-      <div className="page-content bg-ligh ">
+      <div className="page-contenT bg-ligh ">
         {/* <div className="main-slider-wrapper">
                     <div className="slider-inner">
                         <MainBannerSlider2 />
@@ -147,7 +147,7 @@ const MainSection = () => {
                         </Link>
                     </div>
                 </div> */}
-        <section className="shop-section overflow-hidden m-b30" style={{ marginBottom: "50px", marginTop: "0px !important", paddingTop: "0px!important" }}>
+        <section className="shop-sectio overflow-hidden m-b30" style={{ marginBottom: "50px", marginTop: "0px!important", paddingTop: "0px!important" }}>
           <div className="container">
             <FeaturedBlog />
           </div>
