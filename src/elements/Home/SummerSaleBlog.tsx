@@ -16,7 +16,7 @@ const SummerSaleBlog = () => {
             </div> */}
             <div className="col-lg-12 col-md-12 ">
                 <div className="product-box style-4">
-                    <div className="product-media 100vh" style={{backgroundImage: `url(${IMAGES.summer5.src})`, borderRadius:"30px"}}></div>
+                    <div className="product-media 100vhn" style={{backgroundImage: `url(${IMAGES.summer5.src})`, borderRadius:"30px", backgroundPosition: "top"}}></div>
                     <div className="product-content">
                         <div className="main-content " style={{color: "white !important"}}>
                             <div className="badge style-1 mb-3 text-white">Sale Up to 50% Off</div>

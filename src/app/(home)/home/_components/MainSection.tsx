@@ -34,7 +34,7 @@ const MainSection = () => {
 
   // Fade between two images every 4s in a loop
 
-  const heroImages = [IMAGES.herobg, IMAGES.herobg2]; // Replace IMAGES.herobg2 with your second image
+  const heroImages = [IMAGES.herobg, IMAGES.herobg3, IMAGES.herobg4]; // Replace IMAGES.herobg2 with your second image
 
   const [currentImage, setCurrentImage] = useState(0);
   const [fade, setFade] = useState(true);
@@ -52,7 +52,7 @@ const MainSection = () => {
   return (
     <Fragment>
       <div
-        className="h-100vh "
+        className="h-100vh"
         style={{
           zIndex: 1,
           width: "100%",
@@ -60,7 +60,7 @@ const MainSection = () => {
           transform: "translateY(-100px)",
         }}
       >
-        <div className="hero-banner d-flex justify-content-start align-items-center  h-100">
+        <div className="hero-banner d-flex justify-content-start align-items-center  h-100 ">
           <div className="container">
             <div className="row justify-content-start ">
               <div
@@ -93,6 +93,9 @@ const MainSection = () => {
             width: "100%",
             opacity: fade ? 1 : 0,
             transition: "opacity 2s ease",
+            objectFit:"cover",
+            objectPosition:"top"
+            // objectPosition: window.innerWidth <= 768 ? 'right' : 'center' // Align right on mobile
           }}
         />
         {/* <div className="bg-black   position-absolute h-100 w-100" style={{top: 0, opacity:0.3}}></div> */}
@@ -144,7 +147,7 @@ const MainSection = () => {
                         </Link>
                     </div>
                 </div> */}
-        <section className="shop-section overflow-hidden m-b30" style={{ marginBottom: "150px"   }}>
+        <section className="shop-section overflow-hidden m-b30" style={{ marginBottom: "50px", marginTop: "0px !important", paddingTop: "0px!important" }}>
           <div className="container">
             <FeaturedBlog />
           </div>
@@ -155,21 +158,21 @@ const MainSection = () => {
           </div>
         </section> */}
         <section
-          className=" overflow-hidden py-4 mt-5 m-b30 "
-          style={{ background: "#1F1F1F", marginBottom: "150px" }}
+          className=" overflow-hidden py-4  "
+          style={{ background: "#1F1F1F" }}
         >
           <div className="container">
             {/* <ScrollablePreference /> */}
             <LatestoCollection />
           </div>
         </section>
-        <section className="content-inner-3 overflow-hidden m-b30 mb-5">
+        <section className="content-inner-3 overflow-hidden ">
           <div className="dz-features-wrapper overflow-hidden">
             <DzTextSlider />
           </div>
         </section>
         {/*  Products  Section Start */}
-        <section className="content-inner m-b30 mb-5">
+        <section className="content-inne mt-5 ">
           <div className="container">
             <ProductSection />
           </div>
