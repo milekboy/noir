@@ -68,7 +68,7 @@ const FeaturedCategorySlider = () => {
           slidesPerView: 2,
         },
         340: {
-          slidesPerView: 2,
+          slidesPerView: 1,
         },
       }}
     >
@@ -92,6 +92,9 @@ const FeaturedCategorySlider = () => {
                 alt={item.name}
                 width={500}
                 height={500}
+                style={{
+                  objectPosition: "top"
+                }}
                 className=""
               />
               <h6

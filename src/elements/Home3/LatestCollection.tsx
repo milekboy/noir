@@ -13,7 +13,7 @@ export default function LatestoCollection() {
           <h1 className="title align-self-start m-b3 display-3 font-bold text-white">
             Smart Wardrobe{" "}
           </h1>
-        <center>  <p className=" text-white text-center w-50">
+        <center>  <p className=" text-white text-center w-10">
             AI learns
             your unique style preferences, favorite colors, fits, and trends —
             so every suggestion feels like it was handpicked by your personal

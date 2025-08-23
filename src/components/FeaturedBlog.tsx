@@ -4,7 +4,7 @@ import MoreCollectionBlog from "../elements/Home/MoreCollectionBlog";
 
 const FeaturedBlog = () => {
   return (
-    <div className="row">
+    <div className="row ">
       <div className="col-lg-12 left-bo ">
         <div
           // style={{ paddingLeft: "20px" }}
@@ -22,11 +22,11 @@ const FeaturedBlog = () => {
           >
             New In
           </h5>
-          {/* <Link
-            href={"#"}
-            className="animation-btn popup-youtube"
-            style={{ marginTop: "-310px", marginLeft: "600px" }}
-          > */}
+            {/* <Link
+              href={"#"}
+              className="animation-btn popup-youtube"
+              style={{ marginTop: "-310px", marginLeft: "600px" }}
+            > */}
             <div className="text-row word-rotate-box c-black">
               <MoreCollectionBlog />
               <i className="fa-solid fa-play text-dark badge__emoji" />
