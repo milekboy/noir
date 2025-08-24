@@ -48,59 +48,73 @@ const MainSection = () => {
       }, 500); // fade out duration
     }, 9000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages]);
+  const nextImage = (currentImage + 1) % heroImages.length;
   return (
     <Fragment>
       <div
-        className="h-100vh mb-5"
+        className="h-100vh mb-5 "
         style={{
           zIndex: 1,
           width: "100%",
           height: "100vh",
-          // transform: "translateY(-100px)",
+          // position: "relative",
+          overflow: "hidden"
         }}
       >
-        <div className="hero-banner d-flex justify-content-start align-items-center  h-100 ">
+        <div className="hero-banner d-flex justify-content-start align-items-center h-100">
           <div className="container">
-            <div className="row justify-content-start ">
-              <div
-                className="col-lg-4 col-md-10 col-sm-12 text-start d-flex flex-column justify-content-end"
-                style={{ height: "500px", position: "relative" }}
-              >
-                <h1 className="text-white mb-4">Virtual Try-on NOW LIVE!</h1>
-                <p className="text-white mb-5">
-                  Discover the latest trends in fashion and style with our
-                  exclusive collections.
-                </p>
-                <Link href="/try-on" className="btn btn-primary w-50">
-                  Try Now
-                </Link>
-              </div>
-            </div>
+        <div className="row justify-content-start">
+          <div
+            className="col-lg-4 col-md-10 col-sm-12 text-start d-flex flex-column justify-content-end"
+            style={{ height: "500px", position: "relative" }}
+          >
+            <h1 className="text-white mb-4">Virtual Try-on NOW LIVE!</h1>
+            <p className="text-white mb-5">
+          Discover the latest trends in fashion and style with our
+          exclusive collections.
+            </p>
+            <Link href="/try-on" className="btn btn-primary w-50">
+          Try Now
+            </Link>
           </div>
         </div>
-
-        <Image
-          src={heroImages[currentImage]}
-          alt="hero-banner"
-          className={`w-100 h-100 object-fit-cover`}
-          style={{
-            position: "absolute",
-            top: 3,
-            left: 0,
-            zIndex: -1,
-            height: "100%",
-            width: "100%",
-            opacity: fade ? 1 : 0,
-            transition: "opacity 2s ease",
-            objectFit:"cover",
-            objectPosition:"top"
-            // objectPosition: window.innerWidth <= 768 ? 'right' : 'center' // Align right on mobile
-          }}
-        />
-        {/* <div className="bg-black   position-absolute h-100 w-100" style={{top: 0, opacity:0.3}}></div> */}
+          </div>
+        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} >
+          <Image
+            src={heroImages[currentImage]}
+            alt="hero-banner"
+            className="w-100 h-100"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: -2,
+              objectFit: "cover",
+              objectPosition: "top",
+              opacity: fade ? 1 : 0,
+              transition: "opacity 1s ease-in-out",
+            }}
+          />
+          <Image
+            src={heroImages[nextImage]}
+            alt="hero-banner-next"
+            className="w-100 h-100"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: -3,
+              objectFit: "cover",
+              objectPosition: "top",
+            }}
+          />
+        
+         
+        </div>
       </div>
-      <div className="page-contenT bg-ligh ">
+      </div>
+      <div className="page-content bg-ligh ">
         {/* <div className="main-slider-wrapper">
                     <div className="slider-inner">
                         <MainBannerSlider2 />
