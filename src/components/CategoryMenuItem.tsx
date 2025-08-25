@@ -219,7 +219,7 @@ export default function CategoryMenuItem() {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu">
+        <div className="mega-menu" style={{marginTop: "-20px"}}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
@@ -395,7 +395,7 @@ export default function CategoryMenuItem() {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu">
+        <div className="mega-menu" style={{marginTop: "-50px"}}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
@@ -1711,24 +1711,22 @@ export default function CategoryMenuItem() {
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-                Collections
+                Jewelry Corner
               </Link>
               <ul>
                 <li>
-                  <Link href={"/shop-standard"}> Denim</Link>
+                  <Link href={"/shop-standard"}>Velvet trays</Link>
                 </li>
                 <li>
-                  <Link href={"/shop-standard"}>Festival Outfits</Link>
+                  <Link href={"/shop-standard"}>Sunglasses</Link>
                 </li>
                 <li>
-                  <Link href={"/shop-standard"}>Women's Suits</Link>
+                  <Link href={"/shop-standard"}>Minimalist jewelry</Link>
                 </li>
                 <li>
-                  <Link href={"/shop-standard"}>Workwear</Link>
+                  <Link href={"/shop-standard"}>Watches + Bracelets</Link>
                 </li>
-                <li>
-                  <Link href={"/shop-standard"}>Leopard Print</Link>
-                </li>
+             
               </ul>
             </div>
             {/* <div className="col-md-3 col-sm-4 col-6">
