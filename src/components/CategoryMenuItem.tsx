@@ -26,6 +26,623 @@ export default function CategoryMenuItem() {
       console.error("Error fetching products:", error);
     }
   };
+  // create an array of objects of all the categories from the uncommented code below with all the details including subcategories and links
+  // then map through the array to display the categories and subcategories in the menu below
+  const categories = [
+   {
+  name: "Women",
+  icon: "icon feather icon-arrow-right",
+  menuIcon: "icon feather icon-chevron-right",
+  subcategories: [
+    {
+      title: "Clothing",
+      items: [
+        { name: "New in Clothing", link: "/shop-standard" },
+        { name: "Dresses", link: "/shop-standard", badge: "HOT" },
+        { name: "Blazers & Co-ords", link: "/shop-standard" },
+        { name: "Cardigans & Sweaters", link: "/shop-standard", badge: "NEW" },
+        { name: "Hoodies & Sweatshirts", link: "/shop-standard" },
+        { name: "Jackets & Coats", link: "/shop-standard" },
+        { name: "Jeans", link: "/shop-standard" },
+        { name: "Tops & Blouses", link: "/shop-standard" },
+        { name: "Skirts & Shorts", link: "/shop-standard" },
+        { name: "Trousers & Leggings", link: "/shop-standard" },
+        { name: "Suits & Tailoring", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Footwear",
+      items: [
+        { name: "New in Shoes", link: "/shop-standard" },
+        { name: "Heels", link: "/shop-standard" },
+        { name: "Boots & Ankle Boots", link: "/shop-standard" },
+        { name: "Loafers & Mules", link: "/shop-standard" },
+        { name: "Sneakers", link: "/shop-standard" },
+        { name: "Sandals & Slides", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Accessories",
+      items: [
+        { name: "Handbags", link: "/shop-standard" },
+        { name: "Crossbody & Mini Bags", link: "/shop-standard", badge: "TRENDING" },
+        { name: "Belts", link: "/shop-standard" },
+        { name: "Sunglasses", link: "/shop-standard" },
+        { name: "Hats & Caps", link: "/shop-standard" },
+        { name: "Scarves", link: "/shop-standard" },
+        { name: "Jewelry", link: "/shop-standard" },
+        { name: "Watches", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Activewear",
+      items: [
+        { name: "Sports Bras", link: "/shop-standard" },
+        { name: "Leggings", link: "/shop-standard" },
+        { name: "Workout Tops", link: "/shop-standard" },
+        { name: "Track Jackets", link: "/shop-standard" },
+        { name: "Running Shoes", link: "/shop-standard" },
+        { name: "Gym Bags", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Seasonal Picks",
+      items: [
+        { name: "Summer Dresses", link: "/shop-standard" },
+        { name: "Winter Coats", link: "/shop-standard" },
+        { name: "Rainwear", link: "/shop-standard" },
+        { name: "Holiday Shop", link: "/shop-standard", badge: "HOT" },
+        { name: "Resort Wear", link: "/shop-standard" }
+      ]
+    }
+  ]
+},
+    {
+      name: "Men",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+     subcategories: [
+  {
+    title: "Clothing",
+    items: [
+      { name: "New in Clothing", link: "/shop-standard" },
+      { name: "Chinos", link: "/shop-standard" },
+      { name: "Cardigans", link: "/shop-standard", badge: "NEW" },
+      { name: "Hoodies and Sweatshirts", link: "/shop-standard" },
+      { name: "Jackets and Coats", link: "/shop-standard" },
+      { name: "Jeans", link: "/shop-standard" },
+      { name: "Shirts", link: "/shop-standard" },
+      { name: "T-Shirts & Polos", link: "/shop-standard" },
+      { name: "Shorts", link: "/shop-standard" },
+      { name: "Suits & Tailoring", link: "/shop-standard" }
+    ]
+  },
+  {
+    title: "Footwear",
+    items: [
+      { name: "New in Shoes", link: "/shop-standard" },
+      { name: "Sneakers", link: "/shop-standard" },
+      { name: "Boots", link: "/shop-standard" },
+      { name: "Loafers", link: "/shop-standard" },
+      { name: "Sandals & Slides", link: "/shop-standard" },
+      { name: "Formal Shoes", link: "/shop-standard" }
+    ]
+  },
+  {
+    title: "Accessories",
+    items: [
+      { name: "Bags & Backpacks", link: "/shop-standard" },
+      { name: "Belts", link: "/shop-standard" },
+      { name: "Sunglasses", link: "/shop-standard" },
+      { name: "Caps & Hats", link: "/shop-standard" },
+      { name: "Scarves & Gloves", link: "/shop-standard" },
+      { name: "Wallets", link: "/shop-standard" },
+      { name: "Watches", link: "/shop-standard", badge: "TRENDING" }
+    ]
+  },
+  {
+    title: "Activewear",
+    items: [
+      { name: "Gym T-Shirts", link: "/shop-standard" },
+      { name: "Performance Shorts", link: "/shop-standard" },
+      { name: "Track Pants", link: "/shop-standard" },
+      { name: "Sports Jackets", link: "/shop-standard" },
+      { name: "Running Shoes", link: "/shop-standard" },
+      { name: "Sports Bags", link: "/shop-standard" }
+    ]
+  },
+  {
+    title: "Seasonal Picks",
+    items: [
+      { name: "Summer Essentials", link: "/shop-standard" },
+      { name: "Winter Coats", link: "/shop-standard" },
+      { name: "Rain Jackets", link: "/shop-standard" },
+      { name: "Holiday Outfits", link: "/shop-standard", badge: "HOT" },
+      { name: "Resort Wear", link: "/shop-standard" }
+    ]
+  }
+]
+    },
+
+
+  {
+    name: "Corporate but Chic",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Tailored Staples",
+        items: [
+          { name: "Blazers", link: "/shop-standard" },
+          { name: "High-Waist Trousers", link: "/shop-standard" },
+          { name: "Pencil Skirts", link: "/shop-standard" },
+          { name: "Shirt Dresses", link: "/shop-standard" },
+          { name: "Structured Tops", link: "/shop-standard" },
+          { name: "Belted Blazers", link: "/shop-standard", badge: "CHIC" }
+        ]
+      },
+      {
+        title: "Layering Pieces",
+        items: [
+          { name: "Knit Vests", link: "/shop-standard" },
+          { name: "Turtlenecks", link: "/shop-standard" },
+          { name: "Cardigans", link: "/shop-standard" },
+          { name: "Trench Coats", link: "/shop-standard" },
+          { name: "Wrap Coats", link: "/shop-standard" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Girls Night Look",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Party Ready",
+        items: [
+          { name: "Mini Dresses", link: "/shop-standard" },
+          { name: "Sequins & Sparkle", link: "/shop-standard" },
+          { name: "Corset Tops", link: "/shop-standard" },
+          { name: "Cut-Out Dresses", link: "/shop-standard" },
+          { name: "Bodycon Fits", link: "/shop-standard" }
+        ]
+      },
+      {
+        title: "Going Out Essentials",
+        items: [
+          { name: "Faux Leather Pants", link: "/shop-standard" },
+          { name: "Off-Shoulder Tops", link: "/shop-standard" },
+          { name: "Bold Heels", link: "/shop-standard" },
+          { name: "Statement Clutches", link: "/shop-standard" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Smart Casual Staples",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Everyday Pieces",
+        items: [
+          { name: "Blouses", link: "/shop-standard" },
+          { name: "Slim Trousers", link: "/shop-standard" },
+          { name: "Cropped Blazers", link: "/shop-standard" },
+          { name: "Denim Jackets", link: "/shop-standard" },
+          { name: "Loafers", link: "/shop-standard" }
+        ]
+      },
+      {
+        title: "Mix & Match Basics",
+        items: [
+          { name: "Neutral Tees", link: "/shop-standard" },
+          { name: "Midi Skirts", link: "/shop-standard" },
+          { name: "Chinos", link: "/shop-standard" },
+          { name: "Wrap Tops", link: "/shop-standard" }
+        ]
+      }
+    ]
+  },
+ {
+  name: "Back to Campus",
+  icon: "icon feather icon-arrow-right",
+  menuIcon: "icon feather icon-chevron-right",
+  subcategories: [
+    {
+      title: "Clothing",
+      items: [
+        { name: "Hoodies & Sweatshirts", link: "/shop-standard" },
+        { name: "T-Shirts & Polos", link: "/shop-standard" },
+        { name: "Casual Shirts", link: "/shop-standard" },
+        { name: "Jeans & Chinos", link: "/shop-standard" },
+        { name: "Joggers & Track Pants", link: "/shop-standard" },
+        { name: "Jackets & Windbreakers", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Footwear",
+      items: [
+        { name: "Sneakers", link: "/shop-standard", badge: "TRENDING" },
+        { name: "Casual Shoes", link: "/shop-standard" },
+        { name: "Slip-Ons", link: "/shop-standard" },
+        { name: "Boots", link: "/shop-standard" },
+        { name: "Sandals & Slides", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Accessories",
+      items: [
+        { name: "Backpacks", link: "/shop-standard", badge: "HOT" },
+        { name: "Laptop Bags", link: "/shop-standard" },
+        { name: "Caps & Hats", link: "/shop-standard" },
+        { name: "Watches", link: "/shop-standard" },
+        { name: "Wallets", link: "/shop-standard" },
+        { name: "Phone Accessories", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Essentials",
+      items: [
+        { name: "Water Bottles", link: "/shop-standard" },
+        { name: "Stationery", link: "/shop-standard" },
+        { name: "Tech Gadgets", link: "/shop-standard" },
+        { name: "Notebooks & Planners", link: "/shop-standard" },
+        { name: "Headphones & Earbuds", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Loungewear",
+      items: [
+        { name: "Comfy Joggers", link: "/shop-standard" },
+        { name: "Oversized Hoodies", link: "/shop-standard" },
+        { name: "Relaxed Tees", link: "/shop-standard" },
+        { name: "Slides", link: "/shop-standard" },
+        { name: "Pyjamas & Sleepwear", link: "/shop-standard" }
+      ]
+    }
+  ]
+},
+  {
+    name: "Gym & Go",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Active Staples",
+        items: [
+          { name: "Sports Bras", link: "/shop-standard" },
+          { name: "Leggings", link: "/shop-standard" },
+          { name: "Biker Shorts", link: "/shop-standard" },
+          { name: "Tank Tops", link: "/shop-standard" },
+          { name: "Performance Tees", link: "/shop-standard" }
+        ]
+      },
+      {
+        title: "Layer & Go",
+        items: [
+          { name: "Hoodies", link: "/shop-standard" },
+          { name: "Track Pants", link: "/shop-standard" },
+          { name: "Windbreakers", link: "/shop-standard" },
+          { name: "Sneakers", link: "/shop-standard" },
+          { name: "Duffel Bags", link: "/shop-standard" }
+        ]
+      }
+    ]
+  },
+  {
+  name: "Summer Looks",
+  icon: "icon feather icon-arrow-right",
+  menuIcon: "icon feather icon-chevron-right",
+  subcategories: [
+    {
+      title: "Clothing",
+      items: [
+        { name: "Summer Dresses", link: "/shop-standard", badge: "HOT" },
+        { name: "Linen Shirts", link: "/shop-standard" },
+        { name: "Shorts & Skirts", link: "/shop-standard" },
+        { name: "Crop Tops & Tanks", link: "/shop-standard" },
+        { name: "Kaftans & Kimonos", link: "/shop-standard" },
+        { name: "Lightweight Trousers", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Swimwear",
+      items: [
+        { name: "Bikinis", link: "/shop-standard", badge: "TRENDING" },
+        { name: "One-Piece Swimsuits", link: "/shop-standard" },
+        { name: "Swim Shorts", link: "/shop-standard" },
+        { name: "Cover-Ups", link: "/shop-standard" },
+        { name: "Beach Sets", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Footwear",
+      items: [
+        { name: "Sandals", link: "/shop-standard" },
+        { name: "Slides", link: "/shop-standard", badge: "NEW" },
+        { name: "Espadrilles", link: "/shop-standard" },
+        { name: "Flip Flops", link: "/shop-standard" },
+        { name: "Light Sneakers", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Accessories",
+      items: [
+        { name: "Straw Hats", link: "/shop-standard", badge: "HOT" },
+        { name: "Sunglasses", link: "/shop-standard" },
+        { name: "Beach Bags", link: "/shop-standard" },
+        { name: "Light Scarves", link: "/shop-standard" },
+        { name: "Jewelry (Bright & Fun)", link: "/shop-standard" }
+      ]
+    },
+    {
+      title: "Resort Wear",
+      items: [
+        { name: "Maxi Dresses", link: "/shop-standard" },
+        { name: "Printed Co-ords", link: "/shop-standard" },
+        { name: "Linen Co-ords", link: "/shop-standard" },
+        { name: "Holiday Party Dresses", link: "/shop-standard" },
+        { name: "Evening Sandals", link: "/shop-standard" }
+      ]
+    }
+  ]
+},
+  {
+    name: "Travel Light",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Versatile Staples",
+        items: [
+          { name: "Neutral Tees", link: "/shop-standard" },
+          { name: "Jeans", link: "/shop-standard" },
+          { name: "Day Dresses", link: "/shop-standard" },
+          { name: "Linen Shorts", link: "/shop-standard" },
+          { name: "Light Trousers", link: "/shop-standard" }
+        ]
+      },
+      {
+        title: "Travel Essentials",
+        items: [
+          { name: "Crossbody Bags", link: "/shop-standard" },
+          { name: "Backpacks", link: "/shop-standard" },
+          { name: "Sneakers", link: "/shop-standard" },
+          { name: "Block Heels", link: "/shop-standard" },
+          { name: "Scarves", link: "/shop-standard" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Layered Looks",
+    icon: "icon feather icon-arrow-right",
+    menuIcon: "icon feather icon-chevron-right",
+    subcategories: [
+      {
+        title: "Base Layers",
+        items: [
+          { name: "T-Shirts", link: "/shop-standard" },
+          { name: "Tank Tops", link: "/shop-standard" },
+          { name: "Turtlenecks", link: "/shop-standard" },
+          { name: "Camisoles", link: "/shop-standard" }
+        ]
+      },
+      {
+        title: "Outer Layers",
+        items: [
+          { name: "Blazers", link: "/shop-standard" },
+          { name: "Trench Coats", link: "/shop-standard" },
+          { name: "Leather Jackets", link: "/shop-standard" },
+          { name: "Bomber Jackets", link: "/shop-standard" },
+          { name: "Oversized Shirts", link: "/shop-standard" }
+        ]
+      }
+    ]
+  }
+
+  ];
+
+  return (
+    <ul className="nav navbar-nav">
+      {categories
+        .filter(
+          (item) =>
+            item.name !== "Owambe ready\n" &&
+            item.name !== "Try-on Ready Picks\n\n\n"
+        )
+        .map((item, ind) => (
+          <li className="has-mega-menu cate-drop " key={ind}>
+            <Link href="/shop-standard">
+              <i className="icon feather icon-arrow-right" />
+              <span>{item.name}</span>
+              <span className="menu-icon">
+                  <i className="icon feather icon-chevron-right" />
+                </span>
+              {/* {item.name === "Women" ? (
+                <span className="menu-icon">
+                  <i className="icon feather icon-chevron-right" />
+                </span>
+              ) : item.name === "Men\n\n" ? (
+                <span className="menu-icon">
+                  <i className="icon feather icon-chevron-right" />
+                </span>
+              ) : null} */}
+            </Link>
+            {item.name ? (
+              <div className="mega-menu ms-2 " >
+                <div className="row ">
+                  {item.subcategories.map((subcat, ind) => (
+                    <div key={ind} className="col-md-3 col-sm-4 col-6">
+                      <Link href={"#"} className="menu-title">
+                        {/* Clothing
+                         */}
+                        {subcat.title}
+                      </Link>
+                      <ul>
+                        {/* <li>
+                        <Link href={"/shop-standard"}>New in Clothing</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Chinos</Link>
+                      </li> */}
+                        {subcat.items.map((item, ind) => (
+                          <li key={ind}>
+                            <Link href={"/shop-standard"}>
+                              {item.name}
+                              {item.badge && (
+                                <span className="badge bg-primary">NEW</span>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                        {/* <li>
+                        <Link href={"/shop-standard"}>Holiday Shop</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Jackets and Coats</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Jeans</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Joggers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Polo Shirts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Shorts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Trousers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>T-Shirts</Link>
+                      </li> */}
+                      </ul>{" "}
+                    </div>
+                  ))}
+                  {/* <div className="col-md-3 col-sm-4 col-6">
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Suits & Formalwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>Blazers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Formal Shirts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Smart Trousers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Suits</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Ties</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Waistcoats</Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Footwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}> All Footwear</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Casual Shoes</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Sandals</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Slippers</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Smart Shoes</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Trainers</Link>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="col-md-3 col-sm-4 col-6">
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Underwear & Socks
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}> Socks</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>
+                          Underwear
+                          <span className="badge bg-orange">Feture</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Vests</Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Accessories
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>All Accessories</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Belts</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Hats</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>
+                          Sunglasses
+                          <span className="badge bg-purple">SALE</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-3 col-sm-4 col-6">
+                    {" "}
+                    <Link href={"/shop-standard"} className="menu-title">
+                      Nightwear
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link href={"/shop-standard"}>All Nightwear</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Dressing Gowns</Link>
+                      </li>
+                      <li>
+                        <Link href={"/shop-standard"}>Pyjamas</Link>
+                      </li>
+                    </ul>
+                  </div> */}
+                </div>
+              </div>
+            ) : null}
+          </li>
+        ))}
+    </ul>
+  );
   return (
     <ul className="nav navbar-nav">
       {/* {category
@@ -468,9 +1085,8 @@ export default function CategoryMenuItem() {
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-               Suits & Formalwear
+                Suits & Formalwear
               </Link>
-
               <ul>
                 <li>
                   <Link href={"/shop-standard"}>Blazers</Link>
@@ -561,7 +1177,7 @@ export default function CategoryMenuItem() {
           </div>
         </div>
       </li>
-        <li className="cate-drop">
+      <li className="cate-drop">
         <Link href={"/shop-standard"}>
           <i className="icon feather icon-arrow-right" />
           <span>Corporate But Chic</span>
@@ -584,7 +1200,8 @@ export default function CategoryMenuItem() {
                 </li>
                 <li>
                   <Link href={"/shop-standard"}>
-                  Fitted turtlenecks<span className="badge bg-primary">NEW</span>
+                    Fitted turtlenecks
+                    <span className="badge bg-primary">NEW</span>
                   </Link>
                 </li>
                 <li>
@@ -813,7 +1430,7 @@ export default function CategoryMenuItem() {
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-               Shoes
+                Shoes
               </Link>
               <ul>
                 <li>
@@ -977,7 +1594,7 @@ export default function CategoryMenuItem() {
                 <li>
                   <Link href={"/shop-standard"}>Subtle jewelry</Link>
                 </li>
-                  <li>
+                <li>
                   <Link href={"/shop-standard"}>Sunglasses</Link>
                 </li>
               </ul>
@@ -986,7 +1603,7 @@ export default function CategoryMenuItem() {
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-               Shoes
+                Shoes
               </Link>
               <ul>
                 <li>
@@ -1435,7 +2052,7 @@ export default function CategoryMenuItem() {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu" style={{marginTop: '-50px'}}>
+        <div className="mega-menu" style={{ marginTop: "-50px" }}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
@@ -1684,7 +2301,7 @@ export default function CategoryMenuItem() {
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-               Watches
+                Watches
               </Link>
               <ul>
                 <li>
@@ -1946,7 +2563,7 @@ export default function CategoryMenuItem() {
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
-               Dresses
+                Dresses
               </Link>
               <ul>
                 <li>
@@ -1957,7 +2574,8 @@ export default function CategoryMenuItem() {
                 </li>
                 <li>
                   <Link href={"/shop-standard"}>
-                    Tiered maxi dress<span className="badge bg-primary">NEW</span>
+                    Tiered maxi dress
+                    <span className="badge bg-primary">NEW</span>
                   </Link>
                 </li>
                 <li>
@@ -1970,7 +2588,7 @@ export default function CategoryMenuItem() {
             </div>
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"/shop-standard"} className="menu-title">
-               Tops
+                Tops
               </Link>
               <ul>
                 <li>
@@ -2021,7 +2639,7 @@ export default function CategoryMenuItem() {
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-                  Shoes
+                Shoes
               </Link>
               <ul>
                 <li>
@@ -2276,7 +2894,7 @@ export default function CategoryMenuItem() {
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
-               Tops
+                Tops
               </Link>
               <ul>
                 <li>
@@ -2449,7 +3067,7 @@ export default function CategoryMenuItem() {
             <i className="icon feather icon-chevron-right" />
           </span>
         </Link>
-        <div className="mega-menu" style={{marginTop: '-50px'}}>
+        <div className="mega-menu" style={{ marginTop: "-50px" }}>
           <div className="row">
             <div className="col-md-3 col-sm-4 col-6">
               <Link href={"#"} className="menu-title">
@@ -2463,9 +3081,7 @@ export default function CategoryMenuItem() {
                   <Link href={"/shop-standard"}>Ribbed tank tops</Link>
                 </li>
                 <li>
-                  <Link href={"/shop-standard"}>
-                    Slim turtlenecks
-                  </Link>
+                  <Link href={"/shop-standard"}>Slim turtlenecks</Link>
                 </li>
                 <li>
                   <Link href={"/shop-standard"}>Camisoles</Link>
@@ -2498,7 +3114,7 @@ export default function CategoryMenuItem() {
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
                 {" "}
-               Accessories
+                Accessories
               </Link>
               <ul>
                 <li>
