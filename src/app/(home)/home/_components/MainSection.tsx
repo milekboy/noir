@@ -238,7 +238,7 @@ const MainSection = () => {
               <h2 className="mb-3" style={{ fontSize: "2rem", color: "#000" }}>
                 New Arrival 🎉
               </h2>
-              <p className="mb-4" style={{ fontSize: "18px" }}>
+              <p className="mb-4" style={{ fontSize: "18px", marginTop: "10px" }}>
                 Step into the season with our latest collection of must-have
                 pieces. From effortlessly chic staples to statement looks that
                 turn heads, our new arrivals are designed to keep you stylish
