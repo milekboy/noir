@@ -201,7 +201,13 @@ const MainSection = () => {
 
           <div
             className="modal-body d-flex p-0"
-            style={{ minHeight: "600px", height: "600px", maxHeight: "90vh" }}
+            style={{
+              minHeight: "650px",
+              height: "650px",
+              maxHeight: "90vh",
+              background: "#f9f9f9",
+              borderRadius: "10px",
+            }}
           >
             {/* Left: Image Slideshow */}
             <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
@@ -231,24 +237,94 @@ const MainSection = () => {
                   transition: "opacity 1s ease-in-out",
                 }}
               />
+              {/* Promo Badge */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  left: "20px",
+                  background: "#ff4757",
+                  color: "#fff",
+                  padding: "8px 16px",
+                  borderRadius: "30px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                🔥 Limited Offer
+              </div>
             </div>
 
-            {/* Right: Text */}
-            <div style={{ flex: 1, padding: "90px" }}>
-              <h2 className="mb-3" style={{ fontSize: "2rem", color: "#000" }}>
-                New Arrival 🎉
+            {/* Right: Text Section */}
+            <div
+              style={{
+                flex: 1,
+                padding: "70px 50px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                background: "#fff",
+                position: "relative",
+                borderTopRightRadius: "10px",
+                borderBottomRightRadius: "10px",
+              }}
+            >
+              <h2
+                className="mb-3"
+                style={{ fontSize: "2.5rem", color: "#000", fontWeight: "700" }}
+              >
+                New Arrivals 🎉
               </h2>
-              <p className="mb-4" style={{ fontSize: "18px", marginTop: "10px" }}>
-                Step into the season with our latest collection of must-have
-                pieces. From effortlessly chic staples to statement looks that
-                turn heads, our new arrivals are designed to keep you stylish
-                for every occasion. Whether you’re refreshing your wardrobe or
-                searching for that standout outfit, you’ll find the perfect
-                blend of comfort, elegance, and trend-right fashion
+              <p
+                className="mb-4"
+                style={{
+                  fontSize: "18px",
+                  marginTop: "10px",
+                  lineHeight: "1.6",
+                  color: "#333",
+                }}
+              >
+                Step into the season with our latest collection of{" "}
+                <strong>must-have pieces</strong>. From effortlessly chic
+                staples to <em>statement looks</em> that turn heads, our{" "}
+                <strong>New Arrivals</strong> are designed to keep you stylish
+                for every occasion.
               </p>
-              <Link href="/shop-list" className="btn btn-primary btn-lg" style={{marginTop: "20px"}}>
-                Shop Now
-              </Link>
+
+              {/* CTA Buttons */}
+              <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
+                <Link href="/shop-list" className="btn btn-primary btn-lg">
+                  Shop Now
+                </Link>
+                <Link href="/login" className="btn btn-outline-dark btn-lg">
+                  Sign Up
+                </Link>
+              </div>
+
+              {/* Mini product previews */}
+              {/* <div style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
+          <Image
+            src={IMAGES.herobg}
+            alt="Mini Product 1"
+            width={80}
+            height={100}
+            style={{ objectFit: "cover", borderRadius: "10px" }}
+          />
+          <Image
+            src={IMAGES.herobg3}
+            alt="Mini Product 2"
+            width={80}
+            height={100}
+            style={{ objectFit: "cover", borderRadius: "10px" }}
+          />
+          <Image
+            src={IMAGES.herobg4}
+            alt="Mini Product 3"
+            width={80}
+            height={100}
+            style={{ objectFit: "cover", borderRadius: "10px" }}
+          />
+        </div> */}
             </div>
           </div>
         </Modal>
