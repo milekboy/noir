@@ -177,164 +177,163 @@ const MainSection = () => {
 
         {/* ---------- Automatic Popup (Image + Text) ---------- */}
 
-      <Modal
-  className="promo-popup"
-  show={showPopup}
-  onHide={() => setShowPopup(false)}
-  centered
-  size="xl"
-  dialogClassName="custom-modal"
->
-  <button
-    type="button"
-    className="btn-close"
-    onClick={() => setShowPopup(false)}
-    style={{
-      position: "absolute",
-      right: "15px",
-      top: "15px",
-      zIndex: 10,
-    }}
-  >
-    <i className="icon feather icon-x" />
-  </button>
+        <Modal
+          className="promo-popup"
+          show={showPopup}
+          onHide={() => setShowPopup(false)}
+          centered
+          size="xl"
+          dialogClassName="custom-modal"
+        >
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setShowPopup(false)}
+            style={{
+              position: "absolute",
+              right: "15px",
+              top: "15px",
+              zIndex: 10,
+            }}
+          >
+            <i className="icon feather icon-x" />
+          </button>
 
-  <div
-    className="modal-body d-flex p-0 promo-body"
-    style={{
-      minHeight: "650px",
-      height: "650px",
-      maxHeight: "90vh",
-      background: "#f9f9f9",
-      borderRadius: "10px",
-      overflow: "hidden",
-    }}
-  >
-    {/* Left: Image Slideshow */}
-    <div
-      className="promo-left"
-      style={{ flex: 1, position: "relative", overflow: "hidden" }}
-    >
-      <Image
-        src={heroImages[currentImage]}
-        alt="Promo"
-        className="w-100 h-100"
-        style={{
-          objectFit: "cover",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          opacity: fade ? 1 : 0,
-          transition: "opacity 1s ease-in-out",
-        }}
-      />
-      <Image
-        src={heroImages[(currentImage + 1) % heroImages.length]}
-        alt="Next Promo"
-        className="w-100 h-100"
-        style={{
-          objectFit: "cover",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          opacity: fade ? 0 : 1,
-          transition: "opacity 1s ease-in-out",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          background: "#ff4757",
-          color: "#fff",
-          padding: "8px 16px",
-          borderRadius: "30px",
-          fontWeight: "bold",
-          fontSize: "14px",
-        }}
-      >
-        🔥 Limited Offer
-      </div>
-    </div>
+          <div
+            className="modal-body d-flex p-0 promo-body"
+            style={{
+              minHeight: "650px",
+              height: "650px",
+              maxHeight: "90vh",
+              background: "#f9f9f9",
+              borderRadius: "10px",
+              overflow: "hidden",
+            }}
+          >
+            {/* Left: Image Slideshow */}
+            <div
+              className="promo-left"
+              style={{ flex: 1, position: "relative", overflow: "hidden" }}
+            >
+              <Image
+                src={heroImages[currentImage]}
+                alt="Promo"
+                className="w-100 h-100"
+                style={{
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  opacity: fade ? 1 : 0,
+                  transition: "opacity 1s ease-in-out",
+                }}
+              />
+              <Image
+                src={heroImages[(currentImage + 1) % heroImages.length]}
+                alt="Next Promo"
+                className="w-100 h-100"
+                style={{
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  opacity: fade ? 0 : 1,
+                  transition: "opacity 1s ease-in-out",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  left: "20px",
+                  background: "#ff4757",
+                  color: "#fff",
+                  padding: "8px 16px",
+                  borderRadius: "30px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                🔥 Limited Offer
+              </div>
+            </div>
 
-    {/* Right: Text Section */}
-    <div
-      className="promo-right"
-      style={{
-        flex: 1,
-        padding: "70px 50px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        background: "#fff",
-        position: "relative",
-        borderTopRightRadius: "10px",
-        borderBottomRightRadius: "10px",
-      }}
-    >
-      <h2
-        className="mb-3"
-        style={{ fontSize: "2.5rem", color: "#000", fontWeight: "700" }}
-      >
-        New Arrivals 🎉
-      </h2>
-      <p
-        className="mb-4"
-        style={{
-          fontSize: "18px",
-          marginTop: "10px",
-          lineHeight: "1.6",
-          color: "#333",
-        }}
-      >
-        Step into the season with our latest collection of{" "}
-        <strong>must-have pieces</strong>. From effortlessly chic staples to{" "}
-        <em>statement looks</em> that turn heads, our{" "}
-        <strong>New Arrivals</strong> are designed to keep you stylish for every
-        occasion.
-      </p>
+            {/* Right: Text Section */}
+            <div
+              className="promo-right"
+              style={{
+                flex: 1,
+                padding: "70px 50px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                background: "#fff",
+                position: "relative",
+                borderTopRightRadius: "10px",
+                borderBottomRightRadius: "10px",
+              }}
+            >
+              <h2
+                className="mb-3"
+                style={{ fontSize: "2.5rem", color: "#000", fontWeight: "700" }}
+              >
+                New Arrivals 🎉
+              </h2>
+              <p
+                className="mb-4"
+                style={{
+                  fontSize: "18px",
+                  marginTop: "10px",
+                  lineHeight: "1.6",
+                  color: "#333",
+                }}
+              >
+                Step into the season with our latest collection of{" "}
+                <strong>must-have pieces</strong>. From effortlessly chic
+                staples to <em>statement looks</em> that turn heads, our{" "}
+                <strong>New Arrivals</strong> are designed to keep you stylish
+                for every occasion.
+              </p>
 
-      <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
-        <Link href="/shop-list" className="btn btn-primary btn-lg">
-          Shop Now
-        </Link>
-        <Link href="/login" className="btn btn-outline-dark btn-lg">
-          Sign Up
-        </Link>
-      </div>
-    </div>
-  </div>
+              <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
+                <Link href="/shop-list" className="btn btn-primary btn-lg">
+                  Shop Now
+                </Link>
+                <Link href="/login" className="btn btn-outline-dark btn-lg">
+                  Sign Up
+                </Link>
+              </div>
+            </div>
+          </div>
 
-  {/* Mobile responsive overrides */}
-  <style jsx>{`
-    @media (max-width: 768px) {
-      .promo-body {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: auto !important;
-      }
-      .promo-left {
-        height: 200px !important;
-      }
-      .promo-right {
-        padding: 30px 20px !important;
-        border-radius: 0 0 10px 10px !important;
-        text-align: center !important;
-      }
-      .promo-right h2 {
-        font-size: 1.8rem !important;
-      }
-      .promo-right p {
-        font-size: 14px !important;
-      }
-      .promo-right div {
-        justify-content: center !important;
-      }
-    }
-  `}</style>
-</Modal>
-
+          {/* Mobile responsive overrides */}
+          <style jsx>{`
+            @media (max-width: 768px) {
+              .promo-body {
+                flex-direction: column !important;
+                height: auto !important;
+                min-height: auto !important;
+              }
+              .promo-left {
+                height: 200px !important;
+              }
+              .promo-right {
+                padding: 30px 20px !important;
+                border-radius: 0 0 10px 10px !important;
+                text-align: center !important;
+              }
+              .promo-right h2 {
+                font-size: 1.8rem !important;
+              }
+              .promo-right p {
+                font-size: 14px !important;
+              }
+              .promo-right div {
+                justify-content: center !important;
+              }
+            }
+          `}</style>
+        </Modal>
       </div>
     </Fragment>
   );
