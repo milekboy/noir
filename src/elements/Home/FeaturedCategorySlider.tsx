@@ -42,7 +42,7 @@ const FeaturedCategorySlider = () => {
       autoplay={{
         delay: 100,
       }}
-      speed={2000}
+      speed={1000}
       parallax={true}
       loop={true}
       navigation={{
