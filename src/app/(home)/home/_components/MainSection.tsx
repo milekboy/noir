@@ -44,6 +44,15 @@ const MainSection = () => {
 
   const nextImage = (currentImage + 1) % heroImages.length;
   // console.log(window.scrollY)
+ const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <Fragment>
@@ -55,7 +64,7 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
-          transform: window.scrollY > 100 ? "translateY(-80px)" : "none",
+          transform: scrolled ? "translateY(-80px)" : "none",
         }}
       >
         <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >
