@@ -44,9 +44,10 @@ const MainSection = () => {
       setFade(false);
       setTimeout(() => {
         setCurrentImage((prev) => (prev + 1) % heroImages.length);
+        // setCurrentImage(currentImage === heroImages.length - 1 ? 0 : currentImage + 1);
         setFade(true);
-      }, 500); // fade out duration
-    }, 9000);
+      }, 300); // fade out duration
+    }, 8000);
     return () => clearInterval(interval);
   }, [heroImages]);
   const nextImage = (currentImage + 1) % heroImages.length;

@@ -147,7 +147,7 @@ const ProductSection = () => {
                 <div className="col-lg-6 col-md-12">
                     <div className="section-head style-1 m-b30 ">
                         <div className="left-content">
-                            <h2 className="title text-black">Most popular products</h2>
+                            <h2 className="title" style={{color: "#000"}}>Most popular products</h2>
                         </div>
                     </div>	
                 </div>

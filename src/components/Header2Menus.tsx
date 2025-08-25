@@ -62,10 +62,22 @@ export default function Header2Menus() {
         }`}
         onClick={() => dispatch({ type: "toggleMenu", index: 1 })}
       >
-        <Link href="/shop-standard">
+        <Link href="">
           <span>Shop</span>
           <i className="fas fa-chevron-down tabindex" />
         </Link>
+        <div className="mega-menu">
+          <div className="mega-menu-content">
+            <h5   className="text-black">hello</h5>
+        <ul>
+          <li><Link href="/shop-list">Shop List</Link></li>
+          <li><Link href="/shop-cart">Shopping Cart</Link></li>
+          <li><Link href="/shop-wishlist">Wishlist</Link></li>
+          <li><Link href="/shop-details">Product Details</Link></li>
+        </ul>
+          </div>
+         
+        </div>
       </li>
 
       <li
