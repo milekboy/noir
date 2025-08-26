@@ -212,18 +212,24 @@ const MainSection = () => {
           </button>
 
           <div
-            className="modal-body d-lg-flex  p-0"
+
+            className="modal-body d-flex p-0 promo-body"
+
             style={{
               // minHeight: "650px",
               height: "auto",
               background: "#f9f9f9",
               borderRadius: "10px",
+              overflow: "hidden",
             }}
           >
             {/* Left: Image Slideshow */}
-            <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+            <div
+              className="promo-left"
+              style={{ flex: 1, position: "relative", overflow: "hidden" }}
+            >
               <Image
-                src={heroImages[currentImage]} // slideshow image
+                src={heroImages[currentImage]}
                 alt="Promo"
                 className="w-100 h-100"
                 style={{
@@ -248,7 +254,6 @@ const MainSection = () => {
                   transition: "opacity 1s ease-in-out",
                 }}
               />
-              {/* Promo Badge */}
               <div
                 style={{
                   position: "absolute",
@@ -268,6 +273,7 @@ const MainSection = () => {
 
             {/* Right: Text Section */}
             <div
+              className="promo-right"
               style={{
                 flex: 1,
                 padding: "50px 30px",
@@ -302,7 +308,6 @@ const MainSection = () => {
                 for every occasion.
               </p>
 
-              {/* CTA Buttons */}
               <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
                 <Link href="/shop-list" className="btn btn-primary btn-md w-100">
                   Shop Now
@@ -311,33 +316,36 @@ const MainSection = () => {
                   Sign Up
                 </Link>
               </div>
-
-              {/* Mini product previews */}
-              {/* <div style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
-          <Image
-            src={IMAGES.herobg}
-            alt="Mini Product 1"
-            width={80}
-            height={100}
-            style={{ objectFit: "cover", borderRadius: "10px" }}
-          />
-          <Image
-            src={IMAGES.herobg3}
-            alt="Mini Product 2"
-            width={80}
-            height={100}
-            style={{ objectFit: "cover", borderRadius: "10px" }}
-          />
-          <Image
-            src={IMAGES.herobg4}
-            alt="Mini Product 3"
-            width={80}
-            height={100}
-            style={{ objectFit: "cover", borderRadius: "10px" }}
-          />
-        </div> */}
             </div>
           </div>
+
+          {/* Mobile responsive overrides */}
+          <style jsx>{`
+            @media (max-width: 768px) {
+              .promo-body {
+                flex-direction: column !important;
+                height: auto !important;
+                min-height: auto !important;
+              }
+              .promo-left {
+                height: 200px !important;
+              }
+              .promo-right {
+                padding: 30px 20px !important;
+                border-radius: 0 0 10px 10px !important;
+                text-align: center !important;
+              }
+              .promo-right h2 {
+                font-size: 1.8rem !important;
+              }
+              .promo-right p {
+                font-size: 14px !important;
+              }
+              .promo-right div {
+                justify-content: center !important;
+              }
+            }
+          `}</style>
         </Modal>
       </div>
     </Fragment>
