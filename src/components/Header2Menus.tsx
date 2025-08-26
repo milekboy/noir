@@ -5,6 +5,7 @@ import IMAGES from "../constant/theme";
 import CountdownBlog from "./CountdownBlog";
 import { Fragment, useReducer } from "react";
 import {
+  categories,
   menuData2,
   menuData3,
   menuData4,
@@ -46,7 +47,7 @@ export default function Header2Menus() {
 
   return (
     <ul className="nav navbar-nav ">
-      <li
+      {/* <li
         className={`has-mega-menu sub-menu-down auto-width menu-left ${
           state.openMenu === 0 ? "open" : ""
         }`}
@@ -55,19 +56,39 @@ export default function Header2Menus() {
         <Link href="#">
           <span>Home</span>
         </Link>
-      </li>
+      </li> */}
+    {categories.map((item, index) => (
       <li
+        key={index}
         className={`has-mega-menu sub-menu-down ${
-          state.openMenu === 1 ? "open" : ""
+          state.openMenu === index + 1 ? "open" : ""
         }`}
-        onClick={() => dispatch({ type: "toggleMenu", index: 1 })}
+        onClick={() => dispatch({ type: "toggleMenu", index: index + 1 })}
       >
-        <Link href="/shop-standard">
-          <span>Shop</span>
+        <Link href="">
+          <span>{item.name}</span>
           <i className="fas fa-chevron-down tabindex" />
         </Link>
+        {item.subcategories.map((subcategory, subIndex) => (
+          <div key={subIndex} className="mega-menu">
+            <div className="mega-menu-content">
+              <h5 className="text-black">{subcategory.title}</h5>
+              <ul>
+                {subcategory.items.map((item, ind) => (
+                  <li key={ind}>
+                    <Link href={item.link}>{item.name}</Link>
+                  </li>
+                ))}
+                {/* <li><Link href="/shop-cart">Shopping Cart</Link></li>
+                <li><Link href="/shop-wishlist">Wishlist</Link></li>
+                <li><Link href="/shop-details">Product Details</Link></li> */}
+              </ul>
+            </div>
+          </div>
+        ))}
       </li>
-
+    ))}
+{/* 
       <li
         className={`has-mega-menu sub-menu-down auto-width ${
           state.openMenu === 3 ? "open" : ""
@@ -85,7 +106,7 @@ export default function Header2Menus() {
           <span>Checkout</span>
           <i className="fas fa-chevron-down tabindex" />
         </Link>
-      </li>
+      </li> */}
     </ul>
   );
 }

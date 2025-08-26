@@ -35,6 +35,7 @@ const MainSection = () => {
       setFade(false);
       setTimeout(() => {
         setCurrentImage((prev) => (prev + 1) % heroImages.length);
+        // setCurrentImage(currentImage === heroImages.length - 1 ? 0 : currentImage + 1);
         setFade(true);
       }, 500);
     }, 9000);
@@ -42,6 +43,16 @@ const MainSection = () => {
   }, [heroImages]);
 
   const nextImage = (currentImage + 1) % heroImages.length;
+  // console.log(window.scrollY)
+ const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <Fragment>
@@ -53,9 +64,10 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
+          transform: scrolled ? "translateY(-80px)" : "none",
         }}
       >
-        <div className="hero-banner d-flex justify-content-start align-items-center h-100">
+        <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >
           <div className="container">
             <div className="row justify-content-start">
               <div
@@ -196,15 +208,16 @@ const MainSection = () => {
               zIndex: 10,
             }}
           >
-            <i className="icon feather icon-x" />
+            {/* <i className="icon feather icon-x" /> */}
           </button>
 
           <div
+
             className="modal-body d-flex p-0 promo-body"
+
             style={{
-              minHeight: "650px",
-              height: "650px",
-              maxHeight: "90vh",
+              // minHeight: "650px",
+              height: "auto",
               background: "#f9f9f9",
               borderRadius: "10px",
               overflow: "hidden",
@@ -263,7 +276,7 @@ const MainSection = () => {
               className="promo-right"
               style={{
                 flex: 1,
-                padding: "70px 50px",
+                padding: "50px 30px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -275,7 +288,7 @@ const MainSection = () => {
             >
               <h2
                 className="mb-3"
-                style={{ fontSize: "2.5rem", color: "#000", fontWeight: "700" }}
+                style={{ fontSize: "2rem", color: "#000", fontWeight: "700" }}
               >
                 New Arrivals 🎉
               </h2>
@@ -296,10 +309,10 @@ const MainSection = () => {
               </p>
 
               <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
-                <Link href="/shop-list" className="btn btn-primary btn-lg">
+                <Link href="/shop-list" className="btn btn-primary btn-md w-100">
                   Shop Now
                 </Link>
-                <Link href="/login" className="btn btn-outline-dark btn-lg">
+                <Link href="/login" className="btn btn-outline-dark btn-md w-100">
                   Sign Up
                 </Link>
               </div>
