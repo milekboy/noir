@@ -222,7 +222,7 @@ export default function Header2() {
 
                   <Header2Menus />
                 </ul>
-                <div className="dz-social-icon">
+                <div className="dz-social-icon d-none">
                   <ul>
                     <li>
                       <Link

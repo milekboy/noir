@@ -5,17 +5,20 @@ import Image from "next/image";
 import ProductRollup from "@/components/ProductRollup";
 
 export default function LatestoCollection() {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   return (
     <div className="row align-items-center mt-2" >
       <div className="col-lg-12 col-md-12 col-sm-12 m-b3 d-flex justify-content-start ">
         <div className="dz-medi style-2 wow fadeInUp text-center w-100" data-wow-delay="0.2s">
           {/* <Image src={IMAGES.ShopPorductPng3} alt="about"/> */}
-          <h1 className="title align-self-start m-b3 display-3 font-bold text-white">
+          <h1 className="title align-self-start m-b3 display-3 font-bold text-black">
             Smart Wardrobe{" "}
           </h1>
-        <center>  <p className=" text-white text-center w-10">
+        <center>  <p className="  text-center  mx-auto" 
+        style={{color:"#4B4B4B", width: isMobile ? "100%" : "50%"}}
+        >
             AI learns
-            your unique style preferences, favorite colors, fits, and trends —
+            your unique style preferences, favorite colors, fits, and trends
             so every suggestion feels like it was handpicked by your personal
             stylist.
           </p></center>

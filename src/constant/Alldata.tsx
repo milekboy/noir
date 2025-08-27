@@ -1980,3 +1980,632 @@ export const TabData = () => {
     </Nav>
   );
 };
+
+export const categories = [
+    {
+      name: "Women",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "New in Clothing", link: "/shop-list" },
+            { name: "Dresses", link: "/shop-list", badge: "HOT" },
+            { name: "Blazers & Co-ords", link: "/shop-list" },
+            {
+              name: "Cardigans",
+              link: "/shop-list",
+              badge: "NEW",
+            },
+            { name: "Hoodies & Sweatshirts", link: "/shop-list" },
+            { name: "Jackets & Coats", link: "/shop-list" },
+            { name: "Jeans", link: "/shop-list" },
+            { name: "Tops & Blouses", link: "/shop-list" },
+            { name: "Skirts & Shorts", link: "/shop-list" },
+            { name: "Trousers & Leggings", link: "/shop-list" },
+            { name: "Suits & Tailoring", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "New in Shoes", link: "/shop-list" },
+            { name: "Heels", link: "/shop-list" },
+            { name: "Boots & Ankle Boots", link: "/shop-list" },
+            { name: "Loafers & Mules", link: "/shop-list" },
+            { name: "Sneakers", link: "/shop-list" },
+            { name: "Sandals & Slides", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Handbags", link: "/shop-list" },
+            {
+              name: "Mini Bags",
+              link: "/shop-list",
+              badge: "TRENDING",
+            },
+            { name: "Belts", link: "/shop-list" },
+            { name: "Sunglasses", link: "/shop-list" },
+            { name: "Hats & Caps", link: "/shop-list" },
+            { name: "Scarves", link: "/shop-list" },
+            { name: "Jewelry", link: "/shop-list" },
+            { name: "Watches", link: "/shop-list" },
+          ],
+        },
+        // {
+        //   title: "Activewear",
+        //   items: [
+        //     { name: "Sports Bras", link: "/shop-list" },
+        //     { name: "Leggings", link: "/shop-list" },
+        //     { name: "Workout Tops", link: "/shop-list" },
+        //     { name: "Track Jackets", link: "/shop-list" },
+        //     { name: "Running Shoes", link: "/shop-list" },
+        //     { name: "Gym Bags", link: "/shop-list" },
+        //   ],
+        // },
+        {
+          title: "Seasonal Picks",
+          items: [
+            { name: "Summer Dresses", link: "/shop-list" },
+            { name: "Winter Coats", link: "/shop-list" },
+            { name: "Rainwear", link: "/shop-list" },
+            { name: "Holiday Shop", link: "/shop-list", badge: "HOT" },
+            { name: "Resort Wear", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Men",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "New in Clothing", link: "/shop-list" },
+            { name: "Chinos", link: "/shop-list" },
+            { name: "Cardigans", link: "/shop-list", badge: "NEW" },
+            { name: "Hoodies and Sweatshirts", link: "/shop-list" },
+            { name: "Jackets and Coats", link: "/shop-list" },
+            { name: "Jeans", link: "/shop-list" },
+            { name: "Shirts", link: "/shop-list" },
+            { name: "T-Shirts & Polos", link: "/shop-list" },
+            { name: "Shorts", link: "/shop-list" },
+            { name: "Suits & Tailoring", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "New in Shoes", link: "/shop-list" },
+            { name: "Sneakers", link: "/shop-list" },
+            { name: "Boots", link: "/shop-list" },
+            { name: "Loafers", link: "/shop-list" },
+            { name: "Sandals & Slides", link: "/shop-list" },
+            { name: "Formal Shoes", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Bags & Backpacks", link: "/shop-list" },
+            { name: "Belts", link: "/shop-list" },
+            { name: "Sunglasses", link: "/shop-list" },
+            { name: "Caps & Hats", link: "/shop-list" },
+            { name: "Scarves & Gloves", link: "/shop-list" },
+            { name: "Wallets", link: "/shop-list" },
+            { name: "Watches", link: "/shop-list", badge: "TRENDING" },
+          ],
+        },
+        {
+          title: "Activewear",
+          items: [
+            { name: "Gym T-Shirts", link: "/shop-list" },
+            { name: "Performance Shorts", link: "/shop-list" },
+            { name: "Track Pants", link: "/shop-list" },
+            { name: "Sports Jackets", link: "/shop-list" },
+            { name: "Running Shoes", link: "/shop-list" },
+            { name: "Sports Bags", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Seasonal Picks",
+          items: [
+            { name: "Summer Essentials", link: "/shop-list" },
+            { name: "Winter Coats", link: "/shop-list" },
+            { name: "Rain Jackets", link: "/shop-list" },
+            { name: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
+            { name: "Resort Wear", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+
+    {
+      name: "Corporate but Chic",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "Blazers", link: "/shop-list", badge: "HOT" },
+            { name: "Tailored Trousers", link: "/shop-list" },
+            { name: "Pencil Skirts", link: "/shop-list" },
+            { name: "Shirt Dresses", link: "/shop-list" },
+            { name: "Silk Blouses", link: "/shop-list" },
+            { name: "Smart Jumpsuits", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            {
+              name: "Pointed Heels",
+              link: "/shop-list",
+              badge: "TRENDING",
+            },
+            { name: "Loafers", link: "/shop-list" },
+            { name: "Block Heels", link: "/shop-list" },
+            { name: "Ankle Boots", link: "/shop-list" },
+            { name: "Chic Flats", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Outerwear",
+          items: [
+            { name: "Trench Coats", link: "/shop-list" },
+            { name: "Tailored Coats", link: "/shop-list" },
+            { name: "Structured Jackets", link: "/shop-list" },
+            { name: "Cropped Blazers", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Leather Totes", link: "/shop-list", badge: "HOT" },
+            { name: "Statement Belts", link: "/shop-list" },
+            { name: "Minimalist Watches", link: "/shop-list" },
+            { name: "Silk Scarves", link: "/shop-list" },
+            { name: "Delicate Jewelry", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Workwear Essentials",
+          items: [
+            { name: "Classic White Shirts", link: "/shop-list" },
+            { name: "Neutral Trousers", link: "/shop-list" },
+            { name: "Black Dresses", link: "/shop-list" },
+            { name: "Nude Pumps", link: "/shop-list" },
+            { name: "Structured Handbags", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+
+    {
+      name: "Girls' Night Look",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "Bodycon Dresses", link: "/shop-list", badge: "HOT" },
+            { name: "Mini Skirts", link: "/shop-list" },
+            { name: "Sequin Tops", link: "/shop-list", badge: "NEW" },
+            { name: "Leather Pants", link: "/shop-list" },
+            { name: "Corset Tops", link: "/shop-list" },
+            { name: "Co-ord Sets", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            {
+              name: "Strappy Heels",
+              link: "/shop-list",
+              badge: "TRENDING",
+            },
+            { name: "Platform Sandals", link: "/shop-list" },
+            { name: "Pointed Toe Heels", link: "/shop-list" },
+            { name: "Ankle Boots", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Outerwear",
+          items: [
+            { name: "Faux Fur Jackets", link: "/shop-list", badge: "HOT" },
+            { name: "Leather Jackets", link: "/shop-list" },
+            { name: "Blazer Dresses", link: "/shop-list" },
+            { name: "Chic Cropped Jackets", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Clutch Bags", link: "/shop-list", badge: "TRENDING" },
+            { name: "Statement Earrings", link: "/shop-list" },
+            { name: "Layered Necklaces", link: "/shop-list" },
+            { name: "Bold Rings", link: "/shop-list" },
+            { name: "Sparkly Hair Clips", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Party Essentials",
+          items: [
+            {
+              name: "Little Black Dress",
+              link: "/shop-list",
+              badge: "ICONIC",
+            },
+            { name: "Metallic Dresses", link: "/shop-list" },
+            { name: "High Shine Makeup", link: "/shop-list" },
+            { name: "Statement Heels", link: "/shop-list" },
+            { name: "Mini Shoulder Bags", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Smart Casual Staples",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "Blazers", link: "/shop-list", badge: "HOT" },
+            { name: "Tailored Trousers", link: "/shop-list" },
+            { name: "Polo Shirts", link: "/shop-list" },
+            { name: "Oxford Shirts", link: "/shop-list" },
+            { name: "Midi Skirts", link: "/shop-list" },
+            { name: "Smart Jeans", link: "/shop-list", badge: "TRENDING" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "Loafers", link: "/shop-list", badge: "NEW" },
+            { name: "Chelsea Boots", link: "/shop-list" },
+            { name: "Block Heels", link: "/shop-list" },
+            { name: "White Sneakers", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Outerwear",
+          items: [
+            { name: "Trench Coats", link: "/shop-list" },
+            { name: "Light Blazers", link: "/shop-list" },
+            { name: "Cardigans", link: "/shop-list" },
+            { name: "Denim Jackets", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Leather Belts", link: "/shop-list" },
+            { name: "Crossbody Bags", link: "/shop-list" },
+            { name: "Watches", link: "/shop-list", badge: "CLASSIC" },
+            { name: "Minimalist Jewelry", link: "/shop-list" },
+            { name: "Silk Scarves", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Everyday Staples",
+          items: [
+            { name: "Neutral Tees", link: "/shop-list" },
+            { name: "Slim-Fit Trousers", link: "/shop-list" },
+            { name: "Breton Stripes", link: "/shop-list" },
+            { name: "Chinos", link: "/shop-list" },
+            { name: "Smart Knitwear", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Back to Campus",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "Hoodies & Sweatshirts", link: "/shop-list" },
+            { name: "T-Shirts & Polos", link: "/shop-list" },
+            { name: "Casual Shirts", link: "/shop-list" },
+            { name: "Jeans & Chinos", link: "/shop-list" },
+            { name: "Joggers & Track Pants", link: "/shop-list" },
+            { name: "Jackets & Windbreakers", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "Sneakers", link: "/shop-list", badge: "TRENDING" },
+            { name: "Casual Shoes", link: "/shop-list" },
+            { name: "Slip-Ons", link: "/shop-list" },
+            { name: "Boots", link: "/shop-list" },
+            { name: "Sandals & Slides", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Backpacks", link: "/shop-list", badge: "HOT" },
+            { name: "Laptop Bags", link: "/shop-list" },
+            { name: "Caps & Hats", link: "/shop-list" },
+            { name: "Watches", link: "/shop-list" },
+            { name: "Wallets", link: "/shop-list" },
+            { name: "Phone Accessories", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Essentials",
+          items: [
+            { name: "Water Bottles", link: "/shop-list" },
+            { name: "Stationery", link: "/shop-list" },
+            { name: "Tech Gadgets", link: "/shop-list" },
+            { name: "Notebooks & Planners", link: "/shop-list" },
+            { name: "Headphones & Earbuds", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Loungewear",
+          items: [
+            { name: "Comfy Joggers", link: "/shop-list" },
+            { name: "Oversized Hoodies", link: "/shop-list" },
+            { name: "Relaxed Tees", link: "/shop-list" },
+            { name: "Slides", link: "/shop-list" },
+            { name: "Pyjamas & Sleepwear", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Gym & Go",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Activewear",
+          items: [
+            { name: "Sports Bras", link: "/shop-list", badge: "HOT" },
+            { name: "Leggings", link: "/shop-list" },
+            { name: "Biker Shorts", link: "/shop-list", badge: "TRENDING" },
+            { name: "Tank Tops", link: "/shop-list" },
+            { name: "Performance Tees", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Outerwear",
+          items: [
+            { name: "Track Jackets", link: "/shop-list" },
+            { name: "Zip-Up Hoodies", link: "/shop-list" },
+            { name: "Lightweight Wind", link: "/shop-list", badge: "NEW" },
+            { name: "Oversized Sweatshirts", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "Running Shoes", link: "/shop-list" },
+            { name: "Training Sneakers", link: "/shop-list", badge: "HOT" },
+            { name: "Slip-On Sneakers", link: "/shop-list" },
+            { name: "Sport Sandals", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Gym Bags", link: "/shop-list", badge: "TRENDING" },
+            { name: "Water Bottles", link: "/shop-list" },
+            { name: "Fitness Trackers", link: "/shop-list" },
+            { name: "Caps & Headbands", link: "/shop-list" },
+            { name: "Sport Socks", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Athleisure Staples",
+          items: [
+            { name: "Joggers", link: "/shop-list" },
+            { name: "Crop Hoodies", link: "/shop-list" },
+            { name: "Oversized Tees", link: "/shop-list" },
+            { name: "Seamless Sets", link: "/shop-list", badge: "HOT" },
+            { name: "Everyday Sneakers", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Summer Looks",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            { name: "Summer Dresses", link: "/shop-list", badge: "HOT" },
+            { name: "Linen Shirts", link: "/shop-list" },
+            { name: "Shorts & Skirts", link: "/shop-list" },
+            { name: "Crop Tops & Tanks", link: "/shop-list" },
+            { name: "Kaftans & Kimonos", link: "/shop-list" },
+            { name: "Lightweight Trousers", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Swimwear",
+          items: [
+            { name: "Bikinis", link: "/shop-list", badge: "TRENDING" },
+            { name: "One-Piece Swimsuits", link: "/shop-list" },
+            { name: "Swim Shorts", link: "/shop-list" },
+            { name: "Cover-Ups", link: "/shop-list" },
+            { name: "Beach Sets", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "Sandals", link: "/shop-list" },
+            { name: "Slides", link: "/shop-list", badge: "NEW" },
+            { name: "Espadrilles", link: "/shop-list" },
+            { name: "Flip Flops", link: "/shop-list" },
+            { name: "Light Sneakers", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Straw Hats", link: "/shop-list", badge: "HOT" },
+            { name: "Sunglasses", link: "/shop-list" },
+            { name: "Beach Bags", link: "/shop-list" },
+            { name: "Light Scarves", link: "/shop-list" },
+            { name: "Jewelry (Bright & Fun)", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Resort Wear",
+          items: [
+            { name: "Maxi Dresses", link: "/shop-list" },
+            { name: "Printed Co-ords", link: "/shop-list" },
+            { name: "Linen Co-ords", link: "/shop-list" },
+            { name: "Holiday Party Dresses", link: "/shop-list" },
+            { name: "Evening Sandals", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Travel Light",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Clothing",
+          items: [
+            {
+              name: "Wrinkle-Free Dresses",
+              link: "/shop-list",
+              badge: "HOT",
+            },
+            { name: "Jumpsuits & Rompers", link: "/shop-list" },
+            { name: "Lightweight Trousers", link: "/shop-list" },
+            { name: "Breathable Tees", link: "/shop-list" },
+            {
+              name: "Packable Outerwear",
+              link: "/shop-list",
+              badge: "NEW",
+            },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            {
+              name: "Slip-On Sneakers",
+              link: "/shop-list",
+              badge: "TRENDING",
+            },
+            { name: "Comfort Sandals", link: "/shop-list" },
+            { name: "Lightweight Trainers", link: "/shop-list" },
+            { name: "Foldable Flats", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Travel Essentials",
+          items: [
+            { name: "Carry-On Bags", link: "/shop-list", badge: "HOT" },
+            { name: "Weekender Bags", link: "/shop-list" },
+            { name: "Packing Cubes", link: "/shop-list" },
+            { name: "Travel Wallets", link: "/shop-list" },
+            { name: "Neck Pillows", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Crossbody Bags", link: "/shop-list" },
+            { name: "Sunglasses", link: "/shop-list" },
+            { name: "Scarves & Wraps", link: "/shop-list" },
+            { name: "Hats & Caps", link: "/shop-list" },
+            { name: "Compact Umbrellas", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Layering Staples",
+          items: [
+            { name: "Light Cardigans", link: "/shop-list" },
+            { name: "Overshirts", link: "/shop-list" },
+            { name: "Puffer Jackets", link: "/shop-list", badge: "NEW" },
+            { name: "Denim Jackets", link: "/shop-list" },
+            { name: "Versatile Blazers", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Layered Looks",
+      icon: "icon feather icon-arrow-right",
+      menuIcon: "icon feather icon-chevron-right",
+      subcategories: [
+        {
+          title: "Base Layers",
+          items: [
+            { name: "Turtlenecks", link: "/shop-list", badge: "TRENDING" },
+            { name: "Long-Sleeve Tees", link: "/shop-list" },
+            { name: "Slim Fit Tops", link: "/shop-list" },
+            { name: "Camis & Tanks", link: "/shop-list" },
+            { name: "Seamless Bodysuits", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Mid Layers",
+          items: [
+            { name: "Cardigans", link: "/shop-list" },
+            { name: "Sweatshirts", link: "/shop-list" },
+            { name: "Overshirts", link: "/shop-list" },
+            { name: "Vests & Gilets", link: "/shop-list", badge: "HOT" },
+            { name: "Lightweight Knits", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Outerwear",
+          items: [
+            { name: "Trench Coats", link: "/shop-list" },
+            {
+              name: "Denim Jackets",
+              link: "/shop-list",
+              badge: "TRENDING",
+            },
+            { name: "Blazers", link: "/shop-list" },
+            { name: "Bomber Jackets", link: "/shop-list" },
+            { name: "Wool Coats", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Accessories",
+          items: [
+            { name: "Blanket Scarves", link: "/shop-list", badge: "NEW" },
+            { name: "Beanies & Berets", link: "/shop-list" },
+            { name: "Statement Belts", link: "/shop-list" },
+            { name: "Gloves", link: "/shop-list" },
+            { name: "Layered Jewelry", link: "/shop-list" },
+          ],
+        },
+        {
+          title: "Footwear",
+          items: [
+            { name: "Ankle Boots", link: "/shop-list", badge: "HOT" },
+            { name: "Chunky Sneakers", link: "/shop-list" },
+            { name: "Chelsea Boots", link: "/shop-list" },
+            { name: "Knee-High Boots", link: "/shop-list" },
+            { name: "Loafers", link: "/shop-list" },
+          ],
+        },
+      ],
+    },
+  ];

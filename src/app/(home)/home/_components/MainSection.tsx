@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import Link from "next/link";
 import { Fragment, useState, useEffect } from "react";
@@ -16,6 +16,8 @@ import Image from "next/image";
 const MainSection = () => {
   const [openVideo, setOpenVideo] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
   // Auto show popup after 3 seconds
   useEffect(() => {
@@ -35,6 +37,7 @@ const MainSection = () => {
       setFade(false);
       setTimeout(() => {
         setCurrentImage((prev) => (prev + 1) % heroImages.length);
+        // setCurrentImage(currentImage === heroImages.length - 1 ? 0 : currentImage + 1);
         setFade(true);
       }, 500);
     }, 9000);
@@ -42,6 +45,30 @@ const MainSection = () => {
   }, [heroImages]);
 
   const nextImage = (currentImage + 1) % heroImages.length;
+  // console.log(window.scrollY)
+ 
+  // Check screen size and handle scroll
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobileOrTablet(window.innerWidth <= 1024); // 1024px is typical laptop breakpoint
+    };
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    // Initial check
+    checkScreenSize();
+
+    // Add event listeners
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
 
   return (
     <Fragment>
@@ -53,9 +80,10 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
+          transform: (scrolled && isMobileOrTablet) ? "translateY(-20px)" : "none"
         }}
       >
-        <div className="hero-banner d-flex justify-content-start align-items-center h-100">
+        <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >
           <div className="container">
             <div className="row justify-content-start">
               <div
@@ -124,8 +152,8 @@ const MainSection = () => {
         </section>
 
         <section
-          className="overflow-hidden py-4"
-          style={{ background: "#1F1F1F" }}
+          className="overflow-hidden py-5"
+          style={{ background: "" }}
         >
           <div className="container">
             <LatestoCollection />
@@ -196,15 +224,16 @@ const MainSection = () => {
               zIndex: 10,
             }}
           >
-            <i className="icon feather icon-x" />
+            {/* <i className="icon feather icon-x" /> */}
           </button>
 
           <div
+
             className="modal-body d-flex p-0 promo-body"
+
             style={{
-              minHeight: "650px",
-              height: "650px",
-              maxHeight: "90vh",
+              // minHeight: "650px",
+              height: "auto",
               background: "#f9f9f9",
               borderRadius: "10px",
               overflow: "hidden",
@@ -263,7 +292,7 @@ const MainSection = () => {
               className="promo-right"
               style={{
                 flex: 1,
-                padding: "70px 50px",
+                padding: "50px 30px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -275,7 +304,7 @@ const MainSection = () => {
             >
               <h2
                 className="mb-3"
-                style={{ fontSize: "2.5rem", color: "#000", fontWeight: "700" }}
+                style={{ fontSize: "2rem", color: "#000", fontWeight: "700" }}
               >
                 New Arrivals 🎉
               </h2>
@@ -296,10 +325,10 @@ const MainSection = () => {
               </p>
 
               <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
-                <Link href="/shop-list" className="btn btn-primary btn-lg">
+                <Link href="/shop-list" className="btn btn-primary btn-md w-100">
                   Shop Now
                 </Link>
-                <Link href="/login" className="btn btn-outline-dark btn-lg">
+                <Link href="/login" className="btn btn-outline-dark btn-md w-100">
                   Sign Up
                 </Link>
               </div>
