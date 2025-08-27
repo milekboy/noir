@@ -58,10 +58,10 @@ export default function CategoryMenuItem() {
               ) : null} */}
             </Link>
             {item.name ? (
-              <div className="mega-menu ms-2 ">
+              <div className="mega-menu ms- ">
                 <div className="row ">
                   {item.subcategories.map((subcat, ind) => (
-                    <div key={ind} className="col-md-3 col-sm-4 col-6">
+                    <div key={ind} className="col-md-3 col-sm-4 col-6 ">
                       <Link href={"#"} className="menu-title">
                         {/* Clothing
                          */}

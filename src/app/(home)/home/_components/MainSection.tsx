@@ -39,7 +39,7 @@ const MainSection = () => {
         setCurrentImage((prev) => (prev + 1) % heroImages.length);
         // setCurrentImage(currentImage === heroImages.length - 1 ? 0 : currentImage + 1);
         setFade(true);
-      }, 500);
+      }, 230);
     }, 9000);
     return () => clearInterval(interval);
   }, [heroImages]);
@@ -54,7 +54,7 @@ const MainSection = () => {
     };
 
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
+      setScrolled(window.scrollY > 150);
     };
 
     // Initial check
@@ -74,7 +74,7 @@ const MainSection = () => {
     <Fragment>
       {/* ---------- Hero Section ---------- */}
       <div
-        className="h-100vh mb-5 "
+        className="h-100vh mb-5 bg-primar"
         style={{
           zIndex: 1,
           width: "100%",
