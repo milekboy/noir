@@ -1266,16 +1266,16 @@ export const widgetBox = [
 ];
 
 export const colorData = [
-  { valuecolor: "white", inputid: "radioNoLabel01" },
+  { valuecolor: "black", inputid: "radioNoLabel01" },
   { valuecolor: "blue", inputid: "radioNoLabel02" },
   { valuecolor: "#21B290", inputid: "radioNoLabel03" },
   { valuecolor: "#FEC4C4", inputid: "radioNoLabel04" },
   { valuecolor: "#FF7354", inputid: "radioNoLabel05" },
-  { valuecolor: "#51EDC8", inputid: "radioNoLabel06" },
-  { valuecolor: "#B77CF3", inputid: "radioNoLabel07" },
-  { valuecolor: "#FF4A76", inputid: "radioNoLabel08" },
-  { valuecolor: "#3E68FF", inputid: "radioNoLabel09" },
-  { valuecolor: "#7BEF68", inputid: "radioNoLabel10" },
+  // { valuecolor: "#51EDC8", inputid: "radioNoLabel06" },
+  // { valuecolor: "#B77CF3", inputid: "radioNoLabel07" },
+  // { valuecolor: "#FF4A76", inputid: "radioNoLabel08" },
+  // { valuecolor: "#3E68FF", inputid: "radioNoLabel09" },
+  // { valuecolor: "#7BEF68", inputid: "radioNoLabel10" },
 ];
 
 export const widgetSize = [

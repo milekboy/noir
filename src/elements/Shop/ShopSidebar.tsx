@@ -8,6 +8,8 @@ import {
   widgetSize,
 } from "../../constant/Alldata";
 import ShopSidebarPriceSlider from "./ShopSidebarPriceSlider";
+import SelectBoxOne from "./SelectBoxOne";
+import SelectBoxThree from "./SelectBoxThree";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { useEffect, useState } from "react";
 
@@ -37,18 +39,23 @@ export default function ShopSidebar({
   selectedPriceRange,
 }: Props) {
   const [category, setCategory] = useState<Category[]>([]);
+  const [latestOpen, setLatestOpen] = useState(false);
+  const [selectedLatest, setSelectedLatest] = useState("Latest");
 
-useEffect(() => {
-  getCategory();
-}, []);
+  const latestOptions = ["Price", "Size", "Material"];
 
-async function getCategory(){
-  const res = await networkInstance.get("category/get-all-categories");
-  setCategory(res.data);
-  
-}
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  async function getCategory() {
+    const res = await networkInstance.get("category/get-all-categories");
+    setCategory(res.data);
+  }
+
   return (
     <Fragment>
+      {/* Search */}
       <div className="widget widget_search">
         <div className="form-group">
           <div className="input-group">
@@ -93,8 +100,63 @@ async function getCategory(){
           </div>
         </div>
       </div>
+
+      {/* Latest Dropdown
       <div className="widget">
-        <h6 className="widget-title">Price</h6>
+        <h6
+          className="widget-title"
+          style={{
+            color: "black",
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          onClick={() => setLatestOpen(!latestOpen)}
+        >
+          {selectedLatest}
+          <span style={{ fontSize: "14px" }}>{latestOpen ? "▲" : "▼"}</span>
+        </h6>
+
+        {latestOpen && (
+          <ul
+            style={{
+              listStyle: "none",
+              padding: "8px 0",
+              margin: 0,
+              border: "1px solid #ddd",
+              borderRadius: "6px",
+              background: "#fff",
+            }}
+          >
+            {latestOptions.map((opt, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setSelectedLatest(opt);
+                  setLatestOpen(false);
+                }}
+                style={{
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                  borderBottom:
+                    index !== latestOptions.length - 1
+                      ? "1px solid #eee"
+                      : "none",
+                }}
+              >
+                {opt}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div> */}
+
+      {/* Price */}
+      <div className="widget">
+        <h6 className="widget-title" style={{ color: "black" }}>
+          Price
+        </h6>
         <div className="price-slide range-slider">
           <div className="price">
             <ShopSidebarPriceSlider
@@ -104,8 +166,12 @@ async function getCategory(){
           </div>
         </div>
       </div>
+
+      {/* Color */}
       <div className="widget">
-        <h6 className="widget-title">Color</h6>
+        <h6 className="widget-title" style={{ color: "black" }}>
+          Color
+        </h6>
         <div className="d-flex align-items-center flex-wrap color-filter ps-2">
           {colorData.map((item, ind) => (
             <div className="form-check" key={ind}>
@@ -118,15 +184,23 @@ async function getCategory(){
                 onChange={() => onColorChange(item.valuecolor)}
                 checked={selectedColor === item.valuecolor}
               />
-
-              <span style={{ backgroundColor: item.valuecolor }}></span>
+              <span
+                style={{
+                  backgroundColor: item.valuecolor,
+                  width: "25px",
+                  height: "25px",
+                }}
+              ></span>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Size */}
       <div className="widget">
-        <h6 className="widget-title">Size</h6>
+        <h6 className="widget-title" style={{ color: "black" }}>
+          Size
+        </h6>
         <div className="btn-group product-size">
           {widgetSize.map((item, ind) => (
             <Fragment key={ind}>
@@ -140,7 +214,19 @@ async function getCategory(){
                 checked={selectedSize === item.number}
               />
 
-              <label className="btn" htmlFor={item.inputid}>
+              <label
+                className="btn"
+                htmlFor={item.inputid}
+                style={{
+                  borderRadius: "0", // square
+                  width: "50px",
+                  height: "50px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "600",
+                }}
+              >
                 {item.number}
               </label>
             </Fragment>
@@ -148,28 +234,70 @@ async function getCategory(){
         </div>
       </div>
 
-      <div className="widget widget_categories">
-        <h6 className="widget-title">Category</h6>
-        <ul>
-          {category.map((elem, i) => (
-            <li className="cat-item cat-item-26" key={i}>
-              <Link href="">{elem.name}</Link>
-               {/* ({elem.number}) */}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Latest Dropdown */}
+      <div className="widget">
+        <h6 className="widget-title" style={{ color: "black" }}>
+          {" "}
+          Sort By
+        </h6>
+        {/* {/* <h6
+          className="widget-title"
+          style={{
+            color: "black",
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          onClick={() => setLatestOpen(!latestOpen)}
+        >
+          Latest
+          <span style={{ fontSize: "14px" }}>{latestOpen ? "▲" : "▼"}</span>
+        </h6> */}
 
-      <div className="widget widget_tag_cloud">
-        <h6 className="widget-title">Tags</h6>
-        <div className="tagcloud">
-          {TagData.map((item, ind) => (
-            <Link href="/blog-tag" key={ind}>
-              {item.tagname}
-            </Link>
-          ))}
-        </div>
+        {/* {latestOpen && (
+          <ul
+            style={{
+              listStyle: "none",
+              padding: "8px 0",
+              margin: 0,
+              border: "1px solid #ddd",
+              borderRadius: "6px",
+              background: "#fff",
+            }}
+          >
+            {latestOptions.map((opt, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setSelectedLatest(opt); // still updates selection internally
+                  setLatestOpen(false);
+                }}
+                style={{
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                  borderBottom:
+                    index !== latestOptions.length - 1
+                      ? "1px solid #eee"
+                      : "none",
+                }}
+              >
+                {opt}
+              </li>
+            ))}
+          </ul>
+        )} */}
+       
       </div>
+       <div className="form-group" style={{ marginTop: "-30px" }}>
+          <SelectBoxThree/>
+        </div>
+
+      {/* <div className="widget widget_categories"></div> */}
+
+      {/* <div className="widget widget_tag_cloud">
+        {/* <h6 className="widget-title" style={{color: "black"}}>Tags</h6> 
+      </div> */}
     </Fragment>
   );
 }
