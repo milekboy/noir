@@ -80,7 +80,7 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
-          transform: (scrolled && isMobileOrTablet) ? "translateY(-80px)" : "none"
+          transform: (scrolled && isMobileOrTablet) ? "translateY(-20px)" : "none"
         }}
       >
         <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >

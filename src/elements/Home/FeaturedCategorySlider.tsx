@@ -5,7 +5,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Category {
   _id: string;
@@ -18,7 +18,10 @@ const FeaturedCategorySlider = () => {
   const [category, setCategory] = useState<Category[]>([]);
   const networkInstance = NetworkInstance();
   const [loading, setLoading] = useState(true);
+  const [hovered,setHovered] = useState(false);
+  const [swiperInstance, setSwiperInstance] = useState<any>(null);
   
+  console.log("Hovered:", hovered, "Swiper:", swiperInstance)
   useEffect(() => {
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,79 +126,105 @@ const FeaturedCategorySlider = () => {
     return <LoadingSkeleton />;
   }
 
+  const handleMouseEnter = () => {
+    console.log("Mouse entered - stopping autoplay", swiperInstance);
+    setHovered(true);
+    if (swiperInstance && swiperInstance.autoplay) {
+      console.log("Stopping autoplay...");
+      swiperInstance.autoplay.stop();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    console.log("Mouse left - starting autoplay", swiperInstance);
+    setHovered(false);
+    if (swiperInstance && swiperInstance.autoplay) {
+      console.log("Starting autoplay...");
+      swiperInstance.autoplay.start();
+    }
+  };
+
   return (
-    <Swiper
-      slidesPerView={5}
-      spaceBetween={0}
-      autoplay={{
-        delay: 100,
-      }}
-      speed={1000}
-      parallax={true}
-      loop={true}
-      navigation={{
-        nextEl: ".shop-button-next",
-        prevEl: ".shop-button-prev",
-      }}
-      className="swiper-shop"
-      modules={[Navigation, Autoplay]}
-      breakpoints={{
-        1600: {
-          slidesPerView: 5,
-        },
-        1400: {
-          slidesPerView: 5,
-        },
-        991: {
-          slidesPerView: 4,
-        },
-        767: {
-          slidesPerView: 3,
-        },
-        575: {
-          slidesPerView: 2,
-        },
-        340: {
-          slidesPerView: 1,
-        },
-      }}
+    <div 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {category.map((item, ind) => (
-        <SwiperSlide key={ind}>
-          <div
-            className={`shop-box style-1 wow fadeInUp me-4 ${
-              ind % 2 ? "tran" : ""
-            }`}
-            data-wow-delay="0.2s"
-            style={{
-              transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
-            }}
-          >
-            <div className="dz-media ">
-              <Image
-                src={
-                  item.image[0] ||
-                  "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                }
-                alt={item.name}
-                width={500}
-                height={500}
-                style={{
-                  objectPosition: "top"
-                }}
-                className=""
-              />
-              <h6
-                className="product-name text-[10px] position-absolut"
-                style={{ transform: "translateY(-70px)" }}
-              >
-                <Link href="/shop-with-category">{item.name}</Link>
-              </h6>
+      <Swiper
+        onSwiper={setSwiperInstance}
+        slidesPerView={5}
+        spaceBetween={0}
+        autoplay={{
+          delay: 100,
+        }}
+        speed={1000}
+        parallax={true}
+        loop={true}
+        navigation={{
+          nextEl: ".shop-button-next",
+          prevEl: ".shop-button-prev",
+        }}
+        className="swiper-shop"
+        modules={[Navigation, Autoplay]}
+        breakpoints={{
+          1600: {
+            slidesPerView: 5,
+          },
+          1400: {
+            slidesPerView: 5,
+          },
+          991: {
+            slidesPerView: 4,
+          },
+          767: {
+            slidesPerView: 3,
+          },
+          575: {
+            slidesPerView: 2,
+          },
+          340: {
+            slidesPerView: 1,
+          },
+        }}
+      >
+        {category.map((item, ind) => (
+          <SwiperSlide key={ind} >
+            <Link href={`/collections`}>
+              <div
+              className={`shop-box style-1 wow fadeInUp me-4 ${
+                ind % 2 ? "tran" : ""
+              }`}
+              data-wow-delay="0.2s"
+              style={{
+                transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
+              }}
+            >
+              <div className="dz-media ">
+                <Image
+                  src={
+                    item.image[0] ||
+                    "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                  }
+                  alt={item.name}
+                  width={500}
+                  height={500}
+                  style={{
+                    objectPosition: "top"
+                  }}
+                  className=""
+                />
+                <h6
+                  className="product-name text-[10px] position-absolut"
+                  style={{ transform: "translateY(-70px)" }}
+                >
+                  <span className="text-black">{item.name}</span>
+                </h6>
+              </div>
             </div>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+            </Link>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 
