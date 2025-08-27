@@ -141,13 +141,13 @@ export default function ShopStandard() {
                       selectedSize={selectedSize}
                       selectedPriceRange={selectedPriceRange}
                     />
-                    <button
+                    {/* <button
                       type="button"
                       onClick={handleResetFilters}
                       className="btn btn-sm font-14 btn-secondary btn-sharp"
                     >
                       RESET
-                    </button>
+                    </button> */}
                   </aside>
                 </div>
               </div>
