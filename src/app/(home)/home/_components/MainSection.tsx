@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import Link from "next/link";
 import { Fragment, useState, useEffect } from "react";
@@ -16,6 +16,8 @@ import Image from "next/image";
 const MainSection = () => {
   const [openVideo, setOpenVideo] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
   // Auto show popup after 3 seconds
   useEffect(() => {
@@ -44,14 +46,28 @@ const MainSection = () => {
 
   const nextImage = (currentImage + 1) % heroImages.length;
   // console.log(window.scrollY)
- const [scrolled, setScrolled] = useState(false);
+ 
+  // Check screen size and handle scroll
   useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobileOrTablet(window.innerWidth <= 1024); // 1024px is typical laptop breakpoint
+    };
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 100);
     };
 
+    // Initial check
+    checkScreenSize();
+
+    // Add event listeners
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkScreenSize);
+    };
   }, []);
 
   return (
@@ -64,7 +80,7 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
-          transform: scrolled ? "translateY(-80px)" : "none",
+          transform: (scrolled && isMobileOrTablet) ? "translateY(-20px)" : "none"
         }}
       >
         <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >
@@ -136,8 +152,8 @@ const MainSection = () => {
         </section>
 
         <section
-          className="overflow-hidden py-4"
-          style={{ background: "#1F1F1F" }}
+          className="overflow-hidden py-5"
+          style={{ background: "" }}
         >
           <div className="container">
             <LatestoCollection />

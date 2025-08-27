@@ -119,20 +119,156 @@ const ProductSection = () => {
 
 
          const [product, setProduct] = useState<PopularProduct[]>([]);
+         const [loading, setLoading] = useState(true);
           const networkInstance = NetworkInstance();
      
           
            useEffect(() => { 
             async function displayProduct() {
-                const res = await networkInstance.get("/product/get-all-products")
-                console.log(res.data);
-                setProduct(res.data)
+                try {
+                    const res = await networkInstance.get("/product/get-all-products")
+                    console.log(res.data);
+                    setProduct(res.data)
+                } catch (error) {
+                    console.error("Error fetching products:", error);
+                } finally {
+                    setLoading(false);
+                }
             }
 
             displayProduct()
            
            
             }, []);
+
+    // Loading skeleton component
+    const LoadingSkeleton = () => {
+        return (
+            <div className="row g-xl-4 g-3">
+                {Array.from({ length: 8 }).map((_, ind) => (
+                    <div key={ind} className="col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div className="shop-card">
+                            <div
+                                className="dz-media"
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "350px",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    backgroundColor: "#e0e0e0",
+                                    borderRadius: "25px", // All corners rounded
+                                }}
+                            >
+                                {/* Shining effect */}
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: "-100%",
+                                        width: "100%",
+                                        height: "100%",
+                                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                                        animation: "shine 2s ease-in-out infinite",
+                                        animationDelay: `${ind * 0.1}s`,
+                                    }}
+                                />
+                            </div>
+
+                            <div className="dz-content">
+                                <div
+                                    style={{
+                                        width: "50%",
+                                        height: "20px",
+                                        backgroundColor: "#e0e0e0",
+                                        borderRadius: "4px",
+                                        marginBottom: "10px",
+                                        position: "relative",
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    {/* Shining effect for title */}
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: "-100%",
+                                            width: "100%",
+                                            height: "100%",
+                                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                                            animation: "shine 2s ease-in-out infinite",
+                                            animationDelay: `${ind * 0.1 + 0.3}s`,
+                                        }}
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        width: "30%",
+                                        height: "18px",
+                                        backgroundColor: "#e0e0e0",
+                                        borderRadius: "4px",
+                                        position: "relative",
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    {/* Shining effect for price */}
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: "-100%",
+                                            width: "100%",
+                                            height: "100%",
+                                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                                            animation: "shine 2s ease-in-out infinite",
+                                            animationDelay: `${ind * 0.1 + 0.5}s`,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="product-tag">
+                                <div
+                                    style={{
+                                        width: "80px",
+                                        height: "24px",
+                                        backgroundColor: "#e0e0e0",
+                                        borderRadius: "12px",
+                                        position: "relative",
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    {/* Shining effect for badge */}
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: "-100%",
+                                            width: "100%",
+                                            height: "100%",
+                                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                                            animation: "shine 2s ease-in-out infinite",
+                                            animationDelay: `${ind * 0.1 + 0.7}s`,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                <style jsx>{`
+                    @keyframes shine {
+                        0% {
+                            left: -100%;
+                        }
+                        100% {
+                            left: 100%;
+                        }
+                    }
+                `}</style>
+            </div>
+        );
+    };
 
           
         //   useEffect(() => {
@@ -167,87 +303,91 @@ const ProductSection = () => {
                 </div>
             </div>
             <div className="clearfix">
-                <ul id="masonry" className="row g-xl-4 g-3">
-                    {/* {state.data.map((item : MenuItem, ind : number)=>( */}
-                    {product.slice(0,8).map((item, ind)=>(
-                        <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
-                            <div className="shop-card">
-                                <div
-                                    className="dz-media"
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: "350px",        
-                                        overflow: "hidden",
-                                        position: "relative",   
-                                        zIndex: -10
-                                    }}
-                                    >
-                                    <Image
-                                        src={
-                                        item.productImages[0]?.url ||
-                                        "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                                        }
-                                        alt={item.name}
-                                        width={200}
-                                        height={200}
+                {loading ? (
+                    <LoadingSkeleton />
+                ) : (
+                    <ul id="masonry" className="row g-xl-4 g-3">
+                        {/* {state.data.map((item : MenuItem, ind : number)=>( */}
+                        {product.slice(0,8).map((item, ind)=>(
+                            <div className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp" data-wow-delay="0.6s" key={item._id}>
+                                <div className="shop-card">
+                                    <div
+                                        className="dz-media"
                                         style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover"
-                                        }}
-                                    />
-
-                                    <div className="shop-meta">
-                                        <Link
-                                        href={`/product-default/${item._id}` }
-                                        className="btn btn-secondary btn-md btn-rounded"
-                                        // onClick={() =>
-                                        //     dispatch({ type: "SET_DETAIL_MODAL", value: true })
-                                        // }
-                                        >
-                                        <i className="fa-solid fa-eye d-md-none d-block" />
-                                        <span className="d-md-block d-none">View</span>
-                                        </Link>
-
-                                        <div
-                                        className={`btn btn-primary meta-icon dz-wishicon ${
-                                            state.heartIcon[ind] ? "active" : ""
-                                        }`}
-                                        onClick={() => {
-                                            toggleHeart(ind);
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            height: "350px",        
+                                            overflow: "hidden",
+                                            position: "relative",   
+                                            zIndex: -10
                                         }}
                                         >
-                                        <i className="icon feather icon-heart dz-heart" />
-                                        <i className="icon feather icon-heart-on dz-heart-fill" />
+                                        <Image
+                                            src={
+                                            item.productImages[0]?.url ||
+                                            "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                                            }
+                                            alt={item.name}
+                                            width={200}
+                                            height={200}
+                                            style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover"
+                                            }}
+                                        />
+
+                                        <div className="shop-meta">
+                                            <Link
+                                            href={`/product-default/${item._id}` }
+                                            className="btn btn-secondary btn-md btn-rounded"
+                                            // onClick={() =>
+                                            //     dispatch({ type: "SET_DETAIL_MODAL", value: true })
+                                            // }
+                                            >
+                                            <i className="fa-solid fa-eye d-md-none d-block" />
+                                            <span className="d-md-block d-none">View</span>
+                                            </Link>
+
+                                            <div
+                                            className={`btn btn-primary meta-icon dz-wishicon ${
+                                                state.heartIcon[ind] ? "active" : ""
+                                            }`}
+                                            onClick={() => {
+                                                toggleHeart(ind);
+                                            }}
+                                            >
+                                            <i className="icon feather icon-heart dz-heart" />
+                                            <i className="icon feather icon-heart-on dz-heart-fill" />
+                                            </div>
+
+                                            <div
+                                            className={`btn btn-primary meta-icon dz-carticon ${
+                                                state.basketIcon[ind] ? "active" : ""
+                                            }`}
+                                            onClick={() => {
+                                                toggleBasket(ind);
+                                            }}
+                                            >
+                                            <i className="flaticon flaticon-basket" />
+                                            <i className="flaticon flaticon-basket-on dz-heart-fill" />
                                         </div>
+                                    </div>
+                                </div>
 
-                                        <div
-                                        className={`btn btn-primary meta-icon dz-carticon ${
-                                            state.basketIcon[ind] ? "active" : ""
-                                        }`}
-                                        onClick={() => {
-                                            toggleBasket(ind);
-                                        }}
-                                        >
-                                        <i className="flaticon flaticon-basket" />
-                                        <i className="flaticon flaticon-basket-on dz-heart-fill" />
+                                    <div className="dz-content">
+                                        <h5 className="title"><Link href="/shop-list">{item.name}</Link></h5>
+                                        <h5 className="price">&#8358;{item.price}</h5>
+                                    </div>
+                                    <div className="product-tag">
+                                        <span className="badge ">Get 20% Off</span>
                                     </div>
                                 </div>
                             </div>
-
-                                <div className="dz-content">
-                                    <h5 className="title"><Link href="/shop-list">{item.name}</Link></h5>
-                                    <h5 className="price">&#8358;{item.price}</h5>
-                                </div>
-                                <div className="product-tag">
-                                    <span className="badge ">Get 20% Off</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}                    
-                </ul>
+                        ))}                    
+                    </ul>
+                )}
             </div>  
             <Modal className="quick-view-modal" show={state.detailModal} onHide={handleHide} centered>  
                 <button type="button" className="btn-close" 
