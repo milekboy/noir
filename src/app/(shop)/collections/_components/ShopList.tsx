@@ -123,7 +123,7 @@ export default function ShopList({
                 >
                   <aside>
                     <div className="d-flex align-items-center justify-content-between m-b30">
-                      <h6 className="title mb-0 fw-normal d-flex">
+                      <h6 className="title mb-0 fw-normal d-flex" style={{ color: "black" }}>
                         <i className="flaticon-filter me-3" />
                         Filter
                       </h6>
@@ -150,7 +150,7 @@ export default function ShopList({
 
             {/* Main Content */}
             <div className="col-80 col-xl-9 ">
-              <h4 className="mb-3">Category</h4>
+              <h4 className="mb-3" style={{color: "black"}}>Category</h4>
               <div className="row">
                 <div className="col-xl-12">
                   <ShopCategorySlider
@@ -228,7 +228,7 @@ export default function ShopList({
                                 item.productImages[0]?.url || "/fallback.jpg"
                               }
                               title={item.name}
-                              price={item.price}
+                              price={`₦${item.price}`}
                               showdetailModal={() => setDetailModal(true)}
                               _id={""}
                               category={""}

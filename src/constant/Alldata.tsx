@@ -1279,15 +1279,15 @@ export const colorData = [
 ];
 
 export const widgetSize = [
-  { inputid: "btnradio101", number: 4 },
-  { inputid: "btnradiol02", number: 6 },
-  { inputid: "btnradiol03", number: 8 },
-  { inputid: "btnradiol04", number: 10 },
-  { inputid: "btnradiol05", number: 12 },
-  { inputid: "btnradiol06", number: 14 },
-  { inputid: "btnradiol07", number: 16 },
-  { inputid: "btnradiol08", number: 18 },
-  { inputid: "btnradiol09", number: 20 },
+  { inputid: "btnradio101", number: 8 },
+  { inputid: "btnradiol02", number: 10 },
+  { inputid: "btnradiol03", number: 14 },
+  { inputid: "btnradiol04", number: 16 },
+  // { inputid: "btnradiol05", number: 12 },
+  // { inputid: "btnradiol06", number: 14 },
+  // { inputid: "btnradiol07", number: 16 },
+  // { inputid: "btnradiol08", number: 18 },
+  // { inputid: "btnradiol09", number: 20 },
 ];
 
 interface BlogGridType {
