@@ -18,6 +18,7 @@ const CollectionBlog = () => {
                 <h2 className="title wow fadeInUp" data-wow-delay="0.2s" style={{color: "#000"}}>Upgrade your style with our  top-notch collection.</h2>
                 <div className="text-center">	
                     <Link href="/collections" className="btn btn-secondary btn-lg wow fadeInUp m-b30" data-wow-delay="0.4s">All Collections</Link>
+
                 </div>	
             </div>
             {/* {collectionImgData.map(({image, design}, ind)=>(

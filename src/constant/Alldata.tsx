@@ -1266,28 +1266,28 @@ export const widgetBox = [
 ];
 
 export const colorData = [
-  { valuecolor: "white", inputid: "radioNoLabel01" },
+  { valuecolor: "black", inputid: "radioNoLabel01" },
   { valuecolor: "blue", inputid: "radioNoLabel02" },
   { valuecolor: "#21B290", inputid: "radioNoLabel03" },
   { valuecolor: "#FEC4C4", inputid: "radioNoLabel04" },
   { valuecolor: "#FF7354", inputid: "radioNoLabel05" },
-  { valuecolor: "#51EDC8", inputid: "radioNoLabel06" },
-  { valuecolor: "#B77CF3", inputid: "radioNoLabel07" },
-  { valuecolor: "#FF4A76", inputid: "radioNoLabel08" },
-  { valuecolor: "#3E68FF", inputid: "radioNoLabel09" },
-  { valuecolor: "#7BEF68", inputid: "radioNoLabel10" },
+  // { valuecolor: "#51EDC8", inputid: "radioNoLabel06" },
+  // { valuecolor: "#B77CF3", inputid: "radioNoLabel07" },
+  // { valuecolor: "#FF4A76", inputid: "radioNoLabel08" },
+  // { valuecolor: "#3E68FF", inputid: "radioNoLabel09" },
+  // { valuecolor: "#7BEF68", inputid: "radioNoLabel10" },
 ];
 
 export const widgetSize = [
-  { inputid: "btnradio101", number: 4 },
-  { inputid: "btnradiol02", number: 6 },
-  { inputid: "btnradiol03", number: 8 },
-  { inputid: "btnradiol04", number: 10 },
-  { inputid: "btnradiol05", number: 12 },
-  { inputid: "btnradiol06", number: 14 },
-  { inputid: "btnradiol07", number: 16 },
-  { inputid: "btnradiol08", number: 18 },
-  { inputid: "btnradiol09", number: 20 },
+  { inputid: "btnradio101", number: 8 },
+  { inputid: "btnradiol02", number: 10 },
+  { inputid: "btnradiol03", number: 14 },
+  { inputid: "btnradiol04", number: 16 },
+  // { inputid: "btnradiol05", number: 12 },
+  // { inputid: "btnradiol06", number: 14 },
+  // { inputid: "btnradiol07", number: 16 },
+  // { inputid: "btnradiol08", number: 18 },
+  // { inputid: "btnradiol09", number: 20 },
 ];
 
 interface BlogGridType {

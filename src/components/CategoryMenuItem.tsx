@@ -41,7 +41,7 @@ export default function CategoryMenuItem() {
         )
         .map((item, ind) => (
           <li className="has-mega-menu cate-drop " key={ind}>
-            <Link href="/shop-standard">
+            <Link href="/collections">
               <i className="icon feather icon-arrow-right" />
               <span>{item.name}</span>
               <span className="menu-icon">
@@ -61,8 +61,8 @@ export default function CategoryMenuItem() {
               <div className="mega-menu ms- ">
                 <div className="row ">
                   {item.subcategories.map((subcat, ind) => (
-                    <div key={ind} className="col-md-3 col-sm-4 col-6 ">
-                      <Link href={"#"} className="menu-title">
+                    <div key={ind} className="col-md-3 col-sm-4 col-6">
+                      <Link href={"/collections"} className="menu-title">
                         {/* Clothing
                          */}
                         {subcat.title}
@@ -76,7 +76,7 @@ export default function CategoryMenuItem() {
                       </li> */}
                         {subcat.items.map((item, ind) => (
                           <li key={ind}>
-                            <Link href={"/shop-standard"}>
+                            <Link href={"/collections"}>
                               {item.name}
                               {item.badge && (
                                 <span className="badge bg-primary">NEW</span>
