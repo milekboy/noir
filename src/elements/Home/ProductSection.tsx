@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useReducer, useEffect, useState } from "react";
+import { useReducer, useEffect, useState, useContext } from "react";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { Modal } from "react-bootstrap";
 import { masonryData, headfilterData } from "../../constant/Alldata";
@@ -7,6 +7,7 @@ import ModalSlider from "../../components/ModalSlider";
 import ProductInputButton from "../Shop/ProductInputButton";
 import axios from "axios";
 import Image from "next/image";
+import { CartContext } from "@/components/CartContext";
 
 
 interface MenuItem {
@@ -121,6 +122,7 @@ const ProductSection = () => {
          const [product, setProduct] = useState<PopularProduct[]>([]);
          const [loading, setLoading] = useState(true);
           const networkInstance = NetworkInstance();
+           const { setCartCount, fetchCartCount } = useContext(CartContext);
      
           
            useEffect(() => { 
@@ -140,6 +142,42 @@ const ProductSection = () => {
            
            
             }, []);
+
+    const addToCart = async (props: any) => {
+    const payload: Record<string, any> = {
+      productId: props._id,
+      categoryId: props.category,
+      quantity: 1,
+    };
+
+    const existingCartId = localStorage.getItem("cartId");
+    if (existingCartId) {
+      payload.cartId = existingCartId;
+    } else {
+      setCartCount((prev: number) => prev + 1);
+    }
+
+    try {
+      const response = await NetworkInstance().post("/cart/add", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response?.status === 200 || response?.status === 201) {
+        fetchCartCount();
+        const newCartId = response.data?.cartId;
+
+        if (newCartId) {
+          localStorage.setItem("cartId", newCartId);
+        }
+
+        console.log("product added to cart");
+      }
+    } catch (err: any) {
+      console.error("Not added to cart:", err?.response?.data || err, payload);
+    }
+  };
 
     // Loading skeleton component
     const LoadingSkeleton = () => {
@@ -368,6 +406,7 @@ const ProductSection = () => {
                                             }`}
                                             onClick={() => {
                                                 toggleBasket(ind);
+                                                addToCart(item);
                                             }}
                                             >
                                             <i className="flaticon flaticon-basket" />
