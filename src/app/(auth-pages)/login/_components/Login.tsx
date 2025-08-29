@@ -26,24 +26,34 @@ export default function Login() {
     <div className="page-content bg-light">
       <section className="px-3">
         <div className="row">
-          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-content">
-            <div className="dz-bnr-inr-entry">
+          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5"
+           style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: '30vh',
+            position: 'relative',
+            zIndex: 1
+          }}
+          >
+            <div className="dz-bnr-inr-entry" >
               <h1>Login</h1>
               <nav
                 aria-label="breadcrumb text-align-start"
                 className="breadcrumb-row"
               >
-                <ul className="breadcrumb">
-                  <li className="breadcrumb-item">
-                    <Link href="/"> Home</Link>
+                <ul className="breadcrumb" style={{color: "white!important"}}>
+                  <li className="breadcrumb-item text-white" >
+                    <Link href="/" className="text-white"> Home</Link>
                   </li>
-                  <li className="breadcrumb-item">Login</li>
+                  <li className="breadcrumb-item text-white">Login</li>
                 </ul>
               </nav>
             </div>
-            <div className="registration-media">
+            {/* <div className="registration-media">
               <Image src={IMAGES.RegistrationPng3} alt="/" />
-            </div>
+            </div> */}
           </div>
           <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-content justify-content-center">
             <div className="login-area">

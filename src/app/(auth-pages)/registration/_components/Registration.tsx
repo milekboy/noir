@@ -60,40 +60,47 @@ export default function Registration() {
   };
 
   const verifyPassword = () => {
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setConfirm(false);
-      console.log(confirm);
-    } else if (
-      password === confirmPassword &&
-      email.trim() !== "" &&
-      password.trim() !== ""
-    ) {
-      setError("");
-      setCurrentStep(currentStep + 1);
-      setConfirm(true);
-    } else if (email.trim() === "" || password.trim() === "") {
+    // Check if email or password is empty first
+    if (email.trim() === "" || password.trim() === "") {
       toast("Email and Password cannot be empty", {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",
         autoClose: 5000,
       });
+      console.log("Email and Password cannot be empty");
       return setConfirm(false);
-    } else if (
+    }
+
+    // Check password strength requirements
+    if (
       password.length < 7 ||
       !/[A-Z]/.test(password) ||
       !/[a-z]/.test(password) ||
       !/[0-9]/.test(password) ||
-      !/[^A-Za-z0-9]/.test(password)
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
     ) {
       setError(
         "Password must be at least 7 characters and include uppercase, lowercase, number, and symbol."
       );
+      console.log("Password does not meet criteria");
       return setConfirm(false);
-    } else {
-      setError("");
     }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      setConfirm(false);
+      console.log(confirm);
+      
+      return;
+    }
+
+    // All validations passed
+    setError("");
+    setCurrentStep(currentStep + 1);
+    setConfirm(true);
+    console.log("passwords match");
   };
 
   const verifyName = () => {
@@ -111,27 +118,37 @@ export default function Registration() {
   return (
     <div className="page-content bg-light">
       <section className="px-3">
-        <div className="row">
-          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-content">
+        <div className="row flex">
+          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5 mb-" 
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: '30vh',
+            position: 'relative',
+            zIndex: 1
+          }}
+          >
             <div className="dz-bnr-inr-entry">
               <h1>Registration</h1>
               <nav
-                aria-label="breadcrumb text-align-start"
+                aria-label="breadcrumb text-align-start text-white"
                 className="breadcrumb-row"
               >
-                <ul className="breadcrumb">
-                  <li className="breadcrumb-item">
-                    <Link href="/"> Home</Link>
+                <ul className="breadcrumb text-white">
+                  <li className="breadcrumb-item text-white">
+                    <Link href="/" className="text-white"> Home</Link>
                   </li>
-                  <li className="breadcrumb-item">Registration</li>
+                  <li className="breadcrumb-item text-white">Registration</li>
                 </ul>
               </nav>
             </div>
-            <div className="registration-media">
-              <Image src={IMAGES.RegistrationPng3} alt="/" />
-            </div>
+            {/* <div className="registration-media ">
+              <Image src={IMAGES.loginpic4} alt="/"  className="" />
+            </div> */}
           </div>
-          <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-content justify-content-center">
+          <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-conten justify-content-center mb-3">
             {showOtpStep ? (
               <OTP otp={otp} 
               onVerify={verifyOtp}
