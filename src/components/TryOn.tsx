@@ -74,9 +74,87 @@ const HAND_CONNECTIONS: [number, number][] = [
   [0, 17], // palm base
 ];
 
+function isPalmFacingCamera(hand: Array<{ x: number; y: number; z?: number }>): boolean {
+  if (!hand[0] || !hand[5] || !hand[17]) return false;
+
+  const wrist = hand[0];
+  const indexBase = hand[5];
+  const pinkyBase = hand[17];
+
+  const v1 = {
+    x: indexBase.x - wrist.x,
+    y: indexBase.y - wrist.y,
+    z: (indexBase.z ?? 0) - (wrist.z ?? 0),
+  };
+  const v2 = {
+    x: pinkyBase.x - wrist.x,
+    y: pinkyBase.y - wrist.y,
+    z: (pinkyBase.z ?? 0) - (wrist.z ?? 0),
+  };
+
+  // Cross product → palm normal
+  const normal = {
+    x: v1.y * v2.z - v1.z * v2.y,
+    y: v1.z * v2.x - v1.x * v2.z,
+    z: v1.x * v2.y - v1.y * v2.x,
+  };
+
+  const camDir = { x: 0, y: 0, z: -1 };
+  const dot = normal.x * camDir.x + normal.y * camDir.y + normal.z * camDir.z;
+
+  // Positive dot means palm normal points toward camera (palm facing)
+  return dot > 0;
+}
+
+
+// // NEW: Palm orientation utility
+// // ✅ unchanged: this checks one hand
+// function isPalmFacingCamera(hand: Array<{ x: number; y: number; z: number }>): boolean {
+//   if (!hand[0] || !hand[5] || !hand[17]) return false;
+
+//   const wrist = hand[0];
+//   const indexBase = hand[5];
+//   const pinkyBase = hand[17];
+
+//   const v1 = {
+//     x: indexBase.x - wrist.x,
+//     y: indexBase.y - wrist.y,
+//     z: (indexBase.z ?? 0) - (wrist.z ?? 0),
+//   };
+//   const v2 = {
+//     x: pinkyBase.x - wrist.x,
+//     y: pinkyBase.y - wrist.y,
+//     z: (pinkyBase.z ?? 0) - (wrist.z ?? 0),
+//   };
+
+//   // Cross product → palm normal
+//   const normal = {
+//     x: v1.y * v2.z - v1.z * v2.y,
+//     y: v1.z * v2.x - v1.x * v2.z,
+//     z: v1.x * v2.y - v1.y * v2.x,
+//   };
+
+//   const camDir = { x: 0, y: 0, z: -1 }; // MediaPipe camera faces -Z
+
+//   const dot = normal.x * camDir.x + normal.y * camDir.y + normal.z * camDir.z;
+
+//   return dot > 0; // ✅ palm facing if positive
+// }
+
+// // ✅ NEW: loop through all hands detected
+// function checkHands(hands: Array<Array<{ x: number; y: number; z: number }>>) {
+//   return hands.map((hand, i) => {
+//     const isPalm = isPalmFacingCamera(hand);
+//     return { handIndex: i, palmFacing: isPalm };
+//   });
+// }
+
+
+
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 export default function TryOn() {
+  // removed testing UI and forced states
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter(); // ✅ initialize router
@@ -86,6 +164,31 @@ export default function TryOn() {
   const poseRef = useRef<any | null>(null);
   const faceRef = useRef<any | null>(null);
   const handRef = useRef<any | null>(null);
+
+  const logHandFramesRef = useRef(0);
+
+  // Robust handedness label parser: handles nested arrays and common object shapes
+  const parseHandLabel = (raw: any) => {
+    try {
+      let v = raw;
+      // unwrap nested arrays
+      while (Array.isArray(v) && v.length > 0) v = v[0];
+
+      if (!v) return "Hand";
+
+      if (typeof v === "string") return v;
+
+      if (typeof v === "object") {
+        // common fields used by various versions
+        return (
+          v.label || v.categoryName || v.category || v.name || v.displayName || v.labelName || v.tag || "Hand"
+        );
+      }
+    } catch (e) {
+      // ignore
+    }
+    return "Hand";
+  };
 
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
@@ -183,7 +286,7 @@ export default function TryOn() {
     const startLoop = () => {
       const video = videoRef.current;
       const canvas = overlayRef.current;
-      if (!video || !poseRef.current || !canvas) return;
+      if (!video || !poseRef.current || !canvas || !faceRef.current || !handRef.current) return;
 
       runningRef.current = true;
       const ctx = canvas.getContext("2d")!;
@@ -205,8 +308,7 @@ export default function TryOn() {
           const handRes = await handRef.current.detectForVideo(video, tsMs);
           const handsLm = handRes?.landmarks || [];
 
-          const W = canvas.width,
-            H = canvas.height;
+          const W = canvas.width, H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
           // --- Draw Pose
@@ -222,11 +324,9 @@ export default function TryOn() {
             ctx.lineWidth = 2.5;
             ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
             for (const [a, b] of POSE_CONNECTIONS) {
-              const pa = dict[a],
-                pb = dict[b];
+              const pa = dict[a], pb = dict[b];
               if (!pa || !pb) continue;
-              const A = toPx(pa),
-                B = toPx(pb);
+              const A = toPx(pa), B = toPx(pb);
               ctx.beginPath();
               ctx.moveTo(A.x, A.y);
               ctx.lineTo(B.x, B.y);
@@ -253,33 +353,98 @@ export default function TryOn() {
             }
           }
 
-          // --- Draw Hands
-          for (const lm of handsLm) {
-            ctx.strokeStyle = "rgba(255,255,255,0.9)";
-            ctx.fillStyle = "rgba(0,150,255,0.9)";
-            for (const [a, b] of HAND_CONNECTIONS) {
-              const A = lm[a],
-                B = lm[b];
-              if (!A || !B) continue;
-              ctx.beginPath();
-              ctx.moveTo(A.x * W, A.y * H);
-              ctx.lineTo(B.x * W, B.y * H);
-              ctx.stroke();
+          // --- Draw Hands with mirror-aware correction
+          if (handsLm && handsLm.length) {
+            const handednessRaw = (handRes as any)?.handednesses ?? (handRes as any)?.handedness ?? [];
+
+            // Optional logging for first few frames to inspect raw output
+            if (logHandFramesRef.current < 6) {
+              try {
+                // eslint-disable-next-line no-console
+                console.log("handRes", handRes);
+              } catch {}
             }
-            for (const pt of lm) {
-              ctx.beginPath();
-              ctx.arc(pt.x * W, pt.y * H, 2.5, 0, Math.PI * 2);
-              ctx.fill();
+
+            const midX = W / 2;
+
+            for (let hi = 0; hi < handsLm.length; hi++) {
+              const lm = handsLm[hi];
+              const raw = handednessRaw[hi];
+              // handedness can be returned as nested arrays or objects
+              let label = "Hand";
+              let rawVal: any = raw;
+              if (Array.isArray(rawVal) && rawVal.length > 0) rawVal = rawVal[0];
+              if (typeof rawVal === "string") label = rawVal;
+              else if (rawVal && typeof rawVal === "object") {
+                label = rawVal.label ?? rawVal.categoryName ?? rawVal.category ?? rawVal.name ?? label;
+              }
+
+              // draw skeleton
+              ctx.strokeStyle = "rgba(255,255,255,0.9)";
+              for (const [a, b] of HAND_CONNECTIONS) {
+                const A = lm[a], B = lm[b];
+                if (!A || !B) continue;
+                ctx.beginPath();
+                ctx.moveTo(A.x * W, A.y * H);
+                ctx.lineTo(B.x * W, B.y * H);
+                ctx.stroke();
+              }
+
+
+              // determine adjusted handedness from parsed label
+              const labelLower = String(label).toLowerCase();
+              const isLeft = labelLower.includes("left");
+
+              // Palm orientation check: flip for left hands
+              let facing = isPalmFacingCamera(lm);
+              const facingBeforeFlip = facing;
+              if (isLeft) facing = !facing;
+
+              // Detailed debug log for first few frames so we can see why left is inverted
+              if (logHandFramesRef.current < 6) {
+                try {
+                  // eslint-disable-next-line no-console
+                  console.log({
+                    handIndex: hi,
+                    rawHandedness: raw,
+                    parsedLabel: label,
+                    wristPxX: (lm[0]?.x ?? 0) * W,
+                    midX,
+                    mirrorDetected: null,
+                    isLeftBeforeMirrorAdjust: labelLower.includes("left"),
+                    isLeftAfterMirrorAdjust: isLeft,
+                    facingBeforeFlip,
+                    facingAfterFlip: facing,
+                  });
+                } catch {}
+                // increment global log frame count once per frame (only when first hand logs)
+                if (hi === 0) logHandFramesRef.current++;
+              }
+
+              ctx.fillStyle = facing ? "lime" : "red";
+              ctx.font = "16px sans-serif";
+              ctx.fillText(
+                `${label} ${facing ? "Palm Facing Camera" : "Back of Hand"}`,
+                lm[0].x * W + 10,
+                lm[0].y * H - 10
+              );
+
+              // draw dots
+              ctx.fillStyle = "rgba(0,150,255,0.9)";
+              for (const pt of lm) {
+                ctx.beginPath();
+                ctx.arc(pt.x * W, pt.y * H, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+              }
             }
           }
+
         } catch (e) {
           // swallow detection errors
         }
       };
 
-      const hasRVFC =
-        !isIOS &&
-        typeof (video as any).requestVideoFrameCallback === "function";
+      const hasRVFC = !isIOS && typeof (video as any).requestVideoFrameCallback === "function";
 
       if (hasRVFC) {
         const loopRVFC = () => {
@@ -399,6 +564,7 @@ export default function TryOn() {
           pointerEvents: "none",
         }}
       />
+  {/* control panel removed */}
     </div>
   );
 }
