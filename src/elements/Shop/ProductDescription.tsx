@@ -17,11 +17,12 @@ export default function ProductDescription(){
                 </Nav>
                 <Tab.Content>
                     <Tab.Pane eventKey={"description"}>
-                        <ProductTabStyleOne productImages={[]} description="" name="" price="" category="" _id="" />
+                        {/* <ProductTabStyleOne productImages={[]} description="" name="" price="" category="" _id="" /> */}
                     </Tab.Pane>
-                    {/* <Tab.Pane eventKey={"review"}>
+
+                    <Tab.Pane eventKey={"review"}>
                         <Comments />
-                    </Tab.Pane> */}
+                    </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
         </div>

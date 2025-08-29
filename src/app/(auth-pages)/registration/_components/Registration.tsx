@@ -25,6 +25,7 @@ export default function Registration() {
   const [isVerified, setIsVerified] = useState(false);
   const [otp, setOtp] = useState("");
   const [showOtpStep, setShowOtpStep] = useState(false);
+  const [date, setDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,6 +266,22 @@ export default function Registration() {
                             </p>
                           </div>
                         </div>
+                        <div className="m-b20">
+                          <label className="label-title">Date of Birth</label>
+                          <input
+                            name="date"
+                            className="form-control"
+                            value={date}
+                            onChange={(e) => {
+                              setDate(e.target.value);
+                            }}
+                            placeholder="DD/MM/YYYY"
+                            type="date"
+                          />
+
+                        </div>
+
+
                         <div className="m-b25">
                           <label className="label-title">Gender</label>
                           <select
