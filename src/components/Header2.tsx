@@ -166,6 +166,7 @@ export default function Header2() {
     }
     getCart();
   }, [cartItems]);
+  // console.log("cartItems", cartItems);
 
   return (
     <Fragment>

@@ -81,7 +81,7 @@ export default function ShopProductDefault({
           <div className="container">
             <div className="section-head style-2 d-md-flex justify-content-between align-items-center">
               <div className="left-content">
-                <h2 className="title mb-0">Related products</h2>
+                <h2 className="title mb-0 text-black">Related products</h2>
               </div>
               <Link
                 href="/shop-list"
