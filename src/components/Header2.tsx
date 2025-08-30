@@ -10,6 +10,7 @@ import CategoryMenuItem from "./CategoryMenuItem";
 import Categorydropdown from "./CategoryDropdown";
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
+import { usePathname } from "next/navigation";
 
 interface State {
   headerFix: boolean;
@@ -106,6 +107,7 @@ export const CategoryMenu = ({ state, handleToggleClick }: any) => {
 export default function Header2() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [transparent, setTransparent] = useState(true);
+  const router = usePathname();
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
@@ -216,8 +218,16 @@ export default function Header2() {
                   <Image src={IMAGES.logo} alt="logo" className="w-md-100"/>
                   </Link>
                 </div>
+                  <div>
+                    
+                  </div>
+                  <div>
 
-
+                  </div>
+                 { router === "/collections" || router === "/shop-list" ? (<div className="w-100  text-center d-lg-flex justify-content-center d-none ms-5">
+                    <input type="text" className="rounded-end p-2 rounded-3 rounded-end-0 w-50 fs-6 border border-black px-3"  placeholder="Search product, collections or code" style={{fontSize:"14px!important"}}/>
+                    <span className=" rounded-start rounded-start-0 rounded-3 bg-black text-white px-4" style={{padding: "10px", cursor:"pointer"}}>  <i className="iconly-Light-Search" /></span>
+                  </div>) : null}
                 {/* ---------------------------------------- */}
                 <ul className="nav navbar-nav  w-100 d-md-none d-sm-none">
 
@@ -270,7 +280,7 @@ export default function Header2() {
                         Login / Register
                       </Link>
                     </li>
-                    <li className="nav-item search-link">
+                   { router === "/collections" || router === "/shop-list" ? null :  (<li className="nav-item search-link">
                       <Link
                         href={"#"}
                         className="nav-link"
@@ -278,7 +288,7 @@ export default function Header2() {
                       >
                         <i className="iconly-Light-Search" />
                       </Link>
-                    </li>
+                    </li>)}
                     <li className="nav-item wishlist-link">
                       <Link
                         className="nav-link"
