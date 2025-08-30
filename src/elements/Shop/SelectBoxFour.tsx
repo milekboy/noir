@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
   { title: "₦5,000", category: "(16)" },
@@ -13,6 +13,7 @@ export const dataItemValue = [
 
 export default function SelectBoxOne() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [showMenu, setShowMenu] = useState(false);
 
   const handleCheckboxChange = (title: string) => {
     setCheckedItems((prev) => ({
@@ -21,8 +22,21 @@ export default function SelectBoxOne() {
     }));
   };
 
+  const handleApply = () => {
+    const selected = Object.keys(checkedItems).filter(
+      (key) => checkedItems[key]
+    );
+    alert("Selected prices: " + selected.join(", "));
+    setShowMenu(false); // ✅ close after apply
+  };
+
   return (
-    <Dropdown className="select-dropdown" style={{ backgroundColor: "white" }}>
+    <Dropdown
+      className="select-dropdown"
+      show={showMenu}
+      onToggle={() => setShowMenu((prev) => !prev)}
+      style={{ backgroundColor: "white" }}
+    >
       <Dropdown.Toggle
         className="dropdown-inner"
         style={{
@@ -45,6 +59,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
+            onClick={(e) => e.stopPropagation()} // ✅ prevent closing
             style={{
               display: "flex",
               alignItems: "center",
@@ -53,29 +68,46 @@ export default function SelectBoxOne() {
               cursor: "pointer",
             }}
           >
-            {/* Big black checkbox */}
+            {/* Checkbox */}
             <input
               type="checkbox"
               checked={!!checkedItems[data.title]}
               onChange={() => handleCheckboxChange(data.title)}
               style={{
-                transform: "scale(1.3)", // bigger size
+                transform: "scale(1.3)",
                 cursor: "pointer",
-                accentColor: "black", // ✅ makes the checkmark black
+                accentColor: "black",
               }}
             />
 
-            {/* Price and count */}
-            <a href="/collections" style={{ textDecoration: "none", color: "black", width: "100%" }}>
+            {/* Price label */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
               <span style={{ color: "#888", float: "right" }}>
                 {data.category}
               </span>
             </div>
-            </a>
           </Dropdown.Item>
         ))}
+
+        {/* Apply button */}
+        <div style={{ padding: "10px", borderTop: "1px solid #eee" }}>
+          <a href="/collections">
+            <Button
+              // onClick={handleApply}
+              style={{
+                backgroundColor: "black",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "6px",
+                width: "100%", // ✅ Full width
+              }}
+            >
+              Apply
+            </Button>
+          </a>
+        </div>
       </Dropdown.Menu>
     </Dropdown>
   );
