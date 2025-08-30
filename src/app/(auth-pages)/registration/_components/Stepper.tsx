@@ -71,9 +71,9 @@ export function Stepper({
     if (passwordConfirmation) {
       verifyPassword && verifyPassword();
       onStepChange(currentStep + 1);
-      alert("Password confirmation step reached");
+      // alert("Password confirmation step reached");
 
-      console.log("Password confirmation step reached");
+      // console.log("Password confirmation step reached");
     } else {
       verifyPassword && verifyPassword();
     }

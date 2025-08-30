@@ -7,6 +7,7 @@ import herobg from '../../public/assets/images/hero-banner.jpg';
 import herobg2 from '../../public/assets/images/hero-banner2.png';
 import herobg3 from '../../public/assets/images/hero2.jpg';
 import herobg4 from '../../public/assets/images/hero4.jpg';
+import loginpic4 from '../../public/assets/images/loginpic.jpg';
 import summer1 from '../../public/assets/images/summer1.jpg';
 import summer2 from '../../public/assets/images/summer2.jpg';
 import summer3 from '../../public/assets/images/summer3.jpg';
@@ -438,6 +439,7 @@ const IMAGES : any = {
     herobg4: herobg4,
     BgShape: BgShape,
     BackBg2: BackBg2,
+    loginpic4 : loginpic4,
     logopng: logopng,
     logo : logo,
     LogoWhite: LogoWhite,

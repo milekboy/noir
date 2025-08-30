@@ -1,180 +1,234 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+// Pose connections
+const POSE_CONNECTIONS: [string, string][] = [
+  ["left_shoulder", "right_shoulder"],
+  ["left_shoulder", "left_elbow"],
+  ["left_elbow", "left_wrist"],
+  ["right_shoulder", "right_elbow"],
+  ["right_elbow", "right_wrist"],
+  ["left_shoulder", "left_hip"],
+  ["right_shoulder", "right_hip"],
+  ["left_hip", "right_hip"],
+  ["left_hip", "left_knee"],
+  ["left_knee", "left_ankle"],
+  ["right_hip", "right_knee"],
+  ["right_knee", "right_ankle"],
+  ["left_ankle", "left_heel"],
+  ["left_heel", "left_foot_index"],
+  ["right_ankle", "right_heel"],
+  ["right_heel", "right_foot_index"],
+  ["left_eye", "right_eye"],
+  ["left_ear", "left_shoulder"],
+  ["right_ear", "right_shoulder"],
+];
 
-/* =========================
-   CONFIG
-   ========================= */
-const MODEL_URL = "/assets/model/test_shirt.glb";
-
-// Mirrored selfie video, but we map your RIGHT → model RIGHT.
-const MIRROR_X_COORDS = true;
-
-const VIS_THRESH = 0.4;
-const SCALE_CLAMP = { min: 0.3, max: 6.0 };
-const SMOOTH = { pos: 0.5, rot: 0.6, scl: 0.6, arm: 0.6 };
-const SCALE_FIT = 3.0;
-
-// Base nudges (small now); extra auto-nudges come from your body metrics.
-const NUDGE = {
-  px: 20, // fixed pixels down
-  byShoulder: 0.22, // % of shoulder width down
+// Pose indices → names
+const MP_INDEX_TO_NAME: Record<number, string> = {
+  0: "nose",
+  2: "left_eye",
+  5: "right_eye",
+  7: "left_ear",
+  8: "right_ear",
+  11: "left_shoulder",
+  12: "right_shoulder",
+  13: "left_elbow",
+  14: "right_elbow",
+  15: "left_wrist",
+  16: "right_wrist",
+  23: "left_hip",
+  24: "right_hip",
+  25: "left_knee",
+  26: "right_knee",
+  27: "left_ankle",
+  28: "right_ankle",
+  29: "left_heel",
+  30: "right_heel",
+  31: "left_foot_index",
+  32: "right_foot_index",
 };
-// Extra auto offset driven by torso length (shoulder-mid → hip-mid)
-const TORSO_NUDGE_FACTOR = 0.18; // tweak 0.12..0.25 if needed
 
-// Overlay controls
-const SHOW_OVERLAY = true; // draws only the cyan pose lines/dots (no bone axes)
+// Simple hand connections (21 landmarks)
+const HAND_CONNECTIONS: [number, number][] = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4], // thumb
+  [0, 5],
+  [5, 6],
+  [6, 7],
+  [7, 8], // index
+  [5, 9],
+  [9, 10],
+  [10, 11],
+  [11, 12], // middle
+  [9, 13],
+  [13, 14],
+  [14, 15],
+  [15, 16], // ring
+  [13, 17],
+  [17, 18],
+  [18, 19],
+  [19, 20], // pinky
+  [0, 17], // palm base
+];
 
-// MediaPipe landmark indices
-const LIDX = 11; // left_shoulder
-const RIDX = 12; // right_shoulder
-const LELB = 13; // left_elbow
-const RELB = 14; // right_elbow
-const LWR = 15; // left_wrist
-const RWR = 16; // right_wrist
-const LHIP = 23; // left_hip
-const RHIP = 24; // right_hip
+function isPalmFacingCamera(
+  hand: Array<{ x: number; y: number; z?: number }>
+): boolean {
+  if (!hand[0] || !hand[5] || !hand[17]) return false;
+
+  const wrist = hand[0];
+  const indexBase = hand[5];
+  const pinkyBase = hand[17];
+
+  const v1 = {
+    x: indexBase.x - wrist.x,
+    y: indexBase.y - wrist.y,
+    z: (indexBase.z ?? 0) - (wrist.z ?? 0),
+  };
+  const v2 = {
+    x: pinkyBase.x - wrist.x,
+    y: pinkyBase.y - wrist.y,
+    z: (pinkyBase.z ?? 0) - (wrist.z ?? 0),
+  };
+
+  // Cross product → palm normal
+  const normal = {
+    x: v1.y * v2.z - v1.z * v2.y,
+    y: v1.z * v2.x - v1.x * v2.z,
+    z: v1.x * v2.y - v1.y * v2.x,
+  };
+
+  const camDir = { x: 0, y: 0, z: -1 };
+  const dot = normal.x * camDir.x + normal.y * camDir.y + normal.z * camDir.z;
+
+  // Positive dot means palm normal points toward camera (palm facing)
+  return dot > 0;
+}
+
+// // NEW: Palm orientation utility
+// // ✅ unchanged: this checks one hand
+// function isPalmFacingCamera(hand: Array<{ x: number; y: number; z: number }>): boolean {
+//   if (!hand[0] || !hand[5] || !hand[17]) return false;
+
+//   const wrist = hand[0];
+//   const indexBase = hand[5];
+//   const pinkyBase = hand[17];
+
+//   const v1 = {
+//     x: indexBase.x - wrist.x,
+//     y: indexBase.y - wrist.y,
+//     z: (indexBase.z ?? 0) - (wrist.z ?? 0),
+//   };
+//   const v2 = {
+//     x: pinkyBase.x - wrist.x,
+//     y: pinkyBase.y - wrist.y,
+//     z: (pinkyBase.z ?? 0) - (wrist.z ?? 0),
+//   };
+
+//   // Cross product → palm normal
+//   const normal = {
+//     x: v1.y * v2.z - v1.z * v2.y,
+//     y: v1.z * v2.x - v1.x * v2.z,
+//     z: v1.x * v2.y - v1.y * v2.x,
+//   };
+
+//   const camDir = { x: 0, y: 0, z: -1 }; // MediaPipe camera faces -Z
+
+//   const dot = normal.x * camDir.x + normal.y * camDir.y + normal.z * camDir.z;
+
+//   return dot > 0; // ✅ palm facing if positive
+// }
+
+// // ✅ NEW: loop through all hands detected
+// function checkHands(hands: Array<Array<{ x: number; y: number; z: number }>>) {
+//   return hands.map((hand, i) => {
+//     const isPalm = isPalmFacingCamera(hand);
+//     return { handIndex: i, palmFacing: isPalm };
+//   });
+// }
 
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
-/** Exact bone names from your rig */
-const NAMES = {
-  LU: "mixamorig1LeftArm",
-  LL: "mixamorig1LeftForeArm",
-  RU: "mixamorig1RightArm",
-  RL: "mixamorig1RightForeArm",
-  LSH: "mixamorig1LeftShoulder",
-  RSH: "mixamorig1RightShoulder",
-};
-
 export default function TryOn() {
-  const router = useRouter();
-
-  // DOM
+  // removed testing UI and forced states
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const router = useRouter(); // ✅ initialize router
+
   const overlayRef = useRef<HTMLCanvasElement>(null);
-  const threeCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  // MediaPipe
   const poseRef = useRef<any | null>(null);
-  const lastPose = useRef<MPPoint[] | undefined>(undefined);
+  const faceRef = useRef<any | null>(null);
+  const handRef = useRef<any | null>(null);
 
-  // Three.js
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const pivotRef = useRef<THREE.Object3D | null>(null);
-  const shirtGroupRef = useRef<THREE.Object3D | null>(null);
-  const modelRootRef = useRef<THREE.Object3D | null>(null);
-  const anchorShoulderDistRef = useRef<number>(240);
+  const logHandFramesRef = useRef(0);
 
-  const bonesRef = useRef<{
-    LU?: THREE.Bone;
-    LL?: THREE.Bone;
-    RU?: THREE.Bone;
-    RL?: THREE.Bone;
-    LSH?: THREE.Bone;
-    RSH?: THREE.Bone;
-    restQ: Record<string, THREE.Quaternion>;
-    lastZ: Record<string, number>;
-  }>({ restQ: {}, lastZ: {} });
+  // Robust handedness label parser: handles nested arrays and common object shapes
+  const parseHandLabel = (raw: any) => {
+    try {
+      let v = raw;
+      // unwrap nested arrays
+      while (Array.isArray(v) && v.length > 0) v = v[0];
 
-  // smoothing state
-  const lastPos = useRef(new THREE.Vector3());
-  const lastRot = useRef(0);
-  const lastScl = useRef(1);
+      if (!v) return "Hand";
 
-  // strict-mode guard
-  const didInit = useRef(false);
+      if (typeof v === "string") return v;
 
-  /* ---------- utils ---------- */
-  const p2sX = (x: number, W: number) => (MIRROR_X_COORDS ? 1 - x : x) * W;
-  const p2sY = (y: number, H: number) => y * H;
-
-  const angle2D = (ax: number, ay: number, bx: number, by: number) =>
-    Math.atan2(by - ay, bx - ax);
-
-  const setGroupFromWorld = (world: THREE.Vector3) => {
-    if (!pivotRef.current || !shirtGroupRef.current) return;
-    const p = pivotRef.current.position;
-    shirtGroupRef.current.position.set(world.x - p.x, world.y - p.y, 0);
+      if (typeof v === "object") {
+        // common fields used by various versions
+        return (
+          v.label ||
+          v.categoryName ||
+          v.category ||
+          v.name ||
+          v.displayName ||
+          v.labelName ||
+          v.tag ||
+          "Hand"
+        );
+      }
+    } catch (e) {
+      // ignore
+    }
+    return "Hand";
   };
 
-  function drawPoseOverlay(W: number, H: number, lm?: MPPoint[]) {
-    if (!SHOW_OVERLAY) return;
-    const ctx = overlayRef.current?.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, W, H);
-    if (!lm) return;
-
-    const P = (i: number) =>
-      lm[i] ? { x: p2sX(lm[i]!.x, W), y: p2sY(lm[i]!.y, H) } : undefined;
-
-    const Ls = P(LIDX),
-      Rs = P(RIDX),
-      Le = P(LELB),
-      Re = P(RELB),
-      Lw = P(LWR),
-      Rw = P(RWR);
-
-    // pose lines (cyan)
-    ctx.strokeStyle = "rgba(0,200,255,0.9)";
-    ctx.lineWidth = 4;
-    const line = (a?: any, b?: any) => {
-      if (!a || !b) return;
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
-    };
-    line(Ls, Rs);
-    line(Ls, Le);
-    line(Le, Lw);
-    line(Rs, Re);
-    line(Re, Rw);
-
-    // dots
-    ctx.fillStyle = "#0ff";
-    [Ls, Rs, Le, Re, Lw, Rw].forEach((p) => {
-      if (!p) return;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-      ctx.fill();
-    });
-  }
-
-  const setToRest = (bone?: THREE.Bone, key?: string) => {
-    if (!bone || !key) return;
-    const rq = bonesRef.current.restQ[key];
-    if (rq) bone.quaternion.copy(rq);
-  };
+  const runningRef = useRef(false);
+  const cleanupRef = useRef<() => void>(() => {});
 
   useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
-
     let stream: MediaStream | null = null;
     let rafId: number | null = null;
-    let stopLoop = false;
+    let stopRaf = false;
 
-    /* CAMERA */
+    const isIOS =
+      typeof navigator !== "undefined" &&
+      /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     const startCamera = async () => {
       try {
+        const idealW = isIOS ? 960 : 1280;
+        const idealH = isIOS ? 540 : 720;
+
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
+            width: { ideal: idealW },
+            height: { ideal: idealH },
           },
           audio: false,
         });
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "");
+          videoRef.current.setAttribute("autoplay", "");
+          videoRef.current.muted = true;
+          // @ts-ignore
+          videoRef.current.disablePictureInPicture = true;
           await videoRef.current.play().catch(() => {});
         }
       } catch (e) {
@@ -182,13 +236,29 @@ export default function TryOn() {
       }
     };
 
-    /* MEDIAPIPE */
-    const initVision = async () => {
+    const fitCanvas = () => {
+      const el = containerRef.current;
+      const cv = overlayRef.current;
+      if (!el || !cv) return;
+      const w = el.clientWidth || window.innerWidth;
+      const h = el.clientHeight || window.innerHeight;
+      cv.width = w;
+      cv.height = h;
+    };
+
+    const initModels = async () => {
       const vision = await import("@mediapipe/tasks-vision");
-      const { FilesetResolver, PoseLandmarker } = vision;
+      const {
+        FilesetResolver,
+        PoseLandmarker,
+        FaceLandmarker,
+        HandLandmarker,
+      } = vision;
+
       const fileset = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
       );
+
       poseRef.current = await PoseLandmarker.createFromOptions(fileset, {
         baseOptions: {
           modelAssetPath:
@@ -197,326 +267,304 @@ export default function TryOn() {
         runningMode: "VIDEO",
         numPoses: 1,
       });
-    };
 
-    /* THREE */
-    const initThree = () => {
-      if (!threeCanvasRef.current) return;
-      const w = threeCanvasRef.current.clientWidth || window.innerWidth;
-      const h = threeCanvasRef.current.clientHeight || window.innerHeight;
-
-      const renderer = new THREE.WebGLRenderer({
-        canvas: threeCanvasRef.current,
-        alpha: true,
-        antialias: true,
-      });
-      renderer.setSize(w, h, false);
-      (renderer as any).outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.0;
-      rendererRef.current = renderer;
-
-      const scene = new THREE.Scene();
-      sceneRef.current = scene;
-
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      scene.environment = env;
-      scene.background = null;
-
-      const cam = new THREE.OrthographicCamera(0, w, h, 0, -1000, 1000);
-      cam.position.set(0, 0, 10);
-      cameraRef.current = cam;
-
-      const amb = new THREE.AmbientLight(0xffffff, 0.9);
-      const dir = new THREE.DirectionalLight(0xffffff, 1.8);
-      dir.position.set(1, 1, 1.5);
-      scene.add(amb, dir);
-
-      const pivot = new THREE.Object3D();
-      pivot.position.set(w / 2, h / 2, 0);
-      scene.add(pivot);
-      pivotRef.current = pivot;
-
-      new GLTFLoader().load(
-        MODEL_URL,
-        (gltf) => {
-          const root = gltf.scene;
-          modelRootRef.current = root;
-
-          // Front faces only (so you sit "inside" it)
-          root.traverse((o: any) => {
-            if (o.isMesh) {
-              o.frustumCulled = false;
-              const mats = Array.isArray(o.material)
-                ? o.material
-                : [o.material];
-              mats.forEach((m: any) => (m.side = THREE.FrontSide));
-            }
-          });
-
-          // Normalize width and scale
-          const box = new THREE.Box3().setFromObject(root);
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          const normalize = 400 / Math.max(1e-6, size.x);
-          root.scale.multiplyScalar(normalize);
-
-          // Recenter to shoulder midpoint (so base NUDGE stays small)
-          root.updateWorldMatrix(true, true);
-          const LSH = root.getObjectByName(NAMES.LSH) as THREE.Bone | undefined;
-          const RSH = root.getObjectByName(NAMES.RSH) as THREE.Bone | undefined;
-          if (LSH && RSH) {
-            const lw = new THREE.Vector3();
-            LSH.getWorldPosition(lw);
-            const rw = new THREE.Vector3();
-            RSH.getWorldPosition(rw);
-            const midW = lw.add(rw).multiplyScalar(0.5);
-            const midLocal = root.worldToLocal(midW.clone());
-            root.position.sub(midLocal);
-          } else {
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            root.position.sub(center);
-          }
-
-          const shirtGroup = new THREE.Object3D();
-          shirtGroup.add(root);
-          pivot.add(shirtGroup);
-          shirtGroupRef.current = shirtGroup;
-
-          // Bones to drive + rest quats
-          const getB = (n: string) =>
-            root.getObjectByName(n) as THREE.Bone | undefined;
-          bonesRef.current.LU = getB(NAMES.LU);
-          bonesRef.current.LL = getB(NAMES.LL);
-          bonesRef.current.RU = getB(NAMES.RU);
-          bonesRef.current.RL = getB(NAMES.RL);
-          bonesRef.current.LSH = getB(NAMES.LSH);
-          bonesRef.current.RSH = getB(NAMES.RSH);
-
-          ["LU", "LL", "RU", "RL", "LSH", "RSH"].forEach((k) => {
-            const b = (bonesRef.current as any)[k] as THREE.Bone | undefined;
-            if (b) bonesRef.current.restQ[k] = b.quaternion.clone();
-          });
+      faceRef.current = await FaceLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
         },
-        undefined,
-        (err) => console.error("[THREE] GLB load error:", err)
-      );
+        runningMode: "VIDEO",
+        numFaces: 1,
+      });
+
+      handRef.current = await HandLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        },
+        runningMode: "VIDEO",
+        numHands: 2,
+      });
+
+      console.log("[LOCAL] Pose, Face, and Hand models ready");
     };
 
-    /* FIT */
-    const fitAll = () => {
-      const el = containerRef.current;
-      const overlay = overlayRef.current;
+    const startLoop = () => {
+      const video = videoRef.current;
+      const canvas = overlayRef.current;
       if (
-        !el ||
-        !overlay ||
-        !cameraRef.current ||
-        !rendererRef.current ||
-        !pivotRef.current
+        !video ||
+        !poseRef.current ||
+        !canvas ||
+        !faceRef.current ||
+        !handRef.current
       )
         return;
 
-      const w = el.clientWidth || window.innerWidth;
-      const h = el.clientHeight || window.innerHeight;
+      runningRef.current = true;
+      const ctx = canvas.getContext("2d")!;
 
-      overlay.width = w;
-      overlay.height = h;
-      rendererRef.current.setSize(w, h, false);
-      cameraRef.current.left = 0;
-      cameraRef.current.right = w;
-      cameraRef.current.top = h;
-      cameraRef.current.bottom = 0;
-      cameraRef.current.updateProjectionMatrix();
-      pivotRef.current.position.set(w / 2, h / 2, 0);
-    };
+      const processFrame = async () => {
+        if (!runningRef.current) return;
+        const tsMs = performance.now();
 
-    /* LOOP */
-    const loop = async () => {
-      if (stopLoop) return;
-
-      // Update pose
-      const video = videoRef.current;
-      if (video && poseRef.current) {
         try {
-          const ts = performance.now();
-          const res = await poseRef.current.detectForVideo(video, ts);
-          lastPose.current = res?.landmarks?.[0];
-        } catch {}
-      }
+          // Pose
+          const poseRes = await poseRef.current.detectForVideo(video, tsMs);
+          const poseLm = poseRes?.landmarks?.[0];
 
-      // Overlay
-      if (overlayRef.current) {
-        drawPoseOverlay(
-          overlayRef.current.width,
-          overlayRef.current.height,
-          lastPose.current
-        );
-      }
+          // Face
+          const faceRes = await faceRef.current.detectForVideo(video, tsMs);
+          const faceLm = faceRes?.faceLandmarks?.[0];
 
-      // Update garment transform + arm bones
-      if (shirtGroupRef.current && overlayRef.current && cameraRef.current) {
-        const W = overlayRef.current.width;
-        const H = overlayRef.current.height;
+          // Hands
+          const handRes = await handRef.current.detectForVideo(video, tsMs);
+          const handsLm = handRes?.landmarks || [];
 
-        const lm = lastPose.current;
-        const Ls = lm?.[LIDX],
-          Rs = lm?.[RIDX];
-        const Le = lm?.[LELB],
-          Re = lm?.[RELB];
-        const Lw = lm?.[LWR],
-          Rw = lm?.[RWR];
-        const Lh = lm?.[LHIP],
-          Rh = lm?.[RHIP];
+          const W = canvas.width,
+            H = canvas.height;
+          ctx.clearRect(0, 0, W, H);
 
-        if (
-          Ls &&
-          Rs &&
-          (Ls.visibility ?? 1) >= VIS_THRESH &&
-          (Rs.visibility ?? 1) >= VIS_THRESH
-        ) {
-          // Shoulders (screen)
-          const x1 = p2sX(Ls.x, W),
-            y1 = p2sY(Ls.y, H);
-          const x2 = p2sX(Rs.x, W),
-            y2 = p2sY(Rs.y, H);
-          const shoulderPx = Math.hypot(x2 - x1, y2 - y1);
+          // --- Draw Pose
+          if (poseLm) {
+            const dict: Record<string, MPPoint> = {};
+            for (const [idxStr, name] of Object.entries(MP_INDEX_TO_NAME)) {
+              const idx = Number(idxStr);
+              const L = poseLm[idx];
+              if (L) dict[name] = L;
+            }
+            const toPx = (p: MPPoint) => ({ x: p.x * W, y: p.y * H });
 
-          // Torso length for smarter down-offset
-          let torsoPx = 0;
-          if (Lh && Rh) {
-            const hx = (p2sX(Lh.x, W) + p2sX(Rh.x, W)) * 0.5;
-            const hy = (p2sY(Lh.y, H) + p2sY(Rh.y, H)) * 0.5;
-            const sx = (x1 + x2) * 0.5;
-            const sy = (y1 + y2) * 0.5;
-            torsoPx = Math.hypot(hx - sx, hy - sy);
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "rgba(0, 200, 255, 0.9)";
+            for (const [a, b] of POSE_CONNECTIONS) {
+              const pa = dict[a],
+                pb = dict[b];
+              if (!pa || !pb) continue;
+              const A = toPx(pa),
+                B = toPx(pb);
+              ctx.beginPath();
+              ctx.moveTo(A.x, A.y);
+              ctx.lineTo(B.x, B.y);
+              ctx.stroke();
+            }
+            ctx.fillStyle = "rgba(0, 200, 255, 0.9)";
+            for (const name in dict) {
+              const P = toPx(dict[name]);
+              ctx.beginPath();
+              ctx.arc(P.x, P.y, 3, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
 
-          // Midpoint + combined nudges
-          let midX = (x1 + x2) * 0.5;
-          let midY =
-            (y1 + y2) * 0.5 +
-            1000 +
-            NUDGE.byShoulder * shoulderPx +
-            TORSO_NUDGE_FACTOR * torsoPx;
-
-          // to world (ortho)
-          const ndcX = (midX / W) * 2 - 1;
-          const ndcY = -(midY / H) * 2 + 1;
-          const world = new THREE.Vector3(ndcX, ndcY, 0.5).unproject(
-            cameraRef.current
-          );
-
-          // Smooth placement
-          lastPos.current.lerp(world, SMOOTH.pos);
-          setGroupFromWorld(lastPos.current);
-
-          // Scale from shoulder width
-          let s =
-            (shoulderPx / (anchorShoulderDistRef.current ?? 240)) * SCALE_FIT;
-          s = Math.min(SCALE_CLAMP.max, Math.max(SCALE_CLAMP.min, s));
-          lastScl.current += (s - lastScl.current) * SMOOTH.scl;
-          shirtGroupRef.current.scale.set(
-            lastScl.current,
-            lastScl.current,
-            lastScl.current
-          );
-
-          // Rotate garment to shoulder tilt
-          const angle = Math.atan2(y2 - y1, x2 - x1);
-          const targetRotZ = MIRROR_X_COORDS ? angle : -angle;
-          lastRot.current += (targetRotZ - lastRot.current) * SMOOTH.rot;
-          shirtGroupRef.current.rotation.set(0, 0, lastRot.current);
-
-          // Keep shoulders at rest
-          setToRest(bonesRef.current.LSH, "LSH");
-          setToRest(bonesRef.current.RSH, "RSH");
-
-          // Drive arms (Z rotation only)
-          const B = bonesRef.current;
-          const applyZ = (
-            bone: THREE.Bone | undefined,
-            key: string,
-            z: number
-          ) => {
-            if (!bone) return;
-            const base = B.restQ[key];
-            if (!base) return;
-            const prev = B.lastZ[key] ?? 0;
-            const sm = prev + (z - prev) * SMOOTH.arm;
-            B.lastZ[key] = sm;
-            const rotZ = new THREE.Quaternion().setFromAxisAngle(
-              new THREE.Vector3(0, 0, 1),
-              sm
-            );
-            bone.quaternion.copy(base.clone().multiply(rotZ));
-          };
-
-          if (Le && Lw && (Le.visibility ?? 1) >= VIS_THRESH) {
-            const l_s = { x: x1, y: y1 };
-            const l_e = { x: p2sX(Le.x, W), y: p2sY(Le.y, H) };
-            const l_w = { x: p2sX(Lw.x, W), y: p2sY(Lw.y, H) };
-            applyZ(B.LU, "LU", angle2D(l_s.x, l_s.y, l_e.x, l_e.y));
-            applyZ(B.LL, "LL", angle2D(l_e.x, l_e.y, l_w.x, l_w.y));
+          // --- Draw Face
+          if (faceLm) {
+            ctx.fillStyle = "rgba(0,255,0,0.7)";
+            for (let i = 0; i < faceLm.length; i += 2) {
+              // skip half points for perf
+              const pt = faceLm[i];
+              ctx.beginPath();
+              ctx.arc(pt.x * W, pt.y * H, 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
 
-          if (Re && Rw && (Re.visibility ?? 1) >= VIS_THRESH) {
-            const r_s = { x: x2, y: y2 };
-            const r_e = { x: p2sX(Re.x, W), y: p2sY(Re.y, H) };
-            const r_w = { x: p2sX(Rw.x, W), y: p2sY(Rw.y, H) };
-            applyZ(B.RU, "RU", angle2D(r_s.x, r_s.y, r_e.x, r_e.y));
-            applyZ(B.RL, "RL", angle2D(r_e.x, r_e.y, r_w.x, r_w.y));
+          // --- Draw Hands with mirror-aware correction
+          if (handsLm && handsLm.length) {
+            const handednessRaw =
+              (handRes as any)?.handednesses ??
+              (handRes as any)?.handedness ??
+              [];
+
+            // Optional logging for first few frames to inspect raw output
+            if (logHandFramesRef.current < 6) {
+              try {
+                // eslint-disable-next-line no-console
+                console.log("handRes", handRes);
+              } catch {}
+            }
+
+            const midX = W / 2;
+
+            for (let hi = 0; hi < handsLm.length; hi++) {
+              const lm = handsLm[hi];
+              const raw = handednessRaw[hi];
+              // handedness can be returned as nested arrays or objects
+              let label = "Hand";
+              let rawVal: any = raw;
+              if (Array.isArray(rawVal) && rawVal.length > 0)
+                rawVal = rawVal[0];
+              if (typeof rawVal === "string") label = rawVal;
+              else if (rawVal && typeof rawVal === "object") {
+                label =
+                  rawVal.label ??
+                  rawVal.categoryName ??
+                  rawVal.category ??
+                  rawVal.name ??
+                  label;
+              }
+
+              // draw skeleton
+              ctx.strokeStyle = "rgba(255,255,255,0.9)";
+              for (const [a, b] of HAND_CONNECTIONS) {
+                const A = lm[a],
+                  B = lm[b];
+                if (!A || !B) continue;
+                ctx.beginPath();
+                ctx.moveTo(A.x * W, A.y * H);
+                ctx.lineTo(B.x * W, B.y * H);
+                ctx.stroke();
+              }
+
+              // determine adjusted handedness from parsed label
+              const labelLower = String(label).toLowerCase();
+              const isLeft = labelLower.includes("left");
+
+              // Palm orientation check: flip for left hands
+              let facing = isPalmFacingCamera(lm);
+              const facingBeforeFlip = facing;
+              if (isLeft) facing = !facing;
+
+              // Detailed debug log for first few frames so we can see why left is inverted
+              if (logHandFramesRef.current < 6) {
+                try {
+                  // eslint-disable-next-line no-console
+                  console.log({
+                    handIndex: hi,
+                    rawHandedness: raw,
+                    parsedLabel: label,
+                    wristPxX: (lm[0]?.x ?? 0) * W,
+                    midX,
+                    mirrorDetected: null,
+                    isLeftBeforeMirrorAdjust: labelLower.includes("left"),
+                    isLeftAfterMirrorAdjust: isLeft,
+                    facingBeforeFlip,
+                    facingAfterFlip: facing,
+                  });
+                } catch {}
+                // increment global log frame count once per frame (only when first hand logs)
+                if (hi === 0) logHandFramesRef.current++;
+              }
+
+              ctx.fillStyle = facing ? "lime" : "red";
+              ctx.font = "16px sans-serif";
+              ctx.fillText(
+                `${label} ${facing ? "Palm Facing Camera" : "Back of Hand"}`,
+                lm[0].x * W + 10,
+                lm[0].y * H - 10
+              );
+
+              // draw dots
+              ctx.fillStyle = "rgba(0,150,255,0.9)";
+              for (const pt of lm) {
+                ctx.beginPath();
+                ctx.arc(pt.x * W, pt.y * H, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
           }
+        } catch (e) {
+          // swallow detection errors
         }
+      };
+
+      const hasRVFC =
+        !isIOS &&
+        typeof (video as any).requestVideoFrameCallback === "function";
+
+      if (hasRVFC) {
+        const loopRVFC = () => {
+          if (!runningRef.current) return;
+          processFrame().finally(() => {
+            (video as any).requestVideoFrameCallback(loopRVFC);
+          });
+        };
+        (video as any).requestVideoFrameCallback(loopRVFC);
+      } else {
+        const loopRAF = () => {
+          if (!runningRef.current || stopRaf) return;
+          processFrame().finally(() => {
+            rafId = requestAnimationFrame(loopRAF);
+          });
+        };
+        rafId = requestAnimationFrame(loopRAF);
       }
 
-      // Render
-      if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
-      }
-      rafId = requestAnimationFrame(loop);
+      cleanupRef.current = () => {
+        runningRef.current = false;
+        stopRaf = true;
+        if (rafId) cancelAnimationFrame(rafId);
+      };
     };
 
     (async () => {
       await startCamera();
-      await initVision();
-      initThree();
-      fitAll();
-      window.addEventListener("resize", fitAll);
-      loop();
+      fitCanvas();
+      await initModels();
+      startLoop();
+
+      const onResize = () => fitCanvas();
+      window.addEventListener("resize", onResize);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) runningRef.current = false;
+        else if (!runningRef.current) {
+          stopRaf = false;
+          runningRef.current = true;
+          const video = videoRef.current;
+          if (video) requestAnimationFrame(() => startLoop());
+        }
+      });
+
+      cleanupRef.current = () => {
+        window.removeEventListener("resize", onResize);
+        runningRef.current = false;
+        stopRaf = true;
+        if (rafId) cancelAnimationFrame(rafId);
+        if (stream) stream.getTracks().forEach((t) => t.stop());
+      };
     })();
 
-    return () => {
-      stopLoop = true;
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", fitAll);
-      if (stream) stream.getTracks().forEach((t) => t.stop());
-    };
+    return () => cleanupRef.current?.();
   }, []);
+
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   return (
     <div
       ref={containerRef}
-      style={{ position: "relative", width: "100%", height: "100vh" }}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: isIOS ? "60vh" : "80vh",
+        background: "black",
+        overflow: "hidden",
+      }}
     >
       <button
         onClick={() => router.push("/shop-standard")}
         style={{
           position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 20,
-          background: "#0006",
-          color: "#fff",
-          padding: "6px 10px",
-          borderRadius: 6,
+          top: "10px",
+          left: "10px",
+          zIndex: 10,
+          padding: "8px 14px",
+          borderRadius: "6px",
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          border: "1px solid white",
+          cursor: "pointer",
+          marginLeft:
+            typeof window !== "undefined" && window.innerWidth >= 1024
+              ? "100px"
+              : "0",
         }}
       >
         ← Back
       </button>
 
-      {/* Mirrored video for “selfie” feel */}
       <video
         ref={videoRef}
         autoPlay
@@ -528,23 +576,9 @@ export default function TryOn() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          transform: "scaleX(-1)",
           zIndex: 1,
         }}
       />
-
-      <canvas
-        ref={threeCanvasRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 2,
-        }}
-      />
-
-      {/* Cyan pose overlay (no RGB axes) */}
       <canvas
         ref={overlayRef}
         style={{
@@ -552,10 +586,11 @@ export default function TryOn() {
           inset: 0,
           width: "100%",
           height: "100%",
-          zIndex: 3,
+          zIndex: 2,
           pointerEvents: "none",
         }}
       />
+      {/* control panel removed */}
     </div>
   );
 }

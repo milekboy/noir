@@ -107,8 +107,8 @@ export default function ShopList({
         <div className="container">
           <div className="row">
             {/* Sidebar */}
-            <div className="col-xl-3">
-              <div className="sticky-xl-top">
+            <div className="col-xl-3 d-lg-none">
+              <div className="sticky-xl-top ">
                 <Link
                   href={"#"}
                   className={`panel-close-btn ${mobileSidebar ? "active" : ""}`}
@@ -149,7 +149,7 @@ export default function ShopList({
             </div>
 
             {/* Main Content */}
-            <div className="col-80 col-xl-9 ">
+            <div className="col-80 col-xl-12 col-sm-">
               <h4 className="mb-3" style={{color: "black"}}>Category</h4>
               <div className="row">
                 <div className="col-xl-12">
@@ -220,7 +220,7 @@ export default function ShopList({
                       <div className="row gx-xl-4 g-3">
                         {products.map((item, index) => (
                           <div
-                            className="col-6 col-xl-3 col-lg-4 col-md-4 col-sm-6 m-b30"
+                            className="col-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 m-b30"
                             key={index}
                           >
                             <ShopGridCard

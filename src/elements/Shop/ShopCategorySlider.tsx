@@ -65,8 +65,9 @@ export default function ShopCategorySlider({
             className="shop-card "
           >
             <div
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", minHeight: "100px" }}
               className="dz-media rounded overflow-hidden"
+              
             >
               <Image
                 src={
@@ -76,11 +77,12 @@ export default function ShopCategorySlider({
                 alt={item.name}
                 width={200}
                 height={200}
-                className="w-full h-auto object-cover"
+                className="w-full h-50 object-cover"
+                style={{height:"100px!important"}}
               />
             </div>
-            <div className="dz-content">
-              <h6 className="title">
+            <div className="dz-content position-absolute d-flex justify-content-center align-items-center w-100" style={{bottom:50 , left:0}}>
+              <h6 className="title w-auto p-2 px-3 bg-white rounded-5 border-1 border-black" >
                 <Link href={`/shop-list?category=${item._id}`}>
                   {item.name}
                 </Link>
