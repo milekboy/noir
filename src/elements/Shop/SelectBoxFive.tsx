@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "Blue", category: "(16)" },
-  { title: "Red", category: "(19)" },
-  { title: "Green", category: "(16)" },
-  { title: "Purple", category: "(36)" },
-  { title: "Pink", category: "(46)" },
-  { title: "Cream", category: "(16)" },
-  { title: "Brown", category: "(17)" },
+  { title: "Blue", category: "(16)", color: "blue" },
+  { title: "Red", category: "(19)", color: "red" },
+  { title: "Green", category: "(16)", color: "green" },
+  { title: "Purple", category: "(36)", color: "purple" },
+  { title: "Pink", category: "(46)", color: "pink" },
+  { title: "Cream", category: "(16)", color: "wheat" },
+  { title: "Brown", category: "(17)", color: "brown" },
 ];
 
-export default function SelectBoxOne() {
+export default function SelectBoxColor() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [showMenu, setShowMenu] = useState(false);
 
   const handleCheckboxChange = (title: string) => {
     setCheckedItems((prev) => ({
@@ -21,20 +22,19 @@ export default function SelectBoxOne() {
     }));
   };
 
-  // Map color names to actual CSS colors
-  const colorMap: Record<string, string> = {
-    Blue: "blue",
-    Red: "red",
-    Green: "green",
-    Purple: "purple",
-    Pink: "pink",
-    Cream: "#FFFDD0",
-    Brown: "brown",
+  const handleApply = () => {
+    const selected = Object.keys(checkedItems).filter(
+      (key) => checkedItems[key]
+    );
+    alert("Selected colors: " + selected.join(", "));
+    setShowMenu(false);
   };
 
   return (
     <Dropdown
       className="select-dropdown"
+      show={showMenu}
+      onToggle={() => setShowMenu((prev) => !prev)}
       style={{ backgroundColor: "white", marginLeft: "-20px" }}
     >
       <Dropdown.Toggle
@@ -59,6 +59,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
+            onClick={(e) => e.stopPropagation()} // ✅ keep dropdown open
             style={{
               display: "flex",
               alignItems: "center",
@@ -67,61 +68,66 @@ export default function SelectBoxOne() {
               cursor: "pointer",
             }}
           >
-            {/* Custom colored checkbox */}
-            <input
-              type="checkbox"
-              checked={!!checkedItems[data.title]}
-              onChange={() => handleCheckboxChange(data.title)}
+            {/* Colored square acting as checkbox */}
+            <label
               style={{
-                appearance: "none", // remove default checkbox UI
-                WebkitAppearance: "none",
-                MozAppearance: "none",
-                width: "18px",
-                height: "18px",
+                width: "20px",
+                height: "20px",
+                backgroundColor: data.color,
                 borderRadius: "4px",
-                border: "1px solid #ccc",
-                backgroundColor: colorMap[data.title] || "white", // fill color
+                border: checkedItems[data.title]
+                  ? "2px solid black"
+                  : "2px solid #ccc",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 cursor: "pointer",
-                position: "relative",
-              }}
-            />
-            {/* Tick overlay (CSS pseudo-element effect) */}
-            {checkedItems[data.title] && (
-              <span
-                style={{
-                  position: "absolute",
-                  width: "18px",
-                  height: "18px",
-                  pointerEvents: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "14px",
-                  color: "white",
-                }}
-              >
-                ✓
-              </span>
-            )}
-
-            {/* Label text */}
-            <a
-              href="/collections"
-              style={{
-                textDecoration: "none",
-                color: "black",
-                width: "100%",
               }}
             >
-              <div style={{ flex: 1 }}>
-                <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
-                <span style={{ color: "#888", float: "right" }}>
-                  {data.category}
-                </span>
-              </div>
-            </a>
+              <input
+                type="checkbox"
+                checked={!!checkedItems[data.title]}
+                onChange={() => handleCheckboxChange(data.title)}
+                style={{
+                  display: "none", // hide native checkbox
+                }}
+              />
+              {checkedItems[data.title] && (
+                <i
+                  className="fa fa-check"
+                  style={{ color: "white", fontSize: "12px" }}
+                />
+              )}
+            </label>
+
+            {/* Title + Count */}
+            <div style={{ flex: 1 }}>
+              <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
+              <span style={{ color: "#888", float: "right" }}>
+                {data.category}
+              </span>
+            </div>
           </Dropdown.Item>
         ))}
+
+        {/* Apply button */}
+        <div style={{ padding: "10px", borderTop: "1px solid #eee" }}>
+          <a href="/collections">
+            <Button
+              // onClick={handleApply}
+              style={{
+                backgroundColor: "black",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "6px",
+                width: "100%", // ✅ Full width
+              }}
+            >
+              Apply
+            </Button>
+          </a>
+        </div>
       </Dropdown.Menu>
     </Dropdown>
   );

@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  {title:"XS", category: "(6)"},
-    {title:"S", category: "(8)"},
-    {title:"M", category: "(10)"},
-    {title:"M/L", category: "(12)"},
-    {title:"L", category: "(14)"},
-    {title:"XL", category: "(16)"},
-    {title:"XXL", category: "(18)"},
+  { title: "XS", category: "(6)" },
+  { title: "S", category: "(8)" },
+  { title: "M", category: "(10)" },
+  { title: "M/L", category: "(12)" },
+  { title: "L", category: "(14)" },
+  { title: "XL", category: "(16)" },
+  { title: "XXL", category: "(18)" },
 ];
 
 export default function SelectBoxOne() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [showMenu, setShowMenu] = useState(false);
 
   const handleCheckboxChange = (title: string) => {
     setCheckedItems((prev) => ({
@@ -21,8 +22,22 @@ export default function SelectBoxOne() {
     }));
   };
 
+  // ✅ Apply button closes the menu
+  const handleApply = () => {
+    const selected = Object.keys(checkedItems).filter(
+      (key) => checkedItems[key]
+    );
+    alert("Selected sizes: " + selected.join(", "));
+    setShowMenu(false); // close dropdown
+  };
+
   return (
-    <Dropdown className="select-dropdown" style={{ backgroundColor: "white", marginLeft: "-20px" }}>
+    <Dropdown
+      className="select-dropdown"
+      show={showMenu}
+      onToggle={() => setShowMenu((prev) => !prev)}
+      style={{ backgroundColor: "white", marginLeft: "-20px" }}
+    >
       <Dropdown.Toggle
         className="dropdown-inner"
         style={{
@@ -45,6 +60,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
+            onClick={(e) => e.stopPropagation()} // ✅ Prevent closing on click
             style={{
               display: "flex",
               alignItems: "center",
@@ -61,21 +77,43 @@ export default function SelectBoxOne() {
               style={{
                 transform: "scale(1.3)", // bigger size
                 cursor: "pointer",
-                accentColor: "black", // ✅ makes the checkmark black
+                accentColor: "black", // ✅ black tick
               }}
             />
 
-            {/* Price and count */}
-            <a href="/collections" style={{ textDecoration: "none", color: "black", width: "100%" }}>
+            {/* Size and count */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
               <span style={{ color: "#888", float: "right" }}>
                 {data.category}
               </span>
             </div>
-            </a>
           </Dropdown.Item>
         ))}
+
+        {/* ✅ Full-width button */}
+        <div
+          style={{
+            padding: "10px",
+            borderTop: "1px solid #eee",
+          }}
+        >
+          <a href="/collections">
+            <Button
+              // onClick={handleApply}
+              style={{
+                backgroundColor: "black",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "6px",
+                width: "100%", // ✅ Full width
+              }}
+            >
+              Apply
+            </Button>
+          </a>
+        </div>
       </Dropdown.Menu>
     </Dropdown>
   );
