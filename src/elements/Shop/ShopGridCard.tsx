@@ -92,7 +92,7 @@ export default function ShopGridCard(props: cardType) {
   };
 
   return (
-    <div className="shop-card style-1">
+    <div className="shop-card style-1 ">
       <div className="dz-media">
         <Image width={400} height={400} src={props.image} alt="shop" />
         <div className="shop-meta">

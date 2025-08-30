@@ -244,7 +244,7 @@ export default function ShopList({
                         {products.slice(0, 6).map((item, index) => (
                           <div
                             className="col-md-12 col-sm-12 col-xxxl-6"
-                            key={index}
+                            key={item._id}
                           >
                             {" "}
                             <ShopGridCard
@@ -276,7 +276,7 @@ export default function ShopList({
                               title={item.name}
                               price={`₦${item.price}`}
                               showdetailModal={() => setDetailModal(true)}
-                              _id={""}
+                              _id={item._id}
                               category={""}
                             />
                           </div>
