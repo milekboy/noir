@@ -7,6 +7,11 @@ import IMAGES from "@/constant/theme";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
 import SelectBoxOne from "@/elements/Shop/SelectBoxOne";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
+import SelectBoxFour from "@/elements/Shop/SelectBoxFour";
+import SelectBoxFive from "@/elements/Shop/SelectBoxFive";
+import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
+import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
+import SelectBoxEight from "@/elements/Shop/SelectBoxEight";
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
 import { shopStyleData } from "@/constant/Alldata";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
@@ -95,6 +100,8 @@ export default function ShopList({
     return matchColor && matchSize && matchPrice;
   });
 
+  const [showFilters, setShowFilters] = useState(true);
+
   return (
     <div className="page-content bg-light">
       <CommanBanner
@@ -123,7 +130,10 @@ export default function ShopList({
                 >
                   <aside>
                     <div className="d-flex align-items-center justify-content-between m-b30">
-                      <h6 className="title mb-0 fw-normal d-flex" style={{ color: "black" }}>
+                      <h6
+                        className="title mb-0 fw-normal d-flex"
+                        style={{ color: "black" }}
+                      >
                         <i className="flaticon-filter me-3" />
                         Filter
                       </h6>
@@ -150,7 +160,9 @@ export default function ShopList({
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              <h4 className="mb-3" style={{color: "black"}}>Category</h4>
+              <h4 className="mb-3" style={{ color: "black" }}>
+                Category
+              </h4>
               <div className="row">
                 <div className="col-xl-12">
                   <ShopCategorySlider
@@ -158,6 +170,40 @@ export default function ShopList({
                       throw new Error("Function not implemented.");
                     }}
                   />
+                </div>
+              </div>
+              <div className="d-flex justify-content-space-between align-items-center m-b30" style={{marginTop: "30px"}}>
+                {/* Select boxes (shown/hidden based on state) */}
+                {showFilters && (
+                  <div className="d-flex align-items-center">
+                    <SelectBoxFour />
+                    <SelectBoxFive />
+                    <SelectBoxSix />
+                    <SelectBoxSeven />
+                    {/* <SelectBoxEight /> */}
+                  </div>
+                )}
+
+                {/* Filter button */}
+                <div
+                  className="d-flex align-items-center justify-content-between m-b30"
+                  style={{
+                    float: "right",
+                    marginLeft: "auto",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setShowFilters((prev) => !prev)}
+                >
+                  <h6
+                    className="title mb-0 fw-normal d-flex"
+                    style={{ color: "black" }}
+                  >
+                    <i
+                      className="flaticon-filter me-3"
+                      style={{ color: "black" }}
+                    />
+                    Filter
+                  </h6>
                 </div>
               </div>
 
