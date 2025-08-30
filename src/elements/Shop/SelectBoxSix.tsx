@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Dropdown } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "₦5,000", category: "(16)" },
-  { title: "₦10,000", category: "(19)" },
-  { title: "₦25,000", category: "(16)" },
-  { title: "₦50,000", category: "(36)" },
-  { title: "₦150,000", category: "(46)" },
-  { title: "₦250,000", category: "(16)" },
-  { title: "₦500,000", category: "(17)" },
+  {title:"XS", category: "(6)"},
+    {title:"S", category: "(8)"},
+    {title:"M", category: "(10)"},
+    {title:"M/L", category: "(12)"},
+    {title:"L", category: "(14)"},
+    {title:"XL", category: "(16)"},
+    {title:"XXL", category: "(18)"},
 ];
 
 export default function SelectBoxOne() {
@@ -22,7 +22,7 @@ export default function SelectBoxOne() {
   };
 
   return (
-    <Dropdown className="select-dropdown" style={{ backgroundColor: "white" }}>
+    <Dropdown className="select-dropdown" style={{ backgroundColor: "white", marginLeft: "-20px" }}>
       <Dropdown.Toggle
         className="dropdown-inner"
         style={{
@@ -36,7 +36,7 @@ export default function SelectBoxOne() {
           color: "black",
         }}
       >
-        <span className="me-1">Price</span>
+        <span className="me-1">Size</span>
         <i className="fa-solid fa-angle-down ms-2" />
       </Dropdown.Toggle>
 
