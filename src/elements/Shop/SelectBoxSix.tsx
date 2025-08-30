@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "₦5,000", category: "(16)" },
-  { title: "₦10,000", category: "(19)" },
-  { title: "₦25,000", category: "(16)" },
-  { title: "₦50,000", category: "(36)" },
-  { title: "₦150,000", category: "(46)" },
-  { title: "₦250,000", category: "(16)" },
-  { title: "₦500,000", category: "(17)" },
+  { title: "XS", category: "(6)" },
+  { title: "S", category: "(8)" },
+  { title: "M", category: "(10)" },
+  { title: "M/L", category: "(12)" },
+  { title: "L", category: "(14)" },
+  { title: "XL", category: "(16)" },
+  { title: "XXL", category: "(18)" },
 ];
 
 export default function SelectBoxOne() {
@@ -22,12 +22,13 @@ export default function SelectBoxOne() {
     }));
   };
 
+  // ✅ Apply button closes the menu
   const handleApply = () => {
     const selected = Object.keys(checkedItems).filter(
       (key) => checkedItems[key]
     );
-    alert("Selected prices: " + selected.join(", "));
-    setShowMenu(false); // ✅ close after apply
+    alert("Selected sizes: " + selected.join(", "));
+    setShowMenu(false); // close dropdown
   };
 
   return (
@@ -35,7 +36,7 @@ export default function SelectBoxOne() {
       className="select-dropdown"
       show={showMenu}
       onToggle={() => setShowMenu((prev) => !prev)}
-      style={{ backgroundColor: "white" }}
+      style={{ backgroundColor: "white", marginLeft: "-20px" }}
     >
       <Dropdown.Toggle
         className="dropdown-inner"
@@ -50,7 +51,7 @@ export default function SelectBoxOne() {
           color: "black",
         }}
       >
-        <span className="me-1">Price</span>
+        <span className="me-1">Size</span>
         <i className="fa-solid fa-angle-down ms-2" />
       </Dropdown.Toggle>
 
@@ -59,7 +60,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
-            onClick={(e) => e.stopPropagation()} // ✅ prevent closing
+            onClick={(e) => e.stopPropagation()} // ✅ Prevent closing on click
             style={{
               display: "flex",
               alignItems: "center",
@@ -68,19 +69,19 @@ export default function SelectBoxOne() {
               cursor: "pointer",
             }}
           >
-            {/* Checkbox */}
+            {/* Big black checkbox */}
             <input
               type="checkbox"
               checked={!!checkedItems[data.title]}
               onChange={() => handleCheckboxChange(data.title)}
               style={{
-                transform: "scale(1.3)",
+                transform: "scale(1.3)", // bigger size
                 cursor: "pointer",
-                accentColor: "black",
+                accentColor: "black", // ✅ black tick
               }}
             />
 
-            {/* Price label */}
+            {/* Size and count */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
               <span style={{ color: "#888", float: "right" }}>
@@ -90,8 +91,13 @@ export default function SelectBoxOne() {
           </Dropdown.Item>
         ))}
 
-        {/* Apply button */}
-        <div style={{ padding: "10px", borderTop: "1px solid #eee" }}>
+        {/* ✅ Full-width button */}
+        <div
+          style={{
+            padding: "10px",
+            borderTop: "1px solid #eee",
+          }}
+        >
           <a href="/collections">
             <Button
               // onClick={handleApply}
