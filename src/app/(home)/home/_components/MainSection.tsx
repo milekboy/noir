@@ -78,7 +78,7 @@ const MainSection = () => {
         style={{
           zIndex: 1,
           width: "100%",
-          height: "110vh",
+          height: "100vh",
           overflow: "hidden",
           transform: (scrolled && isMobileOrTablet) ? "translateY(-20px)" : "none"
         }}

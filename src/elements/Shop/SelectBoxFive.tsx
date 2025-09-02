@@ -2,16 +2,16 @@ import { useState } from "react";
 import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "₦5,000", category: "(16)" },
-  { title: "₦10,000", category: "(19)" },
-  { title: "₦25,000", category: "(16)" },
-  { title: "₦50,000", category: "(36)" },
-  { title: "₦150,000", category: "(46)" },
-  { title: "₦250,000", category: "(16)" },
-  { title: "₦500,000", category: "(17)" },
+  { title: "Blue", category: "(16)", color: "blue" },
+  { title: "Red", category: "(19)", color: "red" },
+  { title: "Green", category: "(16)", color: "green" },
+  { title: "Purple", category: "(36)", color: "purple" },
+  { title: "Pink", category: "(46)", color: "pink" },
+  { title: "Cream", category: "(16)", color: "wheat" },
+  { title: "Brown", category: "(17)", color: "brown" },
 ];
 
-export default function SelectBoxOne() {
+export default function SelectBoxColor() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [showMenu, setShowMenu] = useState(false);
 
@@ -26,8 +26,8 @@ export default function SelectBoxOne() {
     const selected = Object.keys(checkedItems).filter(
       (key) => checkedItems[key]
     );
-    alert("Selected prices: " + selected.join(", "));
-    setShowMenu(false); // ✅ close after apply
+    alert("Selected colors: " + selected.join(", "));
+    setShowMenu(false);
   };
 
   return (
@@ -35,7 +35,7 @@ export default function SelectBoxOne() {
       className="select-dropdown"
       show={showMenu}
       onToggle={() => setShowMenu((prev) => !prev)}
-      style={{ backgroundColor: "white" }}
+      style={{ backgroundColor: "white", marginLeft: "-20px" }}
     >
       <Dropdown.Toggle
         className="dropdown-inner"
@@ -50,7 +50,7 @@ export default function SelectBoxOne() {
           color: "black",
         }}
       >
-        <span className="me-1">Price</span>
+        <span className="me-1">Color</span>
         <i className="fa-solid fa-angle-down ms-2" />
       </Dropdown.Toggle>
 
@@ -59,7 +59,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
-            onClick={(e) => e.stopPropagation()} // ✅ prevent closing
+            onClick={(e) => e.stopPropagation()} // ✅ keep dropdown open
             style={{
               display: "flex",
               alignItems: "center",
@@ -68,19 +68,39 @@ export default function SelectBoxOne() {
               cursor: "pointer",
             }}
           >
-            {/* Checkbox */}
-            <input
-              type="checkbox"
-              checked={!!checkedItems[data.title]}
-              onChange={() => handleCheckboxChange(data.title)}
+            {/* Colored square acting as checkbox */}
+            <label
               style={{
-                transform: "scale(1.3)",
+                width: "20px",
+                height: "20px",
+                backgroundColor: data.color,
+                borderRadius: "4px",
+                border: checkedItems[data.title]
+                  ? "2px solid black"
+                  : "2px solid #ccc",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 cursor: "pointer",
-                accentColor: "black",
               }}
-            />
+            >
+              <input
+                type="checkbox"
+                checked={!!checkedItems[data.title]}
+                onChange={() => handleCheckboxChange(data.title)}
+                style={{
+                  display: "none", // hide native checkbox
+                }}
+              />
+              {checkedItems[data.title] && (
+                <i
+                  className="fa fa-check"
+                  style={{ color: "white", fontSize: "12px" }}
+                />
+              )}
+            </label>
 
-            {/* Price label */}
+            {/* Title + Count */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
               <span style={{ color: "#888", float: "right" }}>

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "₦5,000", category: "(16)" },
-  { title: "₦10,000", category: "(19)" },
-  { title: "₦25,000", category: "(16)" },
-  { title: "₦50,000", category: "(36)" },
-  { title: "₦150,000", category: "(46)" },
-  { title: "₦250,000", category: "(16)" },
-  { title: "₦500,000", category: "(17)" },
+  { title: "Cotton", category: "(6)" },
+  { title: "Linen", category: "(8)" },
+  { title: "Wool", category: "(10)" },
+  { title: "Silk", category: "(12)" },
+  { title: "Denim", category: "(14)" },
+  { title: "Leather", category: "(16)" },
+  { title: "Suede", category: "(18)" },
 ];
 
 export default function SelectBoxOne() {
@@ -26,7 +26,7 @@ export default function SelectBoxOne() {
     const selected = Object.keys(checkedItems).filter(
       (key) => checkedItems[key]
     );
-    alert("Selected prices: " + selected.join(", "));
+    alert("Selected materials: " + selected.join(", "));
     setShowMenu(false); // ✅ close after apply
   };
 
@@ -35,7 +35,7 @@ export default function SelectBoxOne() {
       className="select-dropdown"
       show={showMenu}
       onToggle={() => setShowMenu((prev) => !prev)}
-      style={{ backgroundColor: "white" }}
+      style={{ backgroundColor: "white", marginLeft: "-20px" }}
     >
       <Dropdown.Toggle
         className="dropdown-inner"
@@ -50,7 +50,7 @@ export default function SelectBoxOne() {
           color: "black",
         }}
       >
-        <span className="me-1">Price</span>
+        <span className="me-1">Material</span>
         <i className="fa-solid fa-angle-down ms-2" />
       </Dropdown.Toggle>
 
@@ -59,7 +59,7 @@ export default function SelectBoxOne() {
           <Dropdown.Item
             as="div"
             key={ind}
-            onClick={(e) => e.stopPropagation()} // ✅ prevent closing
+            onClick={(e) => e.stopPropagation()} // ✅ stop closing dropdown
             style={{
               display: "flex",
               alignItems: "center",
@@ -80,7 +80,7 @@ export default function SelectBoxOne() {
               }}
             />
 
-            {/* Price label */}
+            {/* Label */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
               <span style={{ color: "#888", float: "right" }}>
@@ -90,7 +90,7 @@ export default function SelectBoxOne() {
           </Dropdown.Item>
         ))}
 
-        {/* Apply button */}
+        {/* Apply Button */}
         <div style={{ padding: "10px", borderTop: "1px solid #eee" }}>
           <a href="/collections">
             <Button
