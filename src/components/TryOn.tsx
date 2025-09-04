@@ -12,9 +12,13 @@ const GLASSES_URL = "/assets/model/glasses.glb";
 // Debug toggles
 const SHOW_FACE_DOTS = false; // ← turn off green face points
 
-// Face indices we’ll use for anchoring (kept for future tuning)
+// Face indices we’ll use for anchoring / occluder sizing
 const FACE_LEFT_EYE_OUTER = 33;
 const FACE_RIGHT_EYE_OUTER = 263;
+const FACE_FOREHEAD = 10; // approx
+const FACE_CHIN = 152; // approx
+const FACE_LEFT_TEMPLE = 234;
+const FACE_RIGHT_TEMPLE = 454;
 
 // Pose connections
 const POSE_CONNECTIONS: [string, string][] = [
@@ -175,6 +179,9 @@ export default function TryOn() {
   const glassAdjustRef = useRef<THREE.Group | null>(null);
   const glassesLoadedRef = useRef(false); // ← prevent duplicates
 
+  // 🔴 Occluder ref
+  const occluderRef = useRef<THREE.Mesh | null>(null);
+
   // Smoothing
   const filtPos = useRef(new THREE.Vector3());
   const filtQuat = useRef(new THREE.Quaternion());
@@ -321,6 +328,23 @@ export default function TryOn() {
       const anchor = new THREE.Group();
       scene.add(anchor);
       glassAnchorRef.current = anchor;
+
+      // ▼ NEW: create a depth-only head occluder (invisible, writes depth)
+      const occGeo = new THREE.BoxGeometry(1, 1, 0.25);
+      const occMat = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        depthWrite: true,
+        depthTest: true,
+      });
+      (occMat as any).colorWrite = false; // important: no color, just depth
+
+      const occluder = new THREE.Mesh(occGeo, occMat);
+      occluder.name = "HEAD_OCCLUDER";
+      occluder.position.set(0, 0, -0.04); // slightly behind glasses along head -Z
+      occluder.scale.set(0.3, 0.4, 0.5); // will be updated per-frame
+
+      anchor.add(occluder);
+      occluderRef.current = occluder;
 
       console.log("[GLASSES] Three init OK", { w, h });
     };
@@ -640,6 +664,42 @@ export default function TryOn() {
 
               const s = filtScale.current;
               glassAdjustRef.current.scale.set(s, s, s);
+
+              // === OCCLUDER UPDATE ===
+              if (occluderRef.current) {
+                // Estimate head width / height using temples + forehead/chin
+                const Lc = faceLm[FACE_LEFT_TEMPLE];
+                const Rc = faceLm[FACE_RIGHT_TEMPLE];
+                const Fore = faceLm[FACE_FOREHEAD];
+                const Chin = faceLm[FACE_CHIN];
+
+                const headWidthPx =
+                  Lc && Rc
+                    ? Math.hypot(Rc.x * W - Lc.x * W, Rc.y * H - Lc.y * H)
+                    : ipdPx * 2.6; // fallback ratio
+
+                const headHeightPx =
+                  Fore && Chin
+                    ? Math.hypot(
+                        Chin.x * W - Fore.x * W,
+                        Chin.y * H - Fore.y * H
+                      )
+                    : ipdPx * 3.2; // fallback ratio
+
+                // Convert to world-ish scale using s (our glasses scalar)
+                const widthWorld = s * (headWidthPx / (ipdPx || 1)) * 1.15;
+                const heightWorld = s * (headHeightPx / (ipdPx || 1)) * 1.05;
+                const depthWorld = s * 0.75; // increase to occlude more temple length
+
+                occluderRef.current.scale.set(
+                  widthWorld,
+                  heightWorld,
+                  depthWorld
+                );
+
+                // Keep it slightly behind the bridge along local -Z
+                occluderRef.current.position.set(0, 0, -0.04);
+              }
             }
 
             // D) Mirror compensation (not needed now)
@@ -777,7 +837,6 @@ export default function TryOn() {
       {/* Three.js WebGL canvas for the glasses (between video and 2D overlay) */}
       <canvas
         ref={(el) => {
-          // ✅ block body returns void
           webglRef.current = el;
         }}
         style={{
