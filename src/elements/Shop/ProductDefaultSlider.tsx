@@ -8,6 +8,7 @@ import LightGallery from "lightgallery/react";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import Image from "next/image";
+
 export interface ProductDefaultSliderProps {
   images: {
     url: string;
@@ -15,13 +16,20 @@ export interface ProductDefaultSliderProps {
     filename: string;
   }[];
 }
+
 export default function ProductDefaultSlider({
   images,
 }: ProductDefaultSliderProps) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
   return (
     <div className="swiper-btn-center-lr">
-      <LightGallery plugins={[lgThumbnail, lgZoom]} selector={".DZoomImage"}>
+      {/* LightGallery wrapper */}
+      <LightGallery
+        plugins={[lgThumbnail, lgZoom]}
+        selector=".DZoomImage"
+        speed={500}
+      >
         <Swiper
           className="product-gallery-swiper2 rounded"
           spaceBetween={0}
@@ -29,91 +37,144 @@ export default function ProductDefaultSlider({
           thumbs={{ swiper: thumbsSwiper }}
           modules={[Thumbs]}
         >
+          {/* Slide 1 */}
           <SwiperSlide>
-            <div className="dz-media">
+            <div className="dz-media" style={{ position: "relative" }}>
               <Link
                 className="mfp-link lg-item DZoomImage"
-                href={IMAGES.productdetail2png1.src}
-                data-src={IMAGES.productdetail2png1.src}
+                href={images[0]?.url}
+                data-src={images[0]?.url}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  zIndex: 2,
+                  fontSize: "20px",
+                  color: "#fff",
+                }}
               >
-                <i className="feather icon-maximize dz-maximize top-left" />
+                <i className="feather icon-maximize dz-maximize" />
               </Link>
               <Image
+                style={{ cursor: "pointer" }}
                 width={900}
                 height={900}
                 src={images[0]?.url}
                 alt="product1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  (
+                    document.querySelectorAll(".DZoomImage")[0] as HTMLElement
+                  )?.click();
+                }}
               />
             </div>
           </SwiperSlide>
+
+          {/* Slide 2 */}
           <SwiperSlide>
-            <div className="dz-media">
+            <div className="dz-media" style={{ position: "relative" }}>
               <Link
                 className="mfp-link lg-item DZoomImage"
-                href={IMAGES.productdetail2png2.src}
-                data-src={IMAGES.productdetail2png2.src}
+                href={images[1]?.url || images[0]?.url}
+                data-src={images[1]?.url || images[0]?.url}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  zIndex: 2,
+                  fontSize: "20px",
+                  color: "#fff",
+                }}
               >
-                <i className="feather icon-maximize dz-maximize top-left" />
-                <Image
-                  width={900}
-                  height={900}
-                  alt="product2"
-                  src={images[0]?.url}
-                  className=" d-none"
-                />
+                <i className="feather icon-maximize dz-maximize" />
               </Link>
               <Image
+                style={{ cursor: "pointer" }}
                 width={900}
                 height={900}
-                src={images[0]?.url}
-                alt="product1"
+                src={images[1]?.url || images[0]?.url}
+                alt="product2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  (
+                    document.querySelectorAll(".DZoomImage")[1] as HTMLElement
+                  )?.click();
+                }}
               />
             </div>
           </SwiperSlide>
+
+          {/* Slide 3 */}
           <SwiperSlide>
-            <div className="dz-media">
+            <div className="dz-media" style={{ position: "relative" }}>
               <Link
                 className="mfp-link lg-item DZoomImage"
-                href={IMAGES.productdetail2png2.src}
-                data-src={IMAGES.productdetail2png2.src}
+                href={images[2]?.url || images[0]?.url}
+                data-src={images[2]?.url || images[0]?.url}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  zIndex: 2,
+                  fontSize: "20px",
+                  color: "#fff",
+                }}
               >
-                <i className="feather icon-maximize dz-maximize top-left" />
-                <Image
-                  width={900}
-                  height={900}
-                  alt="product2"
-                  src={images[0]?.url}
-                  className=" d-none"
-                />
+                <i className="feather icon-maximize dz-maximize" />
               </Link>
               <Image
+                style={{ cursor: "pointer" }}
                 width={900}
                 height={900}
-                src={images[0]?.url}
-                alt="product1"
+                src={images[2]?.url || images[0]?.url}
+                alt="product3"
+                onClick={(e) => {
+                  e.preventDefault();
+                  (
+                    document.querySelectorAll(".DZoomImage")[2] as HTMLElement
+                  )?.click();
+                }}
               />
             </div>
           </SwiperSlide>
         </Swiper>
       </LightGallery>
+
+      {/* Thumbnail Swiper */}
       <Swiper
         className="product-gallery-swiper thumb-swiper-lg"
         spaceBetween={10}
-        slidesPerView={2}
-        //freeMode: true,
-        //watchSlidesProgress: true,
-        // @ts-ignore
-        onSwiper={setThumbsSwiper}
+        slidesPerView={3}
+        onSwiper={setThumbsSwiper as any}
         modules={[Thumbs]}
       >
         <SwiperSlide>
-          <Image src={images[0]?.url} width={100} height={100} alt="product1" />
+          <Image
+            src={images[0]?.url}
+            width={100}
+            height={100}
+            alt="thumb1"
+            style={{ cursor: "pointer" }}
+          />
         </SwiperSlide>
         <SwiperSlide>
-          <Image src={images[0]?.url} width={100} height={100} alt="product1" />
+          <Image
+            src={images[1]?.url || images[0]?.url}
+            width={100}
+            height={100}
+            alt="thumb2"
+            style={{ cursor: "pointer" }}
+          />
         </SwiperSlide>
         <SwiperSlide>
-          <Image src={images[0]?.url} width={100} height={100} alt="product1" />
+          <Image
+            src={images[2]?.url || images[0]?.url}
+            width={100}
+            height={100}
+            alt="thumb3"
+            style={{ cursor: "pointer" }}
+          />
         </SwiperSlide>
       </Swiper>
     </div>

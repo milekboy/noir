@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProductInputButton from "./ProductInputButton";
 import ShopCardColour from "./ShopCardColour";
 import StarRating from "./StarRating";
+import { color } from "three/src/nodes/TSL.js";
 
 interface thumbnailCardtype{
     title: string;
@@ -15,7 +16,7 @@ export default function ThumbnailRightProductDetail(props : thumbnailCardtype){
                 <div className="dz-content-footer">
                     <div className="dz-content-start">
                         <span className="badge bg-secondary mb-2">SALE 20% Off</span>
-                        <h4 className="title mb-1">{props.title}</h4>
+                        <h4 className="title mb-1" style={{ color: "black" }}>{props.title}</h4>
                         <div className="review-num">
                             <ul className="dz-rating me-2">                                                       
                                 <StarRating />
@@ -30,7 +31,7 @@ export default function ThumbnailRightProductDetail(props : thumbnailCardtype){
                 </p>
                 <div className="meta-content m-b20">
                     <span className="form-label">Price</span>
-                    <span className="price">$125.75 <del>$132.17</del></span>
+                    <span className="price">₦125.75 <del>₦132.17</del></span>
                 </div>
                 <div className="product-num gap-md-2 gap-xl-0">
                     <div className="btn-quantity light ">
