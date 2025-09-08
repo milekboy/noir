@@ -1057,6 +1057,7 @@ export default function CategoryMenuItem() {
                 </li>
               </ul>
             </div>
+
             {/* <div className="col-md-3 col-sm-4 col-6">
               {" "}
               <Link href={"/shop-standard"} className="menu-title">
