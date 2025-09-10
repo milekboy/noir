@@ -709,7 +709,7 @@ export default function TryOn() {
                   heightWorld,
                   depthWorld
                 );
-                occluderRef.current.position.set(0, 0, -0.4); // change to 0.04
+                occluderRef.current.position.set(0, 0, -0.04); // change to 0.04
               }
             }
           }
@@ -769,7 +769,7 @@ export default function TryOn() {
                   HAT_OCCLUDER_SCALE.z
                 );
                 // keep slightly below hat center so brim/front rim occludes well
-                hatOccluderRef.current.position.set(0, -0.05, 0);
+                hatOccluderRef.current.position.set(0, -0.05, 5);
               }
             }
           }
