@@ -1,22 +1,23 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-// 🔴 Three.js imports for glasses overlay
+// Three.js imports
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-// 🔴 Change this to your actual path in /public
+// Assets
 const GLASSES_URL = "/assets/model/glasses.glb";
+const HAT_URL = "/assets/model/hat_glb.glb";
 
 // Debug toggles
-const SHOW_FACE_DOTS = false; // ← turn off green face points
+const SHOW_FACE_DOTS = false; // keep OFF
 
-// Face indices we’ll use for anchoring / occluder sizing
+// Face indices (used for anchoring / occluder sizing / hat anchor)
 const FACE_LEFT_EYE_OUTER = 33;
 const FACE_RIGHT_EYE_OUTER = 263;
-const FACE_FOREHEAD = 10; // approx
-const FACE_CHIN = 152; // approx
+const FACE_FOREHEAD = 10;
+const FACE_CHIN = 152;
 const FACE_LEFT_TEMPLE = 234;
 const FACE_RIGHT_TEMPLE = 454;
 
@@ -73,24 +74,24 @@ const HAND_CONNECTIONS: [number, number][] = [
   [0, 1],
   [1, 2],
   [2, 3],
-  [3, 4], // thumb
+  [3, 4],
   [0, 5],
   [5, 6],
   [6, 7],
-  [7, 8], // index
+  [7, 8],
   [5, 9],
   [9, 10],
   [10, 11],
-  [11, 12], // middle
+  [11, 12],
   [9, 13],
   [13, 14],
   [14, 15],
-  [15, 16], // ring
+  [15, 16],
   [13, 17],
   [17, 18],
   [18, 19],
-  [19, 20], // pinky
-  [0, 17], // palm base
+  [19, 20],
+  [0, 17],
 ];
 
 function isPalmFacingCamera(
@@ -113,7 +114,6 @@ function isPalmFacingCamera(
     z: (pinkyBase.z ?? 0) - (wrist.z ?? 0),
   };
 
-  // Cross product → palm normal
   const normal = {
     x: v1.y * v2.z - v1.z * v2.y,
     y: v1.z * v2.x - v1.x * v2.z,
@@ -122,70 +122,53 @@ function isPalmFacingCamera(
 
   const camDir = { x: 0, y: 0, z: -1 };
   const dot = normal.x * camDir.x + normal.y * camDir.y + normal.z * camDir.z;
-
-  // Positive dot means palm normal points toward camera (palm facing)
   return dot > 0;
 }
 
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 export default function TryOn() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
 
+  // MediaPipe models
   const poseRef = useRef<any | null>(null);
   const faceRef = useRef<any | null>(null);
   const handRef = useRef<any | null>(null);
-
-  const logHandFramesRef = useRef(0);
-
-  // Robust handedness label parser (unchanged)
-  const parseHandLabel = (raw: any) => {
-    try {
-      let v = raw;
-      while (Array.isArray(v) && v.length > 0) v = v[0];
-      if (!v) return "Hand";
-      if (typeof v === "string") return v;
-      if (typeof v === "object") {
-        return (
-          v.label ||
-          v.categoryName ||
-          v.category ||
-          v.name ||
-          v.displayName ||
-          v.labelName ||
-          v.tag ||
-          "Hand"
-        );
-      }
-    } catch {}
-    return "Hand";
-  };
-
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
 
-  // ===== Three.js refs for the glasses overlay =====
+  // ===== Three.js refs =====
   const webglRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const threeRafRef = useRef<number | null>(null);
 
+  // Glasses groups
   const glassAnchorRef = useRef<THREE.Group | null>(null);
   const glassAdjustRef = useRef<THREE.Group | null>(null);
-  const glassesLoadedRef = useRef(false); // ← prevent duplicates
+  const glassesLoadedRef = useRef(false);
 
-  // 🔴 Occluder ref
+  // Head occluder for glasses
   const occluderRef = useRef<THREE.Mesh | null>(null);
 
-  // Smoothing
+  // Hat groups
+  const hatAnchorRef = useRef<THREE.Group | null>(null);
+  const hatAdjustRef = useRef<THREE.Group | null>(null);
+  const hatLoadedRef = useRef(false);
+
+  // Smoothing (used by glasses; left unchanged)
   const filtPos = useRef(new THREE.Vector3());
   const filtQuat = useRef(new THREE.Quaternion());
   const filtScale = useRef(0.12);
+
+  // === NEW: UI toggles ===
+  const [showGlasses, setShowGlasses] = useState(true);
+  const [showHat, setShowHat] = useState(true);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -224,7 +207,6 @@ export default function TryOn() {
       }
     };
 
-    // size 2D + 3D canvases
     const fitCanvas = () => {
       const el = containerRef.current;
       const cv = overlayRef.current;
@@ -266,7 +248,6 @@ export default function TryOn() {
         numPoses: 1,
       });
 
-      // Enable head-pose matrices
       faceRef.current = await FaceLandmarker.createFromOptions(fileset, {
         baseOptions: {
           modelAssetPath:
@@ -275,7 +256,7 @@ export default function TryOn() {
         runningMode: "VIDEO",
         numFaces: 1,
         outputFaceBlendshapes: false,
-        outputFacialTransformationMatrixes: true,
+        outputFacialTransformationMatrixes: true, // keep for head pose
       });
 
       handRef.current = await HandLandmarker.createFromOptions(fileset, {
@@ -290,7 +271,7 @@ export default function TryOn() {
       console.log("[LOCAL] Pose, Face, and Hand models ready");
     };
 
-    // Three.js init
+    // ---------- Three.js init ----------
     const initThree = () => {
       if (!webglRef.current || rendererRef.current) return;
 
@@ -307,13 +288,11 @@ export default function TryOn() {
       scene.background = null;
       sceneRef.current = scene;
 
-      // Lights
       scene.add(new THREE.AmbientLight(0xffffff, 0.9));
       const dir = new THREE.DirectionalLight(0xffffff, 0.8);
       dir.position.set(0.5, 1, 1);
       scene.add(dir);
 
-      // Camera
       const el = containerRef.current;
       const w = el?.clientWidth || window.innerWidth;
       const h = el?.clientHeight || window.innerHeight;
@@ -324,29 +303,30 @@ export default function TryOn() {
 
       renderer.setSize(w, h, false);
 
-      // Anchor we’ll drive every frame
-      const anchor = new THREE.Group();
-      scene.add(anchor);
-      glassAnchorRef.current = anchor;
+      // Anchors
+      const glassesAnchor = new THREE.Group();
+      const hatAnchor = new THREE.Group();
+      scene.add(glassesAnchor, hatAnchor);
+      glassAnchorRef.current = glassesAnchor;
+      hatAnchorRef.current = hatAnchor;
 
-      // ▼ NEW: create a depth-only head occluder (invisible, writes depth)
+      // Depth-only head occluder under glasses anchor
       const occGeo = new THREE.BoxGeometry(1, 1, 0.25);
       const occMat = new THREE.MeshStandardMaterial({
         color: 0x000000,
         depthWrite: true,
         depthTest: true,
-      });
-      (occMat as any).colorWrite = false; // important: no color, just depth
+      } as any);
+      (occMat as any).colorWrite = false; // no color, just depth
 
       const occluder = new THREE.Mesh(occGeo, occMat);
       occluder.name = "HEAD_OCCLUDER";
-      occluder.position.set(0, 0, -0.04); // slightly behind glasses along head -Z
-      occluder.scale.set(0.3, 0.4, 0.5); // will be updated per-frame
-
-      anchor.add(occluder);
+      occluder.position.set(0, 0, -0.04);
+      occluder.scale.set(0.3, 0.4, 0.5);
+      glassesAnchor.add(occluder);
       occluderRef.current = occluder;
 
-      console.log("[GLASSES] Three init OK", { w, h });
+      console.log("[THREE] init OK", { w, h });
     };
 
     const fitCameraToObject = (obj: THREE.Object3D) => {
@@ -359,7 +339,6 @@ export default function TryOn() {
       box.getSize(size);
       box.getCenter(center);
 
-      // center the model at origin
       obj.position.sub(center);
 
       const maxDim = Math.max(size.x, size.y, size.z) || 1;
@@ -374,19 +353,13 @@ export default function TryOn() {
 
     const loadGlasses = async () => {
       if (!sceneRef.current || !glassAnchorRef.current) return;
-      if (glassesLoadedRef.current) {
-        console.log("[GLASSES] already loaded, skipping");
-        return;
-      }
-
-      console.log("[GLASSES] loading:", GLASSES_URL);
+      if (glassesLoadedRef.current) return;
 
       return new Promise<void>((resolve, reject) => {
         const loader = new GLTFLoader();
         loader.load(
           GLASSES_URL,
           (gltf) => {
-            console.log("[GLASSES] GLB loaded OK");
             const model = gltf.scene;
             model.traverse((o: any) => {
               if (o.isMesh) {
@@ -396,12 +369,11 @@ export default function TryOn() {
               }
             });
 
-            // Adjust group (pivot/offset fixer)
             const adjust = new THREE.Group();
             adjust.name = "GLASSES_ADJUST";
             adjust.add(model);
 
-            // initial guesses; will be overridden each frame
+            // initial guesses (tracking will override)
             adjust.scale.setScalar(0.12);
             adjust.position.set(0, 0.02, 0.02);
             adjust.rotation.set(0, 0, 0);
@@ -410,24 +382,50 @@ export default function TryOn() {
             glassAnchorRef.current!.add(adjust);
             glassesLoadedRef.current = true;
 
-            // Optional: initial camera fit
             fitCameraToObject(adjust);
+            resolve();
+          },
+          undefined,
+          (err) => reject(err)
+        );
+      });
+    };
+
+    const loadHat = async () => {
+      if (!sceneRef.current || !hatAnchorRef.current) return;
+      if (hatLoadedRef.current) return;
+
+      return new Promise<void>((resolve, reject) => {
+        const loader = new GLTFLoader();
+        loader.load(
+          HAT_URL,
+          (gltf) => {
+            const model = gltf.scene;
+            model.traverse((o: any) => {
+              if (o.isMesh) {
+                o.frustumCulled = false;
+                o.castShadow = false;
+                o.receiveShadow = false;
+              }
+            });
+
+            const adjust = new THREE.Group();
+            adjust.name = "HAT_ADJUST";
+            adjust.add(model);
+
+            // conservative starting values; tracking will keep it in place
+            adjust.scale.setScalar(0.065); // smaller than before
+            adjust.position.set(0, 0.12, -0.02);
+            adjust.rotation.set(0, 0, 0);
+
+            hatAdjustRef.current = adjust;
+            hatAnchorRef.current!.add(adjust);
+            hatLoadedRef.current = true;
 
             resolve();
           },
-          (xhr) => {
-            const pct = xhr.total
-              ? Math.round((xhr.loaded / xhr.total) * 100)
-              : -1;
-            console.log(
-              "[GLASSES] progress",
-              pct >= 0 ? `${pct}%` : `${xhr.loaded} bytes`
-            );
-          },
-          (err) => {
-            console.error("[GLASSES] load ERROR", err);
-            reject(err);
-          }
+          undefined,
+          (err) => reject(err)
         );
       });
     };
@@ -453,7 +451,6 @@ export default function TryOn() {
     };
 
     const startLoop = () => {
-      // DO NOT change tracking logic
       const video = videoRef.current;
       const canvas = overlayRef.current;
       if (
@@ -477,7 +474,7 @@ export default function TryOn() {
           const poseRes = await poseRef.current.detectForVideo(video, tsMs);
           const poseLm = poseRes?.landmarks?.[0];
 
-          // Face (with head pose matrices)
+          // Face + head pose
           const faceRes = await faceRef.current.detectForVideo(video, tsMs);
           const faceLm: MPPoint[] | undefined = faceRes?.faceLandmarks?.[0];
           const faceMat: Float32Array | undefined =
@@ -491,7 +488,7 @@ export default function TryOn() {
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
-          // --- Draw Pose (unchanged)
+          // ---- Draw Pose (unchanged) ----
           if (poseLm) {
             const dict: Record<string, MPPoint> = {};
             for (const [idxStr, name] of Object.entries(MP_INDEX_TO_NAME)) {
@@ -523,7 +520,7 @@ export default function TryOn() {
             }
           }
 
-          // --- Draw Face landmarks: DISABLED
+          // ---- Face dots disabled ----
           if (SHOW_FACE_DOTS && faceLm) {
             ctx.fillStyle = "rgba(0,255,0,0.7)";
             for (let i = 0; i < faceLm.length; i += 2) {
@@ -534,27 +531,17 @@ export default function TryOn() {
             }
           }
 
-          // --- Draw Hands (unchanged)
+          // ---- Draw Hands (unchanged visuals) ----
           if (handsLm && handsLm.length) {
             const handednessRaw =
               (handRes as any)?.handednesses ??
               (handRes as any)?.handedness ??
               [];
 
-            if (logHandFramesRef.current < 6) {
-              try {
-                console.log("handRes", handRes);
-              } catch {}
-            }
-
-            const midX = W / 2;
-
             for (let hi = 0; hi < handsLm.length; hi++) {
               const lm = handsLm[hi];
-              const raw = handednessRaw[hi];
-              let label = parseHandLabel(raw);
 
-              // draw skeleton
+              // skeleton
               ctx.strokeStyle = "rgba(255,255,255,0.9)";
               for (const [a, b] of HAND_CONNECTIONS) {
                 const A = lm[a],
@@ -566,38 +553,7 @@ export default function TryOn() {
                 ctx.stroke();
               }
 
-              const labelLower = String(label).toLowerCase();
-              const isLeft = labelLower.includes("left");
-
-              let facing = isPalmFacingCamera(lm);
-              const facingBeforeFlip = facing;
-              if (isLeft) facing = !facing;
-
-              if (logHandFramesRef.current < 6) {
-                try {
-                  console.log({
-                    handIndex: hi,
-                    rawHandedness: raw,
-                    parsedLabel: label,
-                    wristPxX: (lm[0]?.x ?? 0) * W,
-                    midX,
-                    isLeftBeforeMirrorAdjust: labelLower.includes("left"),
-                    isLeftAfterMirrorAdjust: isLeft,
-                    facingBeforeFlip,
-                    facingAfterFlip: facing,
-                  });
-                } catch {}
-                if (hi === 0) logHandFramesRef.current++;
-              }
-
-              ctx.fillStyle = facing ? "lime" : "red";
-              ctx.font = "16px sans-serif";
-              ctx.fillText(
-                `${label} ${facing ? "Palm Facing Camera" : "Back of Hand"}`,
-                lm[0].x * W + 10,
-                lm[0].y * H - 10
-              );
-
+              // dots
               ctx.fillStyle = "rgba(0,150,255,0.9)";
               for (const pt of lm) {
                 ctx.beginPath();
@@ -607,12 +563,11 @@ export default function TryOn() {
             }
           }
 
-          // === 3D GLASSES ANCHORING ===
+          // ===== 3D GLASSES ANCHORING (unchanged logic) =====
           if (glassAnchorRef.current && glassAdjustRef.current && faceLm) {
             const anchor = glassAnchorRef.current;
 
-            // A) Orientation
-            const faceMat = faceRes?.facialTransformationMatrixes?.[0]?.data;
+            // A) Orientation from face matrix
             if (faceMat && faceMat.length === 16) {
               const m = new THREE.Matrix4().fromArray(Array.from(faceMat));
               const pos = new THREE.Vector3();
@@ -625,7 +580,7 @@ export default function TryOn() {
               anchor.quaternion.copy(filtQuat.current);
             }
 
-            // B) Position from eye midpoint (screen → NDC → world at fixed depth)
+            // B) Position at eye midpoint → world depth
             const L = faceLm[FACE_LEFT_EYE_OUTER];
             const R = faceLm[FACE_RIGHT_EYE_OUTER];
             if (L && R && cameraRef.current) {
@@ -635,7 +590,7 @@ export default function TryOn() {
               const ndcY = -(my / H) * 2 + 1;
 
               const targetPos = ndcToWorldAtDistance(ndcX, ndcY, 0.9);
-              targetPos.y -= filtScale.current * 0.02; // tiny nose-bridge drop
+              targetPos.y -= filtScale.current * 0.02;
 
               const ALPHA_POS = 0.3;
               filtPos.current.lerp(targetPos, ALPHA_POS);
@@ -665,9 +620,8 @@ export default function TryOn() {
               const s = filtScale.current;
               glassAdjustRef.current.scale.set(s, s, s);
 
-              // === OCCLUDER UPDATE ===
+              // Update occluder box size
               if (occluderRef.current) {
-                // Estimate head width / height using temples + forehead/chin
                 const Lc = faceLm[FACE_LEFT_TEMPLE];
                 const Rc = faceLm[FACE_RIGHT_TEMPLE];
                 const Fore = faceLm[FACE_FOREHEAD];
@@ -676,7 +630,7 @@ export default function TryOn() {
                 const headWidthPx =
                   Lc && Rc
                     ? Math.hypot(Rc.x * W - Lc.x * W, Rc.y * H - Lc.y * H)
-                    : ipdPx * 2.6; // fallback ratio
+                    : ipdPx * 2.6;
 
                 const headHeightPx =
                   Fore && Chin
@@ -684,30 +638,76 @@ export default function TryOn() {
                         Chin.x * W - Fore.x * W,
                         Chin.y * H - Fore.y * H
                       )
-                    : ipdPx * 3.2; // fallback ratio
+                    : ipdPx * 3.2;
 
-                // Convert to world-ish scale using s (our glasses scalar)
                 const widthWorld = s * (headWidthPx / (ipdPx || 1)) * 1.15;
                 const heightWorld = s * (headHeightPx / (ipdPx || 1)) * 1.05;
-                const depthWorld = s * 0.75; // increase to occlude more temple length
+                const depthWorld = s * 0.75;
 
                 occluderRef.current.scale.set(
                   widthWorld,
                   heightWorld,
                   depthWorld
                 );
-
-                // Keep it slightly behind the bridge along local -Z
                 occluderRef.current.position.set(0, 0, -0.04);
               }
             }
-
-            // D) Mirror compensation (not needed now)
-            // If you mirror the <video>, uncomment:
-            // anchor.scale.set(-1, 1, 1);
           }
-        } catch (e) {
-          // swallow detection errors
+
+          // ===== HAT ANCHORING =====
+          if (hatAnchorRef.current && hatAdjustRef.current && faceLm) {
+            const L = faceLm[FACE_LEFT_EYE_OUTER];
+            const R = faceLm[FACE_RIGHT_EYE_OUTER];
+            const Fore = faceLm[FACE_FOREHEAD];
+
+            if (L && R && Fore && cameraRef.current) {
+              // Use head orientation (same as glasses)
+              if (faceMat && faceMat.length === 16) {
+                const m = new THREE.Matrix4().fromArray(Array.from(faceMat));
+                const pos = new THREE.Vector3();
+                const quat = new THREE.Quaternion();
+                const scl = new THREE.Vector3();
+                m.decompose(pos, quat, scl);
+                hatAnchorRef.current.quaternion.copy(quat);
+              }
+
+              // Position: start from mid-eye then lift up towards forehead
+              const mx = (L.x * W + R.x * W) * 0.5;
+              const my = (L.y * H + R.y * H) * 0.5;
+              const ndcEyeX = (mx / W) * 2 - 1;
+              const ndcEyeY = -(my / H) * 2 + 1;
+              const base = ndcToWorldAtDistance(ndcEyeX, ndcEyeY, 0.88);
+
+              // Move up by a proportion of face height
+              const faceHeightPx = Math.max(
+                20,
+                Math.hypot(
+                  FACE_CHIN in faceLm
+                    ? faceLm[FACE_CHIN].x * W - Fore.x * W
+                    : 0,
+                  FACE_CHIN in faceLm ? faceLm[FACE_CHIN].y * H - Fore.y * H : 0
+                )
+              );
+              const lift = (faceHeightPx / 1000) * 0.9; // tune
+              base.y += lift;
+
+              hatAnchorRef.current.position.copy(base);
+
+              // Scale relative to IPD so hat width roughly matches head
+              const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
+              const hatScale = THREE.MathUtils.clamp(
+                ipdPx * 0.0022,
+                0.055,
+                0.12
+              );
+              hatAdjustRef.current.scale.setScalar(hatScale);
+
+              // Slight forward/back tweak so it sits on hairline
+              hatAdjustRef.current.position.set(0, 0.05, -0.03);
+            }
+          }
+        } catch {
+          // ignore occasional failures
         }
       };
 
@@ -744,12 +744,10 @@ export default function TryOn() {
       await startCamera();
       fitCanvas();
 
-      // 3D init + load glasses + 3D render loop
       initThree();
-      await loadGlasses();
+      await Promise.all([loadGlasses(), loadHat()]);
       renderThreeLoop();
 
-      // tracking init (pose/face/hands)
       await initModels();
       startLoop();
 
@@ -759,7 +757,6 @@ export default function TryOn() {
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) runningRef.current = false;
         else if (!runningRef.current) {
-          stopRaf = false;
           runningRef.current = true;
           const video = videoRef.current;
           if (video) requestAnimationFrame(() => startLoop());
@@ -769,7 +766,6 @@ export default function TryOn() {
       cleanupRef.current = () => {
         window.removeEventListener("resize", onResize);
         runningRef.current = false;
-        stopRaf = true;
         if (rafId) cancelAnimationFrame(rafId);
         if (threeRafRef.current) cancelAnimationFrame(threeRafRef.current);
         if (stream) stream.getTracks().forEach((t) => t.stop());
@@ -781,6 +777,16 @@ export default function TryOn() {
 
     return () => cleanupRef.current?.();
   }, []);
+
+  // --- NEW: apply visibility when toggles change (no re-init) ---
+  useEffect(() => {
+    if (glassAnchorRef.current) glassAnchorRef.current.visible = showGlasses;
+    if (occluderRef.current) occluderRef.current.visible = showGlasses; // hide depth box with glasses
+  }, [showGlasses]);
+
+  useEffect(() => {
+    if (hatAnchorRef.current) hatAnchorRef.current.visible = showHat;
+  }, [showHat]);
 
   const isIOS =
     typeof navigator !== "undefined" &&
@@ -797,6 +803,7 @@ export default function TryOn() {
         overflow: "hidden",
       }}
     >
+      {/* Back */}
       <button
         onClick={() => router.push("/shop-standard")}
         style={{
@@ -819,6 +826,46 @@ export default function TryOn() {
         ← Back
       </button>
 
+      {/* NEW: Toggles */}
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          zIndex: 10,
+          display: "flex",
+          gap: 8,
+        }}
+      >
+        <button
+          onClick={() => setShowGlasses((v) => !v)}
+          style={{
+            padding: "8px 12px",
+            borderRadius: 6,
+            border: "1px solid #fff",
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            cursor: "pointer",
+          }}
+        >
+          {showGlasses ? "Hide Glasses" : "Show Glasses"}
+        </button>
+        <button
+          onClick={() => setShowHat((v) => !v)}
+          style={{
+            padding: "8px 12px",
+            borderRadius: 6,
+            border: "1px solid #fff",
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            cursor: "pointer",
+          }}
+        >
+          {showHat ? "Hide Hat" : "Show Hat"}
+        </button>
+      </div>
+
+      {/* Video */}
       <video
         ref={videoRef}
         autoPlay
@@ -834,11 +881,9 @@ export default function TryOn() {
         }}
       />
 
-      {/* Three.js WebGL canvas for the glasses (between video and 2D overlay) */}
+      {/* Three.js WebGL canvas (between video and 2D overlay) */}
       <canvas
-        ref={(el) => {
-          webglRef.current = el;
-        }}
+        ref={webglRef}
         style={{
           position: "absolute",
           inset: 0,
@@ -849,7 +894,7 @@ export default function TryOn() {
         }}
       />
 
-      {/* 2D overlay for pose/face/hands (green face points disabled) */}
+      {/* 2D overlay for pose/face/hands */}
       <canvas
         ref={overlayRef}
         style={{
