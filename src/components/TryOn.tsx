@@ -130,8 +130,8 @@ type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 // ---------- Hat tuning knobs ----------
 const HAT_SCALE_FACTOR = 0.042; // base size of the hat model
-const HAT_LIFT_FACTOR = 0.5; // portion of face height to move up from eye-line
-const HAT_FORWARD_OFFSET = -0.03; // push back slightly onto hairline (local -Z)
+const HAT_LIFT_FACTOR = 0.3; // portion of face height to move up from eye-line
+const HAT_FORWARD_OFFSET = -0.23; // push back slightly onto hairline (local -Z)
 const HAT_OCCLUDER_SCALE = { x: 0.3, y: 0.1, z: 0.42 }; // scalp occluder size
 
 export default function TryOn() {
