@@ -709,7 +709,7 @@ export default function TryOn() {
                   heightWorld,
                   depthWorld
                 );
-                occluderRef.current.position.set(0, 0, -0.04);
+                occluderRef.current.position.set(0, 0, -0.4); // change to 0.04
               }
             }
           }
