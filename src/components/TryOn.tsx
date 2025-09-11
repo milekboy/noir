@@ -130,9 +130,9 @@ type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 // ---------- Hat tuning knobs ----------
 const HAT_SCALE_FACTOR = 0.042; // base size of the hat model
-const HAT_LIFT_FACTOR = 0.3; // portion of face height to move up from eye-line
+const HAT_LIFT_FACTOR = 0.1; // portion of face height to move up from eye-line
 const HAT_FORWARD_OFFSET = -0.23; // push back slightly onto hairline (local -Z)
-const HAT_OCCLUDER_SCALE = { x: 0.3, y: 0.1, z: 0.42 }; // scalp occluder size
+const HAT_OCCLUDER_SCALE = { x: 0.3, y: 0.1, z: 0.42 }; // unused after dynamic occluder
 
 export default function TryOn() {
   const router = useRouter();
@@ -338,8 +338,8 @@ export default function TryOn() {
       glassesAnchor.add(gOcc);
       occluderRef.current = gOcc;
 
-      // Hat occluder (depth-only, scalp region)
-      const hOccGeo = new THREE.BoxGeometry(1, 0.6, 1);
+      // Hat occluder (depth-only, will be dynamically scaled now)
+      const hOccGeo = new THREE.BoxGeometry(1, 1, 0.25);
       const hOccMat = new THREE.MeshStandardMaterial({
         color: 0x000000,
         depthWrite: true,
@@ -349,12 +349,8 @@ export default function TryOn() {
 
       const hOcc = new THREE.Mesh(hOccGeo, hOccMat);
       hOcc.name = "HAT_OCCLUDER";
-      hOcc.position.set(0, -0.05, 0);
-      hOcc.scale.set(
-        HAT_OCCLUDER_SCALE.x,
-        HAT_OCCLUDER_SCALE.y,
-        HAT_OCCLUDER_SCALE.z
-      );
+      hOcc.position.set(0, 0, -0.04);
+      hOcc.scale.set(0.3, 0.4, 0.5);
       hatAnchor.add(hOcc);
       hatOccluderRef.current = hOcc;
 
@@ -709,14 +705,14 @@ export default function TryOn() {
                   heightWorld,
                   depthWorld
                 );
-                occluderRef.current.position.set(0, 0, -0.04); // change to 0.04
+                occluderRef.current.position.set(0, 0, -0.04);
               }
             }
           }
 
           // ===== HAT ANCHORING (bound to head pose) =====
           if (hatAnchorRef.current && hatAdjustRef.current && faceLm) {
-            // Orientation: same faceMat as glasses (no smoothing; hats are light)
+            // Orientation: faceMat
             if (faceMat && faceMat.length === 16) {
               const m = new THREE.Matrix4().fromArray(Array.from(faceMat));
               const pos = new THREE.Vector3();
@@ -732,7 +728,7 @@ export default function TryOn() {
             const Chin = faceLm[FACE_CHIN];
 
             if (L && R && Fore && cameraRef.current) {
-              // Base anchor: midpoint between eyes (like glasses)
+              // Base anchor: midpoint between eyes
               const mx = (L.x * W + R.x * W) * 0.5;
               const my = (L.y * H + R.y * H) * 0.5;
               const ndcX = (mx / W) * 2 - 1;
@@ -749,7 +745,7 @@ export default function TryOn() {
 
               hatAnchorRef.current.position.copy(basePos);
 
-              // Scale relative to IPD (hat width to head width)
+              // Scale relative to IPD
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
               const hatScale = THREE.MathUtils.clamp(
                 ipdPx * 0.0021,
@@ -758,18 +754,48 @@ export default function TryOn() {
               );
               hatAdjustRef.current.scale.setScalar(hatScale);
 
-              // Seat it on hairline: local offset on hat group
+              // Seat it on hairline
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);
 
-              // Update hat occluder size a bit with scale (so head cuts into the hat)
-              if (hatOccluderRef.current) {
+              // === DYNAMIC HAT OCCLUDER (matches glasses behavior) ===
+              if (
+                hatOccluderRef.current &&
+                faceLm[FACE_LEFT_EYE_OUTER] &&
+                faceLm[FACE_RIGHT_EYE_OUTER]
+              ) {
+                const lx = faceLm[FACE_LEFT_EYE_OUTER].x * W;
+                const ly = faceLm[FACE_LEFT_EYE_OUTER].y * H;
+                const rx = faceLm[FACE_RIGHT_EYE_OUTER].x * W;
+                const ry = faceLm[FACE_RIGHT_EYE_OUTER].y * H;
+                const ipd = Math.hypot(rx - lx, ry - ly);
+
+                const Lc = faceLm[FACE_LEFT_TEMPLE];
+                const Rc = faceLm[FACE_RIGHT_TEMPLE];
+                const headWidthPx =
+                  Lc && Rc
+                    ? Math.hypot(Rc.x * W - Lc.x * W, Rc.y * H - Lc.y * H)
+                    : ipd * 2.6;
+
+                const headHeightPx =
+                  Fore && Chin
+                    ? Math.hypot(
+                        Chin.x * W - Fore.x * W,
+                        Chin.y * H - Fore.y * H
+                      )
+                    : ipd * 3.2;
+
+                const sHat = hatAdjustRef.current.scale.x;
+
+                const widthWorld = sHat * (headWidthPx / (ipd || 1)) * 2.4;
+                const heightWorld = sHat * (headHeightPx / (ipd || 1)) * 0.8;
+                const depthWorld = sHat * 0.9;
+
                 hatOccluderRef.current.scale.set(
-                  HAT_OCCLUDER_SCALE.x,
-                  HAT_OCCLUDER_SCALE.y,
-                  HAT_OCCLUDER_SCALE.z
+                  widthWorld,
+                  heightWorld,
+                  depthWorld
                 );
-                // keep slightly below hat center so brim/front rim occludes well
-                hatOccluderRef.current.position.set(0, -0.05, 5);
+                hatOccluderRef.current.position.set(0, -0.02, -0.05);
               }
             }
           }
@@ -963,7 +989,7 @@ export default function TryOn() {
       />
 
       {/* 2D overlay (pose/hand lines; face dots off) */}
-      <canvas
+      {/* <canvas
         ref={overlayRef}
         style={{
           position: "absolute",
@@ -973,7 +999,7 @@ export default function TryOn() {
           zIndex: 3,
           pointerEvents: "none",
         }}
-      />
+      /> */}
     </div>
   );
 }
