@@ -989,9 +989,10 @@ export default function TryOn() {
       />
 
       {/* 2D overlay (pose/hand lines; face dots off) */}
-      {/* <canvas
+      <canvas
         ref={overlayRef}
         style={{
+          display: "none",
           position: "absolute",
           inset: 0,
           width: "100%",
@@ -999,7 +1000,7 @@ export default function TryOn() {
           zIndex: 3,
           pointerEvents: "none",
         }}
-      /> */}
+      />
     </div>
   );
 }
