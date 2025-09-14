@@ -128,8 +128,8 @@ function isPalmFacingCamera(
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 // ---------- Hat tuning knobs ----------
-const HAT_SCALE_FACTOR = 0.042;
-const HAT_LIFT_FACTOR = 0.1;
+const HAT_SCALE_FACTOR = 0.032;
+const HAT_LIFT_FACTOR = 0.08;
 const HAT_FORWARD_OFFSET = -0.23;
 const HAT_OCCLUDER_SCALE = { x: 0.3, y: 0.1, z: 0.42 }; // unused after dynamic occluder
 
@@ -351,7 +351,7 @@ export default function TryOn() {
       watchAnchorRef.current = watchAnchor;
 
       // Glasses occluder (depth-only)
-      const occGeo = new THREE.BoxGeometry(1, 1, 0.25);
+      const occGeo = new THREE.BoxGeometry(1, 0.5, 0.25);
       const occMat = new THREE.MeshStandardMaterial({
         color: 0x000000,
         depthWrite: true,
@@ -362,12 +362,12 @@ export default function TryOn() {
       const gOcc = new THREE.Mesh(occGeo, occMat);
       gOcc.name = "HEAD_OCCLUDER";
       gOcc.position.set(0, 0, -0.04);
-      gOcc.scale.set(0.3, 0.4, 0.5);
+      gOcc.scale.set(0.3, 0, 0.5);
       glassesAnchor.add(gOcc);
       occluderRef.current = gOcc;
 
       // Hat occluder (depth-only, dynamic scale later)
-      const hOccGeo = new THREE.BoxGeometry(1, 1, 0.25);
+      const hOccGeo = new THREE.BoxGeometry(1, 1.3, 0.25);
       const hOccMat = new THREE.MeshStandardMaterial({
         color: 0x000000,
         depthWrite: true,
@@ -378,7 +378,7 @@ export default function TryOn() {
       const hOcc = new THREE.Mesh(hOccGeo, hOccMat);
       hOcc.name = "HAT_OCCLUDER";
       hOcc.position.set(0, 0, -0.04);
-      hOcc.scale.set(0.3, 0.4, 0.5);
+      hOcc.scale.set(0.22, 0.6, 0.5);
       hatAnchor.add(hOcc);
       hatOccluderRef.current = hOcc;
 
@@ -438,7 +438,7 @@ export default function TryOn() {
             adjust.name = "GLASSES_ADJUST";
             adjust.add(model);
 
-            adjust.scale.setScalar(0.12);
+            adjust.scale.setScalar(0.07);
             adjust.position.set(0, 0.02, 0.02);
             adjust.rotation.set(0, 0, 0);
 
@@ -756,7 +756,7 @@ export default function TryOn() {
                       )
                     : ipdPx * 3.2;
 
-                const widthWorld = s * (headWidthPx / (ipdPx || 1)) * 1.15;
+                const widthWorld = s * (headWidthPx / (ipdPx || 1)) * 1.1;
                 const heightWorld = s * (headHeightPx / (ipdPx || 1)) * 1.05;
                 const depthWorld = s * 0.75;
 
