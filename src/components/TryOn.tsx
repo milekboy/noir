@@ -134,11 +134,13 @@ const HAT_FORWARD_OFFSET = -0.23;
 const HAT_OCCLUDER_SCALE = { x: 0.3, y: 0.1, z: 0.42 }; // unused after dynamic occluder
 
 // ---------- Watch tuning knobs ----------
+// ---------- Watch tuning knobs ----------
 const WATCH_DEPTH = 0.9;
-const WATCH_BASE_SCALE = 6;
-const WATCH_SCALE_K = 0.0007;
-const WATCH_SCALE_MIN = 0.03;
-const WATCH_SCALE_MAX = 0.12;
+const WATCH_BASE_SCALE = 6; // unused once world-scaling kicks in
+const WATCH_SCALE_K = 0.0007; // unused now; keep if you want fallback
+const WATCH_SCALE_MIN = 0.05; // ↑ was 0.03
+const WATCH_SCALE_MAX = 0.25; // ↑ was 0.12 (lets it grow larger)
+const WATCH_WORLD_FACTOR = 0.9; // ↑ was 0.5 inside the block; pull it up here
 const WATCH_LOCAL_OFFSET = new THREE.Vector3(0.0, 0.0, 0.0);
 
 export default function TryOn() {
@@ -562,6 +564,27 @@ export default function TryOn() {
       } catch {}
       return "Hand";
     };
+    // Map MediaPipe landmark (0..1 video coords) → canvas pixels with object-fit: cover
+    function lmToCanvasPx(
+      lm: MPPoint,
+      videoEl: HTMLVideoElement,
+      canvasEl: HTMLCanvasElement
+    ) {
+      const vidW = videoEl.videoWidth || 0;
+      const vidH = videoEl.videoHeight || 0;
+      const canW = canvasEl.width;
+      const canH = canvasEl.height;
+      if (!vidW || !vidH) return { x: lm.x * canW, y: lm.y * canH }; // fallback
+
+      // cover scale + center offset
+      const scale = Math.max(canW / vidW, canH / vidH);
+      const dispW = vidW * scale;
+      const dispH = vidH * scale;
+      const offX = (canW - dispW) * 0.5;
+      const offY = (canH - dispH) * 0.5;
+
+      return { x: offX + lm.x * dispW, y: offY + lm.y * dispH };
+    }
 
     const startLoop = () => {
       const video = videoRef.current;
@@ -854,22 +877,32 @@ export default function TryOn() {
             }
           }
 
-          // ===== WATCH ANCHORING (new) =====
+          // ===== WATCH ANCHORING (mapped to canvas with object-fit: cover) =====
           if (watchAnchorRef.current && watchAdjustRef.current) {
-            // Decide which hand to use:
             let chosenIndex = -1;
-            if (handsLm.length === 1) {
-              chosenIndex = 0;
-            } else if (handsLm.length >= 2) {
-              // Prefer "Left"
+            if (handsLm.length === 1) chosenIndex = 0;
+            else if (handsLm.length >= 2) {
               const label0 = parseHandLabel(handednessRaw[0]).toLowerCase();
               const label1 = parseHandLabel(handednessRaw[1]).toLowerCase();
-              if (label0.includes("left")) chosenIndex = 0;
-              else if (label1.includes("left")) chosenIndex = 1;
-              else chosenIndex = 0;
+              chosenIndex = label0.includes("left")
+                ? 0
+                : label1.includes("left")
+                ? 1
+                : 0;
             }
 
-            if (chosenIndex < 0) {
+            const videoEl = videoRef.current!;
+            const canvasEl = overlayRef.current!;
+            const W = canvasEl.width,
+              H = canvasEl.height;
+
+            if (
+              chosenIndex < 0 ||
+              !videoEl ||
+              !canvasEl ||
+              !cameraRef.current ||
+              videoEl.videoWidth === 0 // guard first frames on some devices/hosts
+            ) {
               watchAnchorRef.current.visible = false;
             } else {
               const lm = handsLm[chosenIndex];
@@ -877,16 +910,19 @@ export default function TryOn() {
               const indexBase = lm?.[5];
               const pinkyBase = lm?.[17];
 
-              if (!wrist || !indexBase || !pinkyBase || !cameraRef.current) {
+              if (!wrist || !indexBase || !pinkyBase) {
                 watchAnchorRef.current.visible = false;
               } else {
                 watchAnchorRef.current.visible = true;
 
-                // Position: project wrist to world
-                const wx = wrist.x * W;
-                const wy = wrist.y * H;
-                const ndcX = (wx / W) * 2 - 1;
-                const ndcY = -(wy / H) * 2 + 1;
+                // 1) Convert to canvas pixels respecting object-fit: cover
+                const Wp = lmToCanvasPx(wrist, videoEl, canvasEl);
+                const Ip = lmToCanvasPx(indexBase, videoEl, canvasEl);
+                const Pp = lmToCanvasPx(pinkyBase, videoEl, canvasEl);
+
+                // 2) Position at WATCH_DEPTH using mapped pixels → NDC
+                const ndcX = (Wp.x / W) * 2 - 1;
+                const ndcY = -(Wp.y / H) * 2 + 1;
                 const wristWorld = ndcToWorldAtDistance(
                   ndcX,
                   ndcY,
@@ -894,33 +930,13 @@ export default function TryOn() {
                 );
                 watchAnchorRef.current.position.copy(wristWorld);
 
-                // Rotation in screen plane
-                const ivx = indexBase.x * W - wx;
-                const ivy = indexBase.y * H - wy;
-                const angleZ = Math.atan2(ivy, ivx);
+                // 3) Screen-plane rotation from mapped pixels
+                const angleZ = Math.atan2(Ip.y - Wp.y, Ip.x - Wp.x);
                 watchAnchorRef.current.rotation.set(0, 0, angleZ);
 
-                // // Scale from hand span
-                // const spanPx = Math.hypot(
-                //   indexBase.x * W - pinkyBase.x * W,
-                //   indexBase.y * H - pinkyBase.y * H
-                // );
-                // const sWatch = THREE.MathUtils.clamp(
-                //   spanPx * WATCH_SCALE_K || WATCH_BASE_SCALE,
-                //   WATCH_SCALE_MIN,
-                //   WATCH_SCALE_MAX
-                // );
-                // watchAdjustRef.current.scale.setScalar(sWatch);
-
-                // Scale from hand span (world units, not pixels)
-                const ndc = (xPx: number, yPx: number) => ({
-                  x: (xPx / W) * 2 - 1,
-                  y: -(yPx / H) * 2 + 1,
-                });
-
-                // index–pinky world positions at the watch depth
-                const idxN = ndc(indexBase.x * W, indexBase.y * H);
-                const pkyN = ndc(pinkyBase.x * W, pinkyBase.y * H);
+                // 4) Scale from WORLD span at the same depth (DPR/hosting agnostic)
+                const idxN = { x: (Ip.x / W) * 2 - 1, y: -(Ip.y / H) * 2 + 1 };
+                const pkyN = { x: (Pp.x / W) * 2 - 1, y: -(Pp.y / H) * 2 + 1 };
                 const idxWorld = ndcToWorldAtDistance(
                   idxN.x,
                   idxN.y,
@@ -931,13 +947,7 @@ export default function TryOn() {
                   pkyN.y,
                   WATCH_DEPTH
                 );
-
-                // world span (meters-like units)
                 const spanWorld = idxWorld.distanceTo(pkyWorld);
-
-                // choose a factor so the band looks right on your model
-                // (start at ~0.5 and tweak)
-                const WATCH_WORLD_FACTOR = 0.5;
 
                 const sWatch = THREE.MathUtils.clamp(
                   spanWorld * WATCH_WORLD_FACTOR,
@@ -946,7 +956,7 @@ export default function TryOn() {
                 );
                 watchAdjustRef.current.scale.setScalar(sWatch);
 
-                // Local nudge if needed
+                // Optional local nudge
                 watchAdjustRef.current.position.copy(WATCH_LOCAL_OFFSET);
               }
             }
