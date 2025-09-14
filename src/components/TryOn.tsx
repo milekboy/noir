@@ -900,13 +900,47 @@ export default function TryOn() {
                 const angleZ = Math.atan2(ivy, ivx);
                 watchAnchorRef.current.rotation.set(0, 0, angleZ);
 
-                // Scale from hand span
-                const spanPx = Math.hypot(
-                  indexBase.x * W - pinkyBase.x * W,
-                  indexBase.y * H - pinkyBase.y * H
+                // // Scale from hand span
+                // const spanPx = Math.hypot(
+                //   indexBase.x * W - pinkyBase.x * W,
+                //   indexBase.y * H - pinkyBase.y * H
+                // );
+                // const sWatch = THREE.MathUtils.clamp(
+                //   spanPx * WATCH_SCALE_K || WATCH_BASE_SCALE,
+                //   WATCH_SCALE_MIN,
+                //   WATCH_SCALE_MAX
+                // );
+                // watchAdjustRef.current.scale.setScalar(sWatch);
+
+                // Scale from hand span (world units, not pixels)
+                const ndc = (xPx: number, yPx: number) => ({
+                  x: (xPx / W) * 2 - 1,
+                  y: -(yPx / H) * 2 + 1,
+                });
+
+                // index–pinky world positions at the watch depth
+                const idxN = ndc(indexBase.x * W, indexBase.y * H);
+                const pkyN = ndc(pinkyBase.x * W, pinkyBase.y * H);
+                const idxWorld = ndcToWorldAtDistance(
+                  idxN.x,
+                  idxN.y,
+                  WATCH_DEPTH
                 );
+                const pkyWorld = ndcToWorldAtDistance(
+                  pkyN.x,
+                  pkyN.y,
+                  WATCH_DEPTH
+                );
+
+                // world span (meters-like units)
+                const spanWorld = idxWorld.distanceTo(pkyWorld);
+
+                // choose a factor so the band looks right on your model
+                // (start at ~0.5 and tweak)
+                const WATCH_WORLD_FACTOR = 0.5;
+
                 const sWatch = THREE.MathUtils.clamp(
-                  spanPx * WATCH_SCALE_K || WATCH_BASE_SCALE,
+                  spanWorld * WATCH_WORLD_FACTOR,
                   WATCH_SCALE_MIN,
                   WATCH_SCALE_MAX
                 );
