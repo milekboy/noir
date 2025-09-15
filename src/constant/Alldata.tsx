@@ -2609,3 +2609,105 @@ export const categories = [
       ],
     },
   ];
+
+
+  // src/data/categoryData.ts
+const categoryData = [
+  {
+    _id: "men",
+    name: "Men",
+    images: [
+      "/assets/images/categories/men1.png",
+      "/assets/images/categories/men1.png",
+      "/assets/images/categories/men1.png",
+    ],
+  },
+  {
+    _id: "women",
+    name: "Women",
+    images: [
+      "/assets/images/categories/women1.png",
+      "/assets/images/categories/women1.png",
+      "/assets/images/categories/women1.png",
+    ],
+  },
+  {
+    _id: "Corporate but Chic",
+    name: "Corporate but Chic",
+    images: [
+     "/assets/images/categories/chic1.png",
+      "/assets/images/categories/chic1.png",
+      "/assets/images/categories/chic1.png",
+    ],
+  },
+
+    {
+    _id: "Girls' Night Look",
+    name: "Girls' Night Look",
+    images: [
+      "/images/categories/kids1.png",
+      "/images/categories/kids2.png",
+    ],
+  },
+
+    {
+    _id: "Smart Casual Staples",
+    name: "Smart Casual Staples",
+    images: [
+      "/assets/images/categories/smart1.png",
+      "/assets/images/categories/smart1.png",
+      "/assets/images/categories/smart1.png",
+    ],
+  },
+
+    {
+    _id: "Back to Campus",
+    name: "Back to Campus",
+    images: [
+      "/images/categories/kids1.png",
+      "/images/categories/kids2.png",
+    ],
+  },
+
+  {
+    _id: "Gym & Go",
+    name: "Gym & Go",
+    images: [
+      "/assets/images/categories/gym1.png",
+      "/assets/images/categories/gym1.png",
+      "/assets/images/categories/gym1.png",
+    ],
+  },
+
+    {
+    _id: "Summer Looks",
+    name: "Summer Looks",
+    images: [
+     "/assets/images/categories/summer1.png",
+      "/assets/images/categories/summer1.png",
+      "/assets/images/categories/summer2.png",
+    ],
+  },
+
+      {
+    _id: "Travel Light",
+    name: "Travel Light",
+    images: [
+      "/images/categories/kids1.png",
+      "/images/categories/kids2.png",
+    ],
+  },
+
+      {
+    _id: "Layered Looks",
+    name: "Layered Looks",
+    images: [
+      "/images/categories/kids1.png",
+      "/images/categories/kids2.png",
+    ],
+  },
+
+
+];
+
+export default categoryData;
