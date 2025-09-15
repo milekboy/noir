@@ -140,7 +140,7 @@ const WATCH_BASE_SCALE = 6; // unused once world-scaling kicks in
 const WATCH_SCALE_K = 0.0007; // unused now; keep if you want fallback
 const WATCH_SCALE_MIN = 0.05; // ↑ was 0.03
 const WATCH_SCALE_MAX = Infinity; // ↑ was 0.12 (lets it grow larger)
-const WATCH_WORLD_FACTOR = 25; // ↑ was 0.5 inside the block; pull it up here
+const WATCH_WORLD_FACTOR = 30; // ↑ was 0.5 inside the block; pull it up here
 const WATCH_LOCAL_OFFSET = new THREE.Vector3(0.0, 0.0, 0.0);
 
 export default function TryOn() {
@@ -509,7 +509,7 @@ export default function TryOn() {
             // Initial size; overridden each frame
             adjust.scale.setScalar(WATCH_BASE_SCALE);
             adjust.position.copy(WATCH_LOCAL_OFFSET);
-            adjust.rotation.set(-Math.PI / 2, 0, 0);
+            adjust.rotation.set(Math.PI / 2, Math.PI, 0);
 
             watchAdjustRef.current = adjust;
             watchAnchorRef.current!.add(adjust);
