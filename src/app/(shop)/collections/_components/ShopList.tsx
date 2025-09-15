@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 import { Modal, Tab } from "react-bootstrap";
+import Image from "next/image"; // ✅ added
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
@@ -11,18 +12,20 @@ import SelectBoxFour from "@/elements/Shop/SelectBoxFour";
 import SelectBoxFive from "@/elements/Shop/SelectBoxFive";
 import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
 import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
-import SelectBoxEight from "@/elements/Shop/SelectBoxEight";
+// import SelectBoxEight from "@/elements/Shop/SelectBoxEight"; // ❌ commented (not used)
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-import { shopStyleData } from "@/constant/Alldata";
+import categoryData, {
+  shopStyleData,
+  categories,
+  CategoryData,
+} from "@/constant/Alldata"; // ✅ named import
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
-import { categories } from "@/constant/Alldata";
 import { useRouter } from "next/navigation";
-
 import NetworkInstance from "../../../api/NetworkInstance";
-import { label } from "three/src/nodes/TSL.js";
+// import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
 export default function ShopList({
   selectedCategory,
@@ -88,9 +91,10 @@ export default function ShopList({
   const onColorChange = (color: string) => setSelectedColor(color);
   const onSizeChange = (size: string) => setSelectedSize(Number(size));
 
-  const filteredCategory = products
-    ? products.filter((item) => item.category === selectedCategory)
-    : products;
+  const filteredCategory =
+    selectedCategory && products.length > 0
+      ? products.filter((item) => item.category === selectedCategory)
+      : products;
 
   const filteredProducts = filteredCategory.filter((item) => {
     const price = item.price;
@@ -378,6 +382,8 @@ export default function ShopList({
     router.push(`/collections?category=${encodeURIComponent(child)}`);
   };
 
+  const [hoveredSub, setHoveredSub] = useState<string | null>(null);
+
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -482,37 +488,72 @@ export default function ShopList({
                     backgroundColor: "#fff",
                     border: "1px solid #eee",
                     borderRadius: "6px",
-                    width: "600px",
+                    width: "700px",
                     padding: "20px 25px",
                     display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "12px 20px",
+                    gridTemplateColumns: "2fr 1fr", // text left, images right
+                    gap: "20px",
                     zIndex: 1000,
                     boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
-                    transition: "all 0.3s ease",
                   }}
                 >
-                  {item.dropdown.map((drop, i) => (
-                    <Link
-                      key={i}
-                      href="#"
-                      style={{
-                        color: "#333",
-                        textDecoration: "none",
-                        fontSize: "13px",
-                        fontWeight: "400",
-                        padding: "6px 0",
-                        transition: "all 0.3s ease",
-                        whiteSpace: "nowrap",
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDropdownClick(item.label, drop.label); // ✅ pass parent + child
-                      }}
-                    >
-                      {drop.label}
-                    </Link>
-                  ))}
+                  {/* Left side: links */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      columnGap: "20px", // horizontal space between columns
+                      rowGap: "4px", // minimal vertical space
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    {item.dropdown.map((drop, i) => (
+                      <Link
+                        key={i}
+                        href="#"
+                        style={{
+                          flex: "0 0 45%", // each link takes ~half width (like 2 columns)
+                          color: "#333",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: "400",
+                          padding: "2px 0",
+                          transition: "all 0.2s ease",
+                          whiteSpace: "nowrap",
+                        }}
+                        onMouseEnter={() => setHoveredSub(drop.label)}
+                        onMouseLeave={() => setHoveredSub(null)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDropdownClick(item.label, drop.label);
+                        }}
+                      >
+                        {drop.label}
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Right side: images */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    {categoryData
+                      .find((cat) => cat.name === item.label)
+                      ?.images.map((img, idx) => (
+                        <Image
+                          key={idx}
+                          src={img}
+                          alt={`${item.label}-${idx}`}
+                          width={300}
+                          height={400}
+                          style={{ borderRadius: "8px", objectFit: "cover" }}
+                        />
+                      ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -623,7 +664,7 @@ export default function ShopList({
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
               <h4 className="mb-3" style={{ color: "black" }}>
-                Category
+                New In
               </h4>
               <div className="row">
                 <div className="col-xl-12">
@@ -704,7 +745,7 @@ export default function ShopList({
 
                 <div className="row">
                   <Tab.Content className="col-12 tab-content shop-">
-                    <Tab.Pane eventKey={"List"}>
+                    {/* <Tab.Pane eventKey={"List"}>
                       <div className="row">
                         {products.slice(0, 6).map((item, index) => (
                           <div
@@ -725,7 +766,7 @@ export default function ShopList({
                           </div>
                         ))}
                       </div>
-                    </Tab.Pane>
+                    </Tab.Pane> */}
 
                     <Tab.Pane eventKey={"Grid"}>
                       <div className="row gx-xl-4 g-3">
