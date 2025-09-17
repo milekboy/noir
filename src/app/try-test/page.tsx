@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 
-const TryOn = dynamic(() => import("@/components/TryOn"), { ssr: false });
+const TryTest = dynamic(() => import("@/components/TryOnTest"), { ssr: false });
 
 import CommanLayout from "@/components/CommanLayout";
 
 export default function Augument() {
   return (
     <CommanLayout>
-      <TryOn />
+      <TryTest />
     </CommanLayout>
   );
 }
