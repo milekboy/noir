@@ -409,7 +409,7 @@ export default function TryTest() {
           depthWrite: true,
           depthTest: true,
         } as any);
-        // (rOccMat as any).colorWrite = false; // invisible (depth-only)
+        (rOccMat as any).colorWrite = false; // invisible (depth-only)
         (rOccMat as any).polygonOffset = true; // avoid z-fighting with the watch
         (rOccMat as any).polygonOffsetFactor = -1;
         (rOccMat as any).polygonOffsetUnits = -1;
