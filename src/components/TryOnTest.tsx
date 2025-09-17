@@ -145,8 +145,8 @@ const WATCH_ROLL_SMOOTH = 0.35;
 
 // ---- RECTANGLE OCCLUDER (no rotation) ----
 const RECT_OCCLUDER_ENABLED = true;
-const RECT_WIDTH_MULT = 2.1; // × span (index↔pinky). Wider: 1.2..1.5
-const RECT_HEIGHT_MULT = 0.7; // × (sWatch * 0.06) along forearm. Taller: 0.9..1.2
+const RECT_WIDTH_MULT = 2.1; // × span (index↔pinky)
+const RECT_HEIGHT_MULT = 0.7; // × (sWatch * 0.06) along forearm
 const RECT_DEPTH_METERS = 0.01; // thickness toward camera (meters)
 const RECT_Z_FROM_WRIST = 0.01; // offset along wrist outward-normal (meters)
 const RECT_EXTRA_PAD = 0.002; // uniform padding (meters)
@@ -402,7 +402,6 @@ export default function TryTest() {
 
       // --- Rectangular wrist occluder (depth-only, no rotation) ---
       if (RECT_OCCLUDER_ENABLED) {
-        // Base box: we scale each frame
         const rOccGeo = new THREE.BoxGeometry(0.1, 0.06, 0.01); // (baseW, baseH, baseD)
         const rOccMat = new THREE.MeshStandardMaterial({
           color: 0x000000,
@@ -915,7 +914,7 @@ export default function TryTest() {
             }
           }
 
-          // ===== WATCH ANCHORING (position + roll + scale) =====
+          // ===== WATCH ANCHORING (position + roll + scale + palm/knuckles flip) =====
           if (watchAnchorRef.current && watchAdjustRef.current) {
             let chosenIndex = -1;
             if (handsLm.length === 1) chosenIndex = 0;
@@ -1021,31 +1020,49 @@ export default function TryTest() {
                 const xAxis = new THREE.Vector3()
                   .subVectors(Iw, Pw)
                   .normalize(); // across wrist
-                const yAxis = new THREE.Vector3()
-                  .subVectors(Ww, Ew)
-                  .normalize(); // along forearm
-                const zAxis = new THREE.Vector3()
+                let yAxis = new THREE.Vector3().subVectors(Ww, Ew).normalize(); // along forearm
+
+                // RAW outward normal (no continuity fix) for facing test
+                const zAxisRaw = new THREE.Vector3()
                   .crossVectors(xAxis, yAxis)
-                  .normalize(); // outward normal
-                yAxis.crossVectors(zAxis, xAxis).normalize(); // re-orthogonalize
+                  .normalize();
 
-                // Continuity: avoid 180° flips if detector swaps direction
-                if (prevZRef.current.dot(zAxis) < 0) {
-                  xAxis.multiplyScalar(-1);
-                  zAxis.multiplyScalar(-1);
+                // Make a stabilized copy for anchor orientation (continuity fix)
+                const xA = xAxis.clone();
+                const zA = zAxisRaw.clone();
+                if (prevZRef.current.dot(zA) < 0) {
+                  xA.multiplyScalar(-1);
+                  zA.multiplyScalar(-1);
                 }
-                prevZRef.current.copy(zAxis);
+                prevZRef.current.copy(zA);
+                yAxis = new THREE.Vector3().crossVectors(zA, xA).normalize();
 
-                const basis = new THREE.Matrix4().makeBasis(
-                  xAxis,
-                  yAxis,
-                  zAxis
-                );
+                // Anchor quaternion from the stabilized basis
+                const basis = new THREE.Matrix4().makeBasis(xA, yAxis, zA);
                 const targetQuat = new THREE.Quaternion().setFromRotationMatrix(
                   basis
                 );
                 watchQuatRef.current.slerp(targetQuat, WATCH_ROLL_SMOOTH);
                 watchAnchorRef.current.quaternion.copy(watchQuatRef.current);
+
+                // 3.5) Palm/knuckles flip for the CHILD (strap swap)
+                const camToWrist = new THREE.Vector3()
+                  .subVectors(wristWorld, cameraRef.current!.position)
+                  .normalize();
+                const zTowardCam = zAxisRaw.dot(camToWrist);
+
+                // If normal points away from camera, flip 180° around forearm axis (local Y)
+                const needFlip = zTowardCam < -0.12; // add a little deadzone
+
+                const childQ = WATCH_MODEL_CORRECTION.clone();
+                if (needFlip) {
+                  const flipY = new THREE.Quaternion().setFromAxisAngle(
+                    new THREE.Vector3(0, 1, 0),
+                    Math.PI
+                  );
+                  childQ.premultiply(flipY); // rotate in parent (anchor) space
+                }
+                watchAdjustRef.current.quaternion.copy(childQ);
 
                 // 4) Scale from WORLD span at same depth
                 const idxN = {
@@ -1087,10 +1104,10 @@ export default function TryTest() {
                     sWatch * 0.06 * RECT_HEIGHT_MULT + RECT_EXTRA_PAD * 2; // along forearm
                   const depth = RECT_DEPTH_METERS; // toward camera
 
-                  // Position: at wrist + nudge along the outward normal (zAxis)
+                  // Position: at wrist + nudge along the outward normal (use stabilized zA)
                   const rectPos = wristWorld
                     .clone()
-                    .add(zAxis.clone().multiplyScalar(RECT_Z_FROM_WRIST));
+                    .add(zA.clone().multiplyScalar(RECT_Z_FROM_WRIST));
                   rect.position.copy(rectPos);
 
                   // No rotation at all (axis-aligned in world)
