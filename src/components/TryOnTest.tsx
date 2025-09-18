@@ -117,18 +117,14 @@ const WATCH_ROLL_SMOOTH = 0.35;
 const RECT_OCCLUDER_ENABLED = true;
 const RECT_WIDTH_MULT = 2.1; // × span (index↔pinky)
 const RECT_HEIGHT_MULT = 0.7; // × (sWatch * 0.06) along forearm
-const RECT_DEPTH_METERS = 0.01; // thickness toward camera (meters)
-const RECT_Z_FROM_WRIST = 0.01; // offset along wrist outward-normal (meters)
-const RECT_EXTRA_PAD = 0.002; // uniform padding (meters)
+const RECT_DEPTH_METERS = 0.01; // toward camera
+const RECT_Z_FROM_WRIST = 0.01; // offset along outward-normal
+const RECT_EXTRA_PAD = 0.002; // uniform padding
 
 // Model correction so local axes match our anchor basis nicely
 const WATCH_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
   new THREE.Euler(Math.PI / 2, Math.PI / 2, 0, "XYZ")
 );
-
-// ---- Visibility gating (debounce) ----
-const SHOW_AFTER_FRAMES = 1; // make 2+ to require more confidence before showing
-const HIDE_AFTER_FRAMES = 4; // make larger to avoid flicker on brief drops
 
 export default function TryTest() {
   const router = useRouter();
@@ -179,23 +175,23 @@ export default function TryTest() {
   const filtQuat = useRef(new THREE.Quaternion());
   const filtScale = useRef(0.12);
 
-  // UI toggles
+  // Toggles (state + refs to avoid stale closures in loop)
   const [showGlasses, setShowGlasses] = useState(true);
   const [showHat, setShowHat] = useState(true);
+  const showGlassesRef = useRef(true);
+  const showHatRef = useRef(true);
 
-  // Run control
+  // Tracking-gate refs (updated each frame)
+  const faceGateRef = useRef(false);
+  const handGateRef = useRef(false);
+
+  // Loading overlay
+  const [modelsReady, setModelsReady] = useState(false);
+  const [visionReady, setVisionReady] = useState(false);
+
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
   const logHandFramesRef = useRef(0);
-
-  // ---- Gate state
-  const faceGateRef = useRef(false);
-  const faceSeenRef = useRef(0);
-  const faceMissRef = useRef(0);
-
-  const watchGateRef = useRef(false);
-  const watchSeenRef = useRef(0);
-  const watchMissRef = useRef(0);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -295,6 +291,7 @@ export default function TryTest() {
         numHands: 2,
       });
 
+      setVisionReady(true);
       console.log("[LOCAL] Pose, Face, and Hand models ready");
     };
 
@@ -346,15 +343,13 @@ export default function TryTest() {
       const glassesAnchor = new THREE.Group();
       const hatAnchor = new THREE.Group();
       const watchAnchor = new THREE.Group();
+      glassesAnchor.visible = false;
+      hatAnchor.visible = false;
+      watchAnchor.visible = false;
       scene.add(glassesAnchor, hatAnchor, watchAnchor);
       glassAnchorRef.current = glassesAnchor;
       hatAnchorRef.current = hatAnchor;
       watchAnchorRef.current = watchAnchor;
-
-      // Hide everything by default (prevents initial “stamp”)
-      glassesAnchor.visible = false;
-      hatAnchor.visible = false;
-      watchAnchor.visible = false;
 
       // Glasses occluder (depth-only)
       const occGeo = new THREE.BoxGeometry(1, 0.5, 0.25);
@@ -368,7 +363,7 @@ export default function TryTest() {
       gOcc.name = "HEAD_OCCLUDER";
       gOcc.position.set(0, 0, -0.04);
       gOcc.scale.set(0.3, 0, 0.5);
-      gOcc.visible = false; // hidden until face gate opens
+      gOcc.visible = false;
       glassesAnchor.add(gOcc);
       occluderRef.current = gOcc;
 
@@ -384,7 +379,7 @@ export default function TryTest() {
       hOcc.name = "HAT_OCCLUDER";
       hOcc.position.set(0, 0, -0.04);
       hOcc.scale.set(0.22, 0.6, 0.5);
-      hOcc.visible = false; // hidden until face gate opens
+      hOcc.visible = false;
       hatAnchor.add(hOcc);
       hatOccluderRef.current = hOcc;
 
@@ -403,7 +398,7 @@ export default function TryTest() {
 
         const rOcc = new THREE.Mesh(rOccGeo, rOccMat);
         rOcc.name = "WRIST_RECT_OCCLUDER";
-        rOcc.visible = false; // hidden until watch gate opens
+        rOcc.visible = false;
         scene.add(rOcc); // NOT parented to watchAnchor → stays axis-aligned
         watchRectOccluderRef.current = rOcc;
       }
@@ -462,6 +457,7 @@ export default function TryTest() {
             const adjust = new THREE.Group();
             adjust.name = "GLASSES_ADJUST";
             adjust.add(model);
+
             adjust.scale.setScalar(0.07);
             adjust.position.set(0, 0.02, 0.02);
             adjust.rotation.set(0, 0, 0);
@@ -527,7 +523,7 @@ export default function TryTest() {
             adjust.name = "WATCH_ADJUST";
             adjust.add(model);
 
-            // Child correction; live wrist rotation goes on ANCHOR
+            // Child gets a fixed correction; live wrist rotation goes on the ANCHOR
             adjust.quaternion.copy(WATCH_MODEL_CORRECTION);
             adjust.scale.setScalar(WATCH_BASE_SCALE);
             watchAdjustRef.current = adjust;
@@ -606,29 +602,6 @@ export default function TryTest() {
       return { x: offX + lm.x * dispW, y: offY + lm.y * dispH };
     }
 
-    // --- visibility gating helper
-    function updateGate(
-      validNow: boolean,
-      gateRef: React.MutableRefObject<boolean>,
-      seenRef: React.MutableRefObject<number>,
-      missRef: React.MutableRefObject<number>
-    ) {
-      if (validNow) {
-        seenRef.current++;
-        missRef.current = 0;
-      } else {
-        missRef.current++;
-        seenRef.current = 0;
-      }
-      if (!gateRef.current && seenRef.current >= SHOW_AFTER_FRAMES) {
-        gateRef.current = true;
-      }
-      if (gateRef.current && missRef.current >= HIDE_AFTER_FRAMES) {
-        gateRef.current = false;
-      }
-      return gateRef.current;
-    }
-
     const startLoop = () => {
       const video = videoRef.current!;
       const canvas = overlayRef.current!;
@@ -671,21 +644,8 @@ export default function TryTest() {
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
-          if (SHOW_FACE_DOTS && faceLm) {
-            ctx.fillStyle = "rgba(0,255,0,0.7)";
-            for (let i = 0; i < faceLm.length; i += 2) {
-              const pt = faceLm[i];
-              ctx.beginPath();
-              ctx.arc(pt.x * W, pt.y * H, 2, 0, Math.PI * 2);
-              ctx.fill();
-            }
-          }
-
-          // ----- VALIDITY FLAGS (for gating)
-          let faceValid = false;
-          let watchValid = false;
-
           // ===== GLASSES =====
+          let faceOpen = !!faceLm;
           if (glassAnchorRef.current && glassAdjustRef.current && faceLm) {
             const anchor = glassAnchorRef.current;
 
@@ -712,7 +672,6 @@ export default function TryTest() {
               const ALPHA_POS = 0.3;
               filtPos.current.lerp(targetPos, ALPHA_POS);
               anchor.position.copy(filtPos.current);
-              faceValid = true; // position computed → ok to show
             }
 
             if (faceLm[FACE_LEFT_EYE_OUTER] && faceLm[FACE_RIGHT_EYE_OUTER]) {
@@ -827,12 +786,11 @@ export default function TryTest() {
                 );
                 hatOccluderRef.current.position.set(0, -0.02, -0.05);
               }
-
-              faceValid = true; // hat also relies on face
             }
           }
 
-          // ===== WATCH =====
+          // ===== WATCH (basis + slerp + palm/knuckles flip) =====
+          let handOpen = false;
           if (watchAnchorRef.current && watchAdjustRef.current) {
             let chosenIndex = -1;
             if (handsLm.length === 1) chosenIndex = 0;
@@ -864,7 +822,9 @@ export default function TryTest() {
               const pinkyBase = lm?.[17];
 
               if (wrist && indexBase && pinkyBase) {
-                // 1) Pixels → world @ fixed depth
+                handOpen = true;
+
+                // 1) Canvas px → world @ fixed depth
                 const Wp = lmToCanvasPx(wrist, videoEl, canvasEl);
                 const Ip = lmToCanvasPx(indexBase, videoEl, canvasEl);
                 const Pp = lmToCanvasPx(pinkyBase, videoEl, canvasEl);
@@ -885,28 +845,23 @@ export default function TryTest() {
                 const Iw = toWorldAtDepth(Ip.x, Ip.y);
                 const Pw = toWorldAtDepth(Pp.x, Pp.y);
 
-                // 2) Basis from landmarks
+                // 2) Build basis (x across, y along forearm, z outward)
                 const xAxis = new THREE.Vector3()
                   .subVectors(Iw, Pw)
                   .normalize();
+
+                // Approx elbow by mirroring mid across wrist
                 const mid = {
                   x: (indexBase.x + pinkyBase.x) / 2,
                   y: (indexBase.y + pinkyBase.y) / 2,
                 };
-                const elbowGuessPx = {
+                const elbowGuess = {
                   x: wrist.x + (wrist.x - mid.x),
                   y: wrist.y + (wrist.y - mid.y),
                 };
-                const Ew = toWorldAtDepth(
-                  ...(() => {
-                    const p = lmToCanvasPx(
-                      elbowGuessPx as any,
-                      videoEl,
-                      canvasEl
-                    );
-                    return [p.x, p.y] as const;
-                  })()
-                );
+                const ePx = lmToCanvasPx(elbowGuess as any, videoEl, canvasEl);
+                const Ew = toWorldAtDepth(ePx.x, ePx.y);
+
                 let yAxis = new THREE.Vector3()
                   .subVectors(wristWorld, Ew)
                   .normalize();
@@ -914,7 +869,7 @@ export default function TryTest() {
                   .crossVectors(xAxis, yAxis)
                   .normalize();
 
-                // 3) Continuity fix
+                // 3) Continuity fix (avoid 180° flips)
                 const xA = xAxis.clone();
                 const zA = zAxisRaw.clone();
                 if (prevZRef.current.dot(zA) < 0) {
@@ -924,23 +879,23 @@ export default function TryTest() {
                 prevZRef.current.copy(zA);
                 yAxis = new THREE.Vector3().crossVectors(zA, xA).normalize();
 
-                // 4) Orientation + position (hat-like decompose)
+                // 4) Matrix → decompose (hat-style), then smooth
                 const handMat = new THREE.Matrix4().makeBasis(xA, yAxis, zA);
                 handMat.setPosition(wristWorld);
                 const handPos = new THREE.Vector3();
                 const handQuat = new THREE.Quaternion();
                 const handScl = new THREE.Vector3();
                 handMat.decompose(handPos, handQuat, handScl);
-                watchQuatRef.current.slerp(handQuat, WATCH_ROLL_SMOOTH);
 
+                watchQuatRef.current.slerp(handQuat, WATCH_ROLL_SMOOTH);
                 watchAnchorRef.current.position.copy(handPos);
                 watchAnchorRef.current.quaternion.copy(watchQuatRef.current);
 
-                // 5) Palm/knuckles flip for CHILD
+                // 5) Flip child 180° around forearm axis if knuckles face camera
                 const camToWrist = new THREE.Vector3()
                   .subVectors(wristWorld, cameraRef.current!.position)
                   .normalize();
-                const zTowardCam = zAxisRaw.dot(camToWrist);
+                const zTowardCam = zAxisRaw.dot(camToWrist); // + = palm, - = knuckles
                 const needFlip = zTowardCam < -0.12;
 
                 const childQ = WATCH_MODEL_CORRECTION.clone();
@@ -953,7 +908,7 @@ export default function TryTest() {
                 }
                 watchAdjustRef.current.quaternion.copy(childQ);
 
-                // 6) Scale from span
+                // 6) Scale from WORLD span at same depth
                 const idxN = {
                   x: (Ip.x / Wc) * 2 - 1,
                   y: -(Ip.y / Hc) * 2 + 1,
@@ -982,7 +937,7 @@ export default function TryTest() {
                 watchAdjustRef.current.scale.setScalar(sWatch);
                 watchAdjustRef.current.position.copy(WATCH_LOCAL_OFFSET);
 
-                // 7) Rect occluder (axis-aligned)
+                // 7) Rect occluder (axis-aligned, no rotation)
                 if (RECT_OCCLUDER_ENABLED && watchRectOccluderRef.current) {
                   const rect = watchRectOccluderRef.current;
                   const width =
@@ -995,50 +950,45 @@ export default function TryTest() {
                     .clone()
                     .add(zA.clone().multiplyScalar(RECT_Z_FROM_WRIST));
                   rect.position.copy(rectPos);
-                  rect.quaternion.set(0, 0, 0, 1);
+                  rect.quaternion.set(0, 0, 0, 1); // stays axis-aligned
                   rect.scale.set(width / 0.1, height / 0.06, depth / 0.01);
                 }
-
-                watchValid = true; // we got a full, consistent wrist pose this frame
               }
             }
           }
 
-          // ====== GATING (show/hide after valid/invalid streaks) ======
-          const faceOpen = updateGate(
-            faceValid,
-            faceGateRef,
-            faceSeenRef,
-            faceMissRef
-          );
-          const watchOpen = updateGate(
-            watchValid,
-            watchGateRef,
-            watchSeenRef,
-            watchMissRef
-          );
+          // ===== FINAL VISIBILITY GATING (per frame) =====
+          faceGateRef.current = !!faceOpen;
+          handGateRef.current = !!handOpen;
 
-          // Face-driven actors (respect UI toggles)
-          if (glassAnchorRef.current) {
-            glassAnchorRef.current.visible = faceOpen && showGlasses;
-          }
-          if (occluderRef.current) {
-            occluderRef.current.visible = faceOpen && showGlasses;
-          }
-          if (hatAnchorRef.current) {
-            hatAnchorRef.current.visible = faceOpen && showHat;
-          }
-          if (hatOccluderRef.current) {
-            hatOccluderRef.current.visible = faceOpen && showHat;
-          }
+          if (glassAnchorRef.current)
+            glassAnchorRef.current.visible =
+              faceGateRef.current && showGlassesRef.current;
+          if (occluderRef.current)
+            occluderRef.current.visible =
+              faceGateRef.current && showGlassesRef.current;
 
-          // Watch + its occluder
-          if (watchAnchorRef.current) {
-            watchAnchorRef.current.visible = watchOpen;
-          }
-          if (watchRectOccluderRef.current) {
-            watchRectOccluderRef.current.visible =
-              watchOpen && RECT_OCCLUDER_ENABLED;
+          if (hatAnchorRef.current)
+            hatAnchorRef.current.visible =
+              faceGateRef.current && showHatRef.current;
+          if (hatOccluderRef.current)
+            hatOccluderRef.current.visible =
+              faceGateRef.current && showHatRef.current;
+
+          if (watchAnchorRef.current)
+            watchAnchorRef.current.visible = handGateRef.current;
+          if (watchRectOccluderRef.current)
+            watchRectOccluderRef.current.visible = handGateRef.current;
+
+          // --- Optional visuals (kept minimal) ---
+          if (SHOW_FACE_DOTS && faceLm) {
+            ctx.fillStyle = "rgba(0,255,0,0.7)";
+            for (let i = 0; i < faceLm.length; i += 2) {
+              const pt = faceLm[i];
+              ctx.beginPath();
+              ctx.arc(pt.x * W, pt.y * H, 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
         } catch {
           // ignore intermittent errors
@@ -1079,10 +1029,14 @@ export default function TryTest() {
       fitCanvas();
 
       await initThree();
+
+      // Load models first → show overlay until these finish
       await Promise.all([loadGlasses(), loadHat(), loadWatch()]);
+      setModelsReady(true);
+
       renderThreeLoop();
 
-      await initModels();
+      await initModels(); // tracking models (MediaPipe)
       startLoop();
 
       const onResize = () => fitCanvas();
@@ -1112,8 +1066,9 @@ export default function TryTest() {
     return () => cleanupRef.current?.();
   }, []);
 
-  // Visibility toggles now respect gates
+  // Keep refs synced with toggles; also immediately apply vis using the latest gates
   useEffect(() => {
+    showGlassesRef.current = showGlasses;
     if (glassAnchorRef.current)
       glassAnchorRef.current.visible = faceGateRef.current && showGlasses;
     if (occluderRef.current)
@@ -1121,6 +1076,7 @@ export default function TryTest() {
   }, [showGlasses]);
 
   useEffect(() => {
+    showHatRef.current = showHat;
     if (hatAnchorRef.current)
       hatAnchorRef.current.visible = faceGateRef.current && showHat;
     if (hatOccluderRef.current)
@@ -1130,6 +1086,8 @@ export default function TryTest() {
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const showLoading = !modelsReady; // only show while GLTF models load
 
   return (
     <div
@@ -1149,7 +1107,7 @@ export default function TryTest() {
           position: "absolute",
           top: "10px",
           left: "10px",
-          zIndex: 10,
+          zIndex: 20,
           padding: "8px 14px",
           borderRadius: "6px",
           background: "rgba(0,0,0,0.6)",
@@ -1171,7 +1129,7 @@ export default function TryTest() {
           position: "absolute",
           top: "10px",
           right: "10px",
-          zIndex: 10,
+          zIndex: 20,
           display: "flex",
           gap: 8,
         }}
@@ -1246,6 +1204,64 @@ export default function TryTest() {
           pointerEvents: "none",
         }}
       />
+
+      {/* Loading overlay */}
+      {showLoading && (
+        <>
+          <style>{`
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+          `}</style>
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 99,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background:
+                "linear-gradient(135deg, rgba(15,15,20,0.85), rgba(0,0,0,0.65))",
+              backdropFilter: "blur(2px)",
+              animation: "fadein 250ms ease-out",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                padding: "14px 18px",
+                borderRadius: 12,
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                boxShadow: "0 6px 22px rgba(0,0,0,0.35)",
+              }}
+            >
+              <div
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  border: "3px solid rgba(255,255,255,0.25)",
+                  borderTopColor: "#fff",
+                  animation: "spin 1s linear infinite",
+                }}
+              />
+              <div
+                style={{
+                  color: "#fff",
+                  fontSize: 16,
+                  letterSpacing: 0.3,
+                  fontWeight: 600,
+                }}
+              >
+                Loading models…
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
