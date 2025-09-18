@@ -126,6 +126,10 @@ const WATCH_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
   new THREE.Euler(Math.PI / 2, Math.PI / 2, 0, "XYZ")
 );
 
+// ---- Visibility gating (debounce) ----
+const SHOW_AFTER_FRAMES = 1; // make 2+ to require more confidence before showing
+const HIDE_AFTER_FRAMES = 4; // make larger to avoid flicker on brief drops
+
 export default function TryTest() {
   const router = useRouter();
 
@@ -175,13 +179,23 @@ export default function TryTest() {
   const filtQuat = useRef(new THREE.Quaternion());
   const filtScale = useRef(0.12);
 
-  // UI
+  // UI toggles
   const [showGlasses, setShowGlasses] = useState(true);
   const [showHat, setShowHat] = useState(true);
 
+  // Run control
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
   const logHandFramesRef = useRef(0);
+
+  // ---- Gate state
+  const faceGateRef = useRef(false);
+  const faceSeenRef = useRef(0);
+  const faceMissRef = useRef(0);
+
+  const watchGateRef = useRef(false);
+  const watchSeenRef = useRef(0);
+  const watchMissRef = useRef(0);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -337,6 +351,11 @@ export default function TryTest() {
       hatAnchorRef.current = hatAnchor;
       watchAnchorRef.current = watchAnchor;
 
+      // Hide everything by default (prevents initial “stamp”)
+      glassesAnchor.visible = false;
+      hatAnchor.visible = false;
+      watchAnchor.visible = false;
+
       // Glasses occluder (depth-only)
       const occGeo = new THREE.BoxGeometry(1, 0.5, 0.25);
       const occMat = new THREE.MeshStandardMaterial({
@@ -349,6 +368,7 @@ export default function TryTest() {
       gOcc.name = "HEAD_OCCLUDER";
       gOcc.position.set(0, 0, -0.04);
       gOcc.scale.set(0.3, 0, 0.5);
+      gOcc.visible = false; // hidden until face gate opens
       glassesAnchor.add(gOcc);
       occluderRef.current = gOcc;
 
@@ -364,6 +384,7 @@ export default function TryTest() {
       hOcc.name = "HAT_OCCLUDER";
       hOcc.position.set(0, 0, -0.04);
       hOcc.scale.set(0.22, 0.6, 0.5);
+      hOcc.visible = false; // hidden until face gate opens
       hatAnchor.add(hOcc);
       hatOccluderRef.current = hOcc;
 
@@ -382,7 +403,7 @@ export default function TryTest() {
 
         const rOcc = new THREE.Mesh(rOccGeo, rOccMat);
         rOcc.name = "WRIST_RECT_OCCLUDER";
-        rOcc.visible = false;
+        rOcc.visible = false; // hidden until watch gate opens
         scene.add(rOcc); // NOT parented to watchAnchor → stays axis-aligned
         watchRectOccluderRef.current = rOcc;
       }
@@ -441,7 +462,6 @@ export default function TryTest() {
             const adjust = new THREE.Group();
             adjust.name = "GLASSES_ADJUST";
             adjust.add(model);
-
             adjust.scale.setScalar(0.07);
             adjust.position.set(0, 0.02, 0.02);
             adjust.rotation.set(0, 0, 0);
@@ -507,7 +527,7 @@ export default function TryTest() {
             adjust.name = "WATCH_ADJUST";
             adjust.add(model);
 
-            // Child gets a fixed correction; live wrist rotation goes on the ANCHOR
+            // Child correction; live wrist rotation goes on ANCHOR
             adjust.quaternion.copy(WATCH_MODEL_CORRECTION);
             adjust.scale.setScalar(WATCH_BASE_SCALE);
             watchAdjustRef.current = adjust;
@@ -586,6 +606,29 @@ export default function TryTest() {
       return { x: offX + lm.x * dispW, y: offY + lm.y * dispH };
     }
 
+    // --- visibility gating helper
+    function updateGate(
+      validNow: boolean,
+      gateRef: React.MutableRefObject<boolean>,
+      seenRef: React.MutableRefObject<number>,
+      missRef: React.MutableRefObject<number>
+    ) {
+      if (validNow) {
+        seenRef.current++;
+        missRef.current = 0;
+      } else {
+        missRef.current++;
+        seenRef.current = 0;
+      }
+      if (!gateRef.current && seenRef.current >= SHOW_AFTER_FRAMES) {
+        gateRef.current = true;
+      }
+      if (gateRef.current && missRef.current >= HIDE_AFTER_FRAMES) {
+        gateRef.current = false;
+      }
+      return gateRef.current;
+    }
+
     const startLoop = () => {
       const video = videoRef.current!;
       const canvas = overlayRef.current!;
@@ -628,7 +671,6 @@ export default function TryTest() {
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
-          // Optional visuals...
           if (SHOW_FACE_DOTS && faceLm) {
             ctx.fillStyle = "rgba(0,255,0,0.7)";
             for (let i = 0; i < faceLm.length; i += 2) {
@@ -639,7 +681,11 @@ export default function TryTest() {
             }
           }
 
-          // ===== GLASSES (as before) =====
+          // ----- VALIDITY FLAGS (for gating)
+          let faceValid = false;
+          let watchValid = false;
+
+          // ===== GLASSES =====
           if (glassAnchorRef.current && glassAdjustRef.current && faceLm) {
             const anchor = glassAnchorRef.current;
 
@@ -666,6 +712,7 @@ export default function TryTest() {
               const ALPHA_POS = 0.3;
               filtPos.current.lerp(targetPos, ALPHA_POS);
               anchor.position.copy(filtPos.current);
+              faceValid = true; // position computed → ok to show
             }
 
             if (faceLm[FACE_LEFT_EYE_OUTER] && faceLm[FACE_RIGHT_EYE_OUTER]) {
@@ -717,7 +764,7 @@ export default function TryTest() {
             }
           }
 
-          // ===== HAT (as before) =====
+          // ===== HAT =====
           if (hatAnchorRef.current && hatAdjustRef.current && faceLm) {
             if (faceMat && faceMat.length === 16) {
               const m = new THREE.Matrix4().fromArray(Array.from(faceMat));
@@ -780,10 +827,12 @@ export default function TryTest() {
                 );
                 hatOccluderRef.current.position.set(0, -0.02, -0.05);
               }
+
+              faceValid = true; // hat also relies on face
             }
           }
 
-          // ===== WATCH (apply "hat logic": build a matrix, decompose, slerp) =====
+          // ===== WATCH =====
           if (watchAnchorRef.current && watchAdjustRef.current) {
             let chosenIndex = -1;
             if (handsLm.length === 1) chosenIndex = 0;
@@ -803,29 +852,19 @@ export default function TryTest() {
               Hc = canvasEl.height;
 
             if (
-              chosenIndex < 0 ||
-              !videoEl ||
-              !canvasEl ||
-              !cameraRef.current ||
-              videoEl.videoWidth === 0
+              chosenIndex >= 0 &&
+              videoEl &&
+              canvasEl &&
+              cameraRef.current &&
+              videoEl.videoWidth !== 0
             ) {
-              watchAnchorRef.current.visible = false;
-              if (watchRectOccluderRef.current)
-                watchRectOccluderRef.current.visible = false;
-            } else {
               const lm = handsLm[chosenIndex];
               const wrist = lm?.[0];
               const indexBase = lm?.[5];
               const pinkyBase = lm?.[17];
 
-              if (!wrist || !indexBase || !pinkyBase) {
-                watchAnchorRef.current.visible = false;
-                if (watchRectOccluderRef.current)
-                  watchRectOccluderRef.current.visible = false;
-              } else {
-                watchAnchorRef.current.visible = true;
-
-                // 1) Canvas px (object-fit: cover) → screen NDC → world @ fixed depth
+              if (wrist && indexBase && pinkyBase) {
+                // 1) Pixels → world @ fixed depth
                 const Wp = lmToCanvasPx(wrist, videoEl, canvasEl);
                 const Ip = lmToCanvasPx(indexBase, videoEl, canvasEl);
                 const Pp = lmToCanvasPx(pinkyBase, videoEl, canvasEl);
@@ -846,11 +885,10 @@ export default function TryTest() {
                 const Iw = toWorldAtDepth(Ip.x, Ip.y);
                 const Pw = toWorldAtDepth(Pp.x, Pp.y);
 
-                // 2) Build basis from landmarks (x across wrist, y along forearm, z outward)
+                // 2) Basis from landmarks
                 const xAxis = new THREE.Vector3()
                   .subVectors(Iw, Pw)
                   .normalize();
-                // Forearm approx using wrist → "virtual elbow" fallback via symmetry
                 const mid = {
                   x: (indexBase.x + pinkyBase.x) / 2,
                   y: (indexBase.y + pinkyBase.y) / 2,
@@ -876,7 +914,7 @@ export default function TryTest() {
                   .crossVectors(xAxis, yAxis)
                   .normalize();
 
-                // 3) Continuity fix (same as before) to avoid 180° snaps
+                // 3) Continuity fix
                 const xA = xAxis.clone();
                 const zA = zAxisRaw.clone();
                 if (prevZRef.current.dot(zA) < 0) {
@@ -886,28 +924,24 @@ export default function TryTest() {
                 prevZRef.current.copy(zA);
                 yAxis = new THREE.Vector3().crossVectors(zA, xA).normalize();
 
-                // 4) *** HAT LOGIC APPLIED HERE ***
-                // Build a 4x4 transform for the hand, then decompose like the hat
+                // 4) Orientation + position (hat-like decompose)
                 const handMat = new THREE.Matrix4().makeBasis(xA, yAxis, zA);
                 handMat.setPosition(wristWorld);
                 const handPos = new THREE.Vector3();
                 const handQuat = new THREE.Quaternion();
                 const handScl = new THREE.Vector3();
                 handMat.decompose(handPos, handQuat, handScl);
-
-                // Smooth like glasses/hat
                 watchQuatRef.current.slerp(handQuat, WATCH_ROLL_SMOOTH);
 
-                // Apply to ANCHOR (position + rotation)
                 watchAnchorRef.current.position.copy(handPos);
                 watchAnchorRef.current.quaternion.copy(watchQuatRef.current);
 
-                // 5) Palm/knuckles flip for CHILD (swap strap towards camera)
+                // 5) Palm/knuckles flip for CHILD
                 const camToWrist = new THREE.Vector3()
                   .subVectors(wristWorld, cameraRef.current!.position)
                   .normalize();
-                const zTowardCam = zAxisRaw.dot(camToWrist); // + when palm faces cam
-                const needFlip = zTowardCam < -0.12; // flip when knuckles face camera
+                const zTowardCam = zAxisRaw.dot(camToWrist);
+                const needFlip = zTowardCam < -0.12;
 
                 const childQ = WATCH_MODEL_CORRECTION.clone();
                 if (needFlip) {
@@ -919,7 +953,7 @@ export default function TryTest() {
                 }
                 watchAdjustRef.current.quaternion.copy(childQ);
 
-                // 6) Scale from WORLD span at same depth
+                // 6) Scale from span
                 const idxN = {
                   x: (Ip.x / Wc) * 2 - 1,
                   y: -(Ip.y / Hc) * 2 + 1,
@@ -948,7 +982,7 @@ export default function TryTest() {
                 watchAdjustRef.current.scale.setScalar(sWatch);
                 watchAdjustRef.current.position.copy(WATCH_LOCAL_OFFSET);
 
-                // 7) Rect occluder (axis-aligned, no rotation)
+                // 7) Rect occluder (axis-aligned)
                 if (RECT_OCCLUDER_ENABLED && watchRectOccluderRef.current) {
                   const rect = watchRectOccluderRef.current;
                   const width =
@@ -961,14 +995,50 @@ export default function TryTest() {
                     .clone()
                     .add(zA.clone().multiplyScalar(RECT_Z_FROM_WRIST));
                   rect.position.copy(rectPos);
-                  rect.quaternion.set(0, 0, 0, 1); // stays axis-aligned
+                  rect.quaternion.set(0, 0, 0, 1);
                   rect.scale.set(width / 0.1, height / 0.06, depth / 0.01);
-                  rect.visible = true;
-                } else if (watchRectOccluderRef.current) {
-                  watchRectOccluderRef.current.visible = false;
                 }
+
+                watchValid = true; // we got a full, consistent wrist pose this frame
               }
             }
+          }
+
+          // ====== GATING (show/hide after valid/invalid streaks) ======
+          const faceOpen = updateGate(
+            faceValid,
+            faceGateRef,
+            faceSeenRef,
+            faceMissRef
+          );
+          const watchOpen = updateGate(
+            watchValid,
+            watchGateRef,
+            watchSeenRef,
+            watchMissRef
+          );
+
+          // Face-driven actors (respect UI toggles)
+          if (glassAnchorRef.current) {
+            glassAnchorRef.current.visible = faceOpen && showGlasses;
+          }
+          if (occluderRef.current) {
+            occluderRef.current.visible = faceOpen && showGlasses;
+          }
+          if (hatAnchorRef.current) {
+            hatAnchorRef.current.visible = faceOpen && showHat;
+          }
+          if (hatOccluderRef.current) {
+            hatOccluderRef.current.visible = faceOpen && showHat;
+          }
+
+          // Watch + its occluder
+          if (watchAnchorRef.current) {
+            watchAnchorRef.current.visible = watchOpen;
+          }
+          if (watchRectOccluderRef.current) {
+            watchRectOccluderRef.current.visible =
+              watchOpen && RECT_OCCLUDER_ENABLED;
           }
         } catch {
           // ignore intermittent errors
@@ -1042,15 +1112,19 @@ export default function TryTest() {
     return () => cleanupRef.current?.();
   }, []);
 
-  // Visibility toggles
+  // Visibility toggles now respect gates
   useEffect(() => {
-    if (glassAnchorRef.current) glassAnchorRef.current.visible = showGlasses;
-    if (occluderRef.current) occluderRef.current.visible = showGlasses;
+    if (glassAnchorRef.current)
+      glassAnchorRef.current.visible = faceGateRef.current && showGlasses;
+    if (occluderRef.current)
+      occluderRef.current.visible = faceGateRef.current && showGlasses;
   }, [showGlasses]);
 
   useEffect(() => {
-    if (hatAnchorRef.current) hatAnchorRef.current.visible = showHat;
-    if (hatOccluderRef.current) hatOccluderRef.current.visible = showHat;
+    if (hatAnchorRef.current)
+      hatAnchorRef.current.visible = faceGateRef.current && showHat;
+    if (hatOccluderRef.current)
+      hatOccluderRef.current.visible = faceGateRef.current && showHat;
   }, [showHat]);
 
   const isIOS =
