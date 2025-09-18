@@ -14,6 +14,10 @@ import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
+import SelectBoxFour from "@/elements/Shop/SelectBoxFour";
+import SelectBoxFive from "@/elements/Shop/SelectBoxFive";
+import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
+import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
 
 export default function ShopStandard() {
   const handleResetFilters = () => {
@@ -42,6 +46,7 @@ export default function ShopStandard() {
   }
   const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
+   const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
     getProducts();
@@ -121,7 +126,7 @@ export default function ShopStandard() {
                     />
                   </svg>
                 </Link>
-                <div
+                {/* <div
                   className={`shop-filter mt-xl-2 mt-0 ${
                     mobileSidebar ? "active" : ""
                   }`}
@@ -147,12 +152,51 @@ export default function ShopStandard() {
                       className="btn btn-sm font-14 btn-secondary btn-sharp"
                     >
                       RESET
-                    </button> */}
+                    </button> *
                   </aside>
-                </div>
+                </div> */}
               </div>
             </div>
-            <div className="col-80 col-xl-9">
+
+              <div
+                              className="d-flex justify-content-space-between align-items-center m-b30"
+                              style={{ marginTop: "30px" }}
+                            >
+                              {/* Select boxes (shown/hidden based on state) */}
+                              {showFilters && (
+                                <div className="d-flex align-items-center">
+                                  <SelectBoxFour />
+                                  <SelectBoxFive />
+                                  <SelectBoxSix />
+                                  <SelectBoxSeven />
+                                  {/* <SelectBoxEight /> */}
+                                </div>
+                              )}
+              
+                              {/* Filter button */}
+                              <div
+                                className="d-flex align-items-center justify-content-between m-b30"
+                                style={{
+                                  float: "right",
+                                  marginLeft: "auto",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => setShowFilters((prev) => !prev)}
+                              >
+                                <h6
+                                  className="title mb-0 fw-normal d-flex"
+                                  style={{ color: "black" }}
+                                >
+                                  <i
+                                    className="flaticon-filter me-3"
+                                    style={{ color: "black" }}
+                                  />
+                                  Filter
+                                </h6>
+                              </div>
+                            </div>
+
+            <div className="col-80 col-xl-12">
               <Tab.Container defaultActiveKey={"Grid"}>
                 <div className="filter-wrapper">
                   <div className="filter-left-area">

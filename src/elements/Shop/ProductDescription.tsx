@@ -13,9 +13,9 @@ export default function ProductDescription() {
               Description
             </Nav.Link>
           </Nav.Item>
-          {/* <Nav.Item as="li">
-                        <Nav.Link as="button" eventKey={"review"}>Reviews (12)</Nav.Link>
-                    </Nav.Item> */}
+          <Nav.Item as="li">
+                        <Nav.Link as="button" eventKey={"review"}>Reviews</Nav.Link>
+                    </Nav.Item>
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey={"description"}>

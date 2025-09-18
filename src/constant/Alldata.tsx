@@ -2645,8 +2645,9 @@ const categoryData = [
     _id: "Girls' Night Look",
     name: "Girls' Night Look",
     images: [
-      "/images/categories/kids1.png",
-      "/images/categories/kids2.png",
+      "/assets/images/categories/girl1.png",
+      "/assets/images/categories/girl1.png",
+      "/assets/images/categories/girl1.png",
     ],
   },
 
@@ -2664,8 +2665,9 @@ const categoryData = [
     _id: "Back to Campus",
     name: "Back to Campus",
     images: [
-      "/images/categories/kids1.png",
-      "/images/categories/kids2.png",
+    "/assets/images/categories/back1.png",
+     "/assets/images/categories/back1.png",
+      "/assets/images/categories/back1.png",
     ],
   },
 
@@ -2693,8 +2695,9 @@ const categoryData = [
     _id: "Travel Light",
     name: "Travel Light",
     images: [
-      "/images/categories/kids1.png",
-      "/images/categories/kids2.png",
+      "/assets/images/categories/travel1.png",
+      "/assets/images/categories/travel1.png",
+      "/assets/images/categories/travel1.png",
     ],
   },
 
@@ -2702,8 +2705,9 @@ const categoryData = [
     _id: "Layered Looks",
     name: "Layered Looks",
     images: [
-      "/images/categories/kids1.png",
-      "/images/categories/kids2.png",
+      "/assets/images/categories/layered1.png",
+      "/assets/images/categories/layered1.png",
+      "/assets/images/categories/layered1.png",
     ],
   },
 
@@ -2711,3 +2715,28 @@ const categoryData = [
 ];
 
 export default categoryData;
+
+const commentData = [
+  {
+    id: 1,
+    image: "https://example.com/images/user1.jpg",
+    name: "Michel Poe",
+    content: "This is a sample comment.",
+    replies: [
+      {
+        id: 2,
+        image: "https://example.com/images/user2.jpg",
+        name: "Celesto Anderson",
+        content: "This is a reply to Michel."
+      }
+    ]
+  },
+  {
+    id: 3,
+    image: "https://example.com/images/user3.jpg",
+    name: "Monsur Rahman Lito",
+    content: "Another top-level comment."
+  }
+];
+export { commentData };
+
