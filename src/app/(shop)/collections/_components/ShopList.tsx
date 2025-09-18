@@ -379,7 +379,7 @@ export default function ShopList({
   // ✅ Handle dropdown click
   const handleDropdownClick = (parent: string, child: string) => {
     setBreadcrumb(["Home", "Collections", parent, child]);
-    router.push(`/collections?category=${encodeURIComponent(child)}`);
+    router.push(`/collections?${encodeURIComponent(parent)}?category=${encodeURIComponent(child)}`);
   };
 
   const [hoveredSub, setHoveredSub] = useState<string | null>(null);
@@ -783,7 +783,7 @@ export default function ShopList({
                               price={`₦${item.price}`}
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
-                              category={""}
+                              category={item.category}
                             />
                           </div>
                         ))}

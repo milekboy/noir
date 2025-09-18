@@ -31,9 +31,11 @@ interface Product {
 }
 export interface ShopProductDefaultProps {
   product: Product;
+  category?: any;
 }
 export default function ShopProductDefault({
   product,
+  category,
 }: ShopProductDefaultProps) {
   const [detailModal, setDetailModal] = useState<boolean>(false);
   return (
@@ -45,7 +47,21 @@ export default function ShopProductDefault({
               <li className="breadcrumb-item">
                 <Link href="/"> Home</Link>
               </li>
-              <li className="breadcrumb-item">Product Default</li>
+              <li className="breadcrumb-item">Collections</li>
+              {category && (
+             
+                <li className="breadcrumb-item">
+                  {" "}
+                  <Link href={`/collections?${category.name}`}>
+                    {category.name}
+                  </Link>{" "}
+                </li>
+              
+                
+              )}
+              <li className="breadcrumb-item active" aria-current="page">
+                {product.name}
+              </li>
             </ul>
           </nav>
         </div>
