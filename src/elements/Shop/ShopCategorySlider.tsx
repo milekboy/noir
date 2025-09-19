@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import { ShopCatSlider } from "../../constant/Alldata";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,36 +20,36 @@ export default function ShopCategorySlider({
     image: string[];
     __v: number;
   }
+
   const [category, setCategory] = useState<Category[]>([]);
   const networkInstance = NetworkInstance();
+
   useEffect(() => {
     getProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getProducts = async () => {
     try {
       const res = await networkInstance.get("category/get-all-categories");
-
       setCategory(res.data);
-      console.log(res.data);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching categories:", error);
     }
   };
+
   return (
     <Swiper
       className="category-swiper"
       modules={[Autoplay]}
-      loop={true}
-      slidesPerView={7}
+      loop
+      slidesPerView={4}
       spaceBetween={20}
       autoplay={{
         delay: 3000,
         disableOnInteraction: false,
       }}
       breakpoints={{
-        1600: { slidesPerView: 7 },
+        1600: { slidesPerView: 6 },
         1200: { slidesPerView: 5 },
         991: { slidesPerView: 4 },
         768: { slidesPerView: 3 },
@@ -62,32 +61,29 @@ export default function ShopCategorySlider({
         <SwiperSlide key={index}>
           <div
             onClick={() => onCategorySelect(item._id)}
-            className="shop-card "
+            className="flex items-center gap-4 p-3 border rounded-md bg-white hover:shadow-sm transition cursor-pointer"
+            style={{ display: "flex", alignItems: "center" }}
           >
-            <div
-              style={{ cursor: "pointer", minHeight: "100px" }}
-              className="dz-media rounded overflow-hidden"
-              
-            >
+            {/* Bigger Image */}
+            <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded">
               <Image
                 src={
                   item.image[0] ||
                   "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                 }
                 alt={item.name}
-                width={200}
-                height={200}
-                className="w-full h-50 object-cover"
-                style={{height:"100px!important"}}
+                width={80}
+                height={80}
+                className="w-full h-full object-cover"
               />
             </div>
-            <div className="dz-content position-absolute d-flex justify-content-center align-items-center w-100" style={{bottom:50 , left:0}}>
-              <h6 className="title w-auto p-2 px-3 bg-white rounded-5 border-1 border-black" >
-                <Link href={`/shop-list?category=${item._id}`}>
-                  {item.name}
-                </Link>
-              </h6>
-            </div>
+
+            {/* Text beside image */}
+            <h6 className="text-base font-medium whitespace-nowrap" style={{ float: "right" }}>
+              <Link href={`/shop-list?category=${item._id}`}>
+                {item.name}
+              </Link>
+            </h6>
           </div>
         </SwiperSlide>
       ))}
