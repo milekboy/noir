@@ -378,6 +378,7 @@ export default function ShopList({
   //   "Collections",
   // ]);
 
+
   // // ✅ Handle dropdown click
   // const handleDropdownClick = (parent: string, child: string) => {
   //   setBreadcrumb(["Home", "Collections", parent, child]);
@@ -838,7 +839,9 @@ export default function ShopList({
                               price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
+
                               category={item.subcategory || ""}
+
                             />
                           </div>
                         ))}
