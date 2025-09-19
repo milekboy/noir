@@ -1139,7 +1139,7 @@ export default function TryTest() {
         ← Back
       </button>
 
-      {/* Toggles + Flip */}
+      {/* Toggles (top-right) */}
       <div
         style={{
           position: "absolute",
@@ -1176,21 +1176,32 @@ export default function TryTest() {
         >
           {showHat ? "Hide Hat" : "Show Hat"}
         </button>
-        <button
-          onClick={flipCamera}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 6,
-            border: "1px solid #fff",
-            background: "rgba(0,0,0,0.6)",
-            color: "#fff",
-            cursor: "pointer",
-          }}
-          title="Switch between front and back camera"
-        >
-          Flip Camera
-        </button>
       </div>
+
+      {/* Flip camera (bottom-right, separate from toggles & outside mirror) */}
+      <button
+        onClick={flipCamera}
+        aria-label="Flip camera"
+        className="d-lg-none"
+        style={{
+          position: "absolute",
+          right: 14,
+          bottom: 14,
+          zIndex: 21,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "10px 12px",
+          borderRadius: 999,
+          border: "1px solid rgba(255,255,255,0.25)",
+          background: "rgba(0,0,0,0.5)",
+          color: "#fff",
+          cursor: "pointer",
+          backdropFilter: "blur(4px)",
+        }}
+      >
+        Flip Camera
+      </button>
 
       {/* EVERYTHING that must visually mirror together is inside this wrapper */}
       <div
@@ -1250,9 +1261,9 @@ export default function TryTest() {
       {showLoading && (
         <>
           <style>{`
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-          `}</style>
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
           <div
             style={{
               position: "absolute",
