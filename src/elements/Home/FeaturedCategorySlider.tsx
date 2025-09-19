@@ -18,10 +18,10 @@ const FeaturedCategorySlider = () => {
   const [category, setCategory] = useState<Category[]>([]);
   const networkInstance = NetworkInstance();
   const [loading, setLoading] = useState(true);
-  const [hovered,setHovered] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [swiperInstance, setSwiperInstance] = useState<any>(null);
-  
-  console.log("Hovered:", hovered, "Swiper:", swiperInstance)
+
+  console.log("Hovered:", hovered, "Swiper:", swiperInstance);
   useEffect(() => {
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -31,8 +31,7 @@ const FeaturedCategorySlider = () => {
     try {
       const res = await networkInstance.get("category/get-all-categories");
       setCategory(res.data);
-      console.log(res.data);
-      console.log(category);
+      console.log("here", res);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -59,7 +58,7 @@ const FeaturedCategorySlider = () => {
                 height: "300px",
                 backgroundColor: "#e0e0e0",
                 position: "relative",
-                borderRadius:"23px",
+                borderRadius: "23px",
                 overflow: "hidden",
               }}
             >
@@ -71,15 +70,13 @@ const FeaturedCategorySlider = () => {
                   left: "-100%",
                   width: "100%",
                   height: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
                   animation: "shine 2s ease-in-out infinite",
                 }}
               />
             </div>
-            <div
-              className="mt-2"
-              style={{ transform: "translateY(-20px)" }}
-            >
+            <div className="mt-2" style={{ transform: "translateY(-20px)" }}>
               {/* <div
                 style={{
                   width: "80px",
@@ -145,10 +142,7 @@ const FeaturedCategorySlider = () => {
   };
 
   return (
-    <div 
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <Swiper
         onSwiper={setSwiperInstance}
         slidesPerView={5}
@@ -187,39 +181,39 @@ const FeaturedCategorySlider = () => {
         }}
       >
         {category.map((item, ind) => (
-          <SwiperSlide key={ind} >
+          <SwiperSlide key={ind}>
             <Link href={`/collections`}>
               <div
-              className={`shop-box style-1 wow fadeInUp me-4 ${
-                ind % 2 ? "tran" : ""
-              }`}
-              data-wow-delay="0.2s"
-              style={{
-                transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
-              }}
-            >
-              <div className="dz-media ">
-                <Image
-                  src={
-                    item.image[0] ||
-                    "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                  }
-                  alt={item.name}
-                  width={500}
-                  height={500}
-                  style={{
-                    objectPosition: "top"
-                  }}
-                  className=""
-                />
-                <h6
-                  className="product-name text-[10px] position-absolut"
-                  style={{ transform: "translateY(-70px)" }}
-                >
-                  <span className="text-black">{item.name}</span>
-                </h6>
+                className={`shop-box style-1 wow fadeInUp me-4 ${
+                  ind % 2 ? "tran" : ""
+                }`}
+                data-wow-delay="0.2s"
+                style={{
+                  transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
+                }}
+              >
+                <div className="dz-media ">
+                  <Image
+                    src={
+                      item.image[0] ||
+                      "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                    }
+                    alt={item.name}
+                    width={500}
+                    height={500}
+                    style={{
+                      objectPosition: "top",
+                    }}
+                    className=""
+                  />
+                  <h6
+                    className="product-name text-[10px] position-absolut"
+                    style={{ transform: "translateY(-70px)" }}
+                  >
+                    <span className="text-black">{item.name}</span>
+                  </h6>
+                </div>
               </div>
-            </div>
             </Link>
           </SwiperSlide>
         ))}
