@@ -24,7 +24,9 @@ import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 import { useRouter } from "next/navigation";
-import NetworkInstance from "../../../api/NetworkInstance";
+import axios from "axios";
+import NetworkInstance from "@/app/api/NetworkInstance";
+
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
 export default function ShopList({
@@ -58,7 +60,7 @@ export default function ShopList({
     __v: number;
   }
 
-  const [products, setProducts] = useState<Product[]>([]);
+  // const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
   //api call
 
@@ -91,268 +93,268 @@ export default function ShopList({
   const onColorChange = (color: string) => setSelectedColor(color);
   const onSizeChange = (size: string) => setSelectedSize(Number(size));
 
-  const filteredCategory =
-    selectedCategory && products.length > 0
-      ? products.filter((item) => item.category === selectedCategory)
-      : products;
+  // const filteredCategory =
+  //   selectedCategory && products.length > 0
+  //     ? products.filter((item) => item.category === selectedCategory)
+  //     : products;
 
-  const filteredProducts = filteredCategory.filter((item) => {
-    const price = item.price;
-    const matchColor = selectedColor ? item.color === selectedColor : true;
-    const matchSize = selectedSize
-      ? item.size === selectedSize.toString()
-      : true;
-    const matchPrice =
-      price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
-    return matchColor && matchSize && matchPrice;
-  });
+  // const filteredProducts = filteredCategory.filter((item) => {
+  //   const price = item.price;
+  //   const matchColor = selectedColor ? item.color === selectedColor : true;
+  //   const matchSize = selectedSize
+  //     ? item.size === selectedSize.toString()
+  //     : true;
+  //   const matchPrice =
+  //     price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
+  //   return matchColor && matchSize && matchPrice;
+  // });
 
   const [showFilters, setShowFilters] = useState(true);
 
   const [hovered, setHovered] = useState<string | null>(null);
 
-  const navItems = [
-    {
-      href: "/collections",
-      label: "Women",
-      dropdown: [
-        { label: "New in Clothing", link: "/shop-list" },
-        { label: "Dresses", link: "/shop-list", badge: "HOT" },
-        { label: "Blazers & Co-ords", link: "/shop-list" },
-        { label: "Cardigans", link: "/shop-list", badge: "NEW" },
-        { label: "Hoodies & Sweatshirts", link: "/shop-list" },
-        { label: "Jackets & Coats", link: "/shop-list" },
-        { label: "Jeans", link: "/shop-list" },
-        { label: "Tops & Blouses", link: "/shop-list" },
-        { label: "Skirts & Shorts", link: "/shop-list" },
-        { label: "Trousers & Leggings", link: "/shop-list" },
-        { label: "Suits & Tailoring", link: "/shop-list" },
+  // const navItems = [
+  //   {
+  //     href: "/collections",
+  //     label: "Women",
+  //     dropdown: [
+  //       { label: "New in Clothing", link: "/shop-list" },
+  //       { label: "Dresses", link: "/shop-list", badge: "HOT" },
+  //       { label: "Blazers & Co-ords", link: "/shop-list" },
+  //       { label: "Cardigans", link: "/shop-list", badge: "NEW" },
+  //       { label: "Hoodies & Sweatshirts", link: "/shop-list" },
+  //       { label: "Jackets & Coats", link: "/shop-list" },
+  //       { label: "Jeans", link: "/shop-list" },
+  //       { label: "Tops & Blouses", link: "/shop-list" },
+  //       { label: "Skirts & Shorts", link: "/shop-list" },
+  //       { label: "Trousers & Leggings", link: "/shop-list" },
+  //       { label: "Suits & Tailoring", link: "/shop-list" },
 
-        { label: "New in Shoes", link: "/shop-list" },
-        { label: "Heels", link: "/shop-list" },
-        { label: "Boots & Ankle Boots", link: "/shop-list" },
-        { label: "Loafers & Mules", link: "/shop-list" },
-        { label: "Sneakers", link: "/shop-list" },
-        { label: "Sandals & Slides", link: "/shop-list" },
+  //       { label: "New in Shoes", link: "/shop-list" },
+  //       { label: "Heels", link: "/shop-list" },
+  //       { label: "Boots & Ankle Boots", link: "/shop-list" },
+  //       { label: "Loafers & Mules", link: "/shop-list" },
+  //       { label: "Sneakers", link: "/shop-list" },
+  //       { label: "Sandals & Slides", link: "/shop-list" },
 
-        { label: "Handbags", link: "/shop-list" },
-        { label: "Mini Bags", link: "/shop-list", badge: "TRENDING" },
-        { label: "Belts", link: "/shop-list" },
-        { label: "Sunglasses", link: "/shop-list" },
-        { label: "Hats & Caps", link: "/shop-list" },
-        { label: "Scarves", link: "/shop-list" },
-        { label: "Jewelry", link: "/shop-list" },
-        { label: "Watches", link: "/shop-list" },
+  //       { label: "Handbags", link: "/shop-list" },
+  //       { label: "Mini Bags", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Belts", link: "/shop-list" },
+  //       { label: "Sunglasses", link: "/shop-list" },
+  //       { label: "Hats & Caps", link: "/shop-list" },
+  //       { label: "Scarves", link: "/shop-list" },
+  //       { label: "Jewelry", link: "/shop-list" },
+  //       { label: "Watches", link: "/shop-list" },
 
-        { label: "Summer Dresses", link: "/shop-list" },
-        { label: "Winter Coats", link: "/shop-list" },
-        { label: "Rainwear", link: "/shop-list" },
-        { label: "Holiday Shop", link: "/shop-list", badge: "HOT" },
-        { label: "Resort Wear", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Men",
-      dropdown: [
-        { label: "New in Clothing", link: "/shop-list" },
-        { label: "Chinos", link: "/shop-list" },
-        { label: "Cardigans", link: "/shop-list", badge: "NEW" },
-        { label: "Hoodies and Sweatshirts", link: "/shop-list" },
-        { label: "Jackets and Coats", link: "/shop-list" },
-        { label: "Jeans", link: "/shop-list" },
-        { label: "Shirts", link: "/shop-list" },
-        { label: "T-Shirts & Polos", link: "/shop-list" },
-        { label: "Shorts", link: "/shop-list" },
-        { label: "Suits & Tailoring", link: "/shop-list" },
+  //       { label: "Summer Dresses", link: "/shop-list" },
+  //       { label: "Winter Coats", link: "/shop-list" },
+  //       { label: "Rainwear", link: "/shop-list" },
+  //       { label: "Holiday Shop", link: "/shop-list", badge: "HOT" },
+  //       { label: "Resort Wear", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Men",
+  //     dropdown: [
+  //       { label: "New in Clothing", link: "/shop-list" },
+  //       { label: "Chinos", link: "/shop-list" },
+  //       { label: "Cardigans", link: "/shop-list", badge: "NEW" },
+  //       { label: "Hoodies and Sweatshirts", link: "/shop-list" },
+  //       { label: "Jackets and Coats", link: "/shop-list" },
+  //       { label: "Jeans", link: "/shop-list" },
+  //       { label: "Shirts", link: "/shop-list" },
+  //       { label: "T-Shirts & Polos", link: "/shop-list" },
+  //       { label: "Shorts", link: "/shop-list" },
+  //       { label: "Suits & Tailoring", link: "/shop-list" },
 
-        { label: "New in Shoes", link: "/shop-list" },
-        { label: "Sneakers", link: "/shop-list" },
-        { label: "Boots", link: "/shop-list" },
-        { label: "Loafers", link: "/shop-list" },
-        { label: "Sandals & Slides", link: "/shop-list" },
-        { label: "Formal Shoes", link: "/shop-list" },
+  //       { label: "New in Shoes", link: "/shop-list" },
+  //       { label: "Sneakers", link: "/shop-list" },
+  //       { label: "Boots", link: "/shop-list" },
+  //       { label: "Loafers", link: "/shop-list" },
+  //       { label: "Sandals & Slides", link: "/shop-list" },
+  //       { label: "Formal Shoes", link: "/shop-list" },
 
-        { label: "Bags & Backpacks", link: "/shop-list" },
-        { label: "Belts", link: "/shop-list" },
-        { label: "Sunglasses", link: "/shop-list" },
-        { label: "Caps & Hats", link: "/shop-list" },
-        { label: "Scarves & Gloves", link: "/shop-list" },
-        { label: "Wallets", link: "/shop-list" },
-        { label: "Watches", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Bags & Backpacks", link: "/shop-list" },
+  //       { label: "Belts", link: "/shop-list" },
+  //       { label: "Sunglasses", link: "/shop-list" },
+  //       { label: "Caps & Hats", link: "/shop-list" },
+  //       { label: "Scarves & Gloves", link: "/shop-list" },
+  //       { label: "Wallets", link: "/shop-list" },
+  //       { label: "Watches", link: "/shop-list", badge: "TRENDING" },
 
-        { label: "Gym T-Shirts", link: "/shop-list" },
-        { label: "Performance Shorts", link: "/shop-list" },
-        { label: "Track Pants", link: "/shop-list" },
-        { label: "Sports Jackets", link: "/shop-list" },
-        { label: "Running Shoes", link: "/shop-list" },
-        { label: "Sports Bags", link: "/shop-list" },
+  //       { label: "Gym T-Shirts", link: "/shop-list" },
+  //       { label: "Performance Shorts", link: "/shop-list" },
+  //       { label: "Track Pants", link: "/shop-list" },
+  //       { label: "Sports Jackets", link: "/shop-list" },
+  //       { label: "Running Shoes", link: "/shop-list" },
+  //       { label: "Sports Bags", link: "/shop-list" },
 
-        { label: "Summer Essentials", link: "/shop-list" },
-        { label: "Winter Coats", link: "/shop-list" },
-        { label: "Rain Jackets", link: "/shop-list" },
-        { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
-        { label: "Resort Wear", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Corporate but Chic",
-      dropdown: [
-        { label: "Blazers", link: "/shop-list", badge: "HOT" },
-        { label: "Tailored Trousers", link: "/shop-list" },
-        { label: "Pencil Skirts", link: "/shop-list" },
-        { label: "Shirt Dresses", link: "/shop-list" },
-        { label: "Silk Blouses", link: "/shop-list" },
-        { label: "Smart Jumpsuits", link: "/shop-list" },
+  //       { label: "Summer Essentials", link: "/shop-list" },
+  //       { label: "Winter Coats", link: "/shop-list" },
+  //       { label: "Rain Jackets", link: "/shop-list" },
+  //       { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
+  //       { label: "Resort Wear", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Corporate but Chic",
+  //     dropdown: [
+  //       { label: "Blazers", link: "/shop-list", badge: "HOT" },
+  //       { label: "Tailored Trousers", link: "/shop-list" },
+  //       { label: "Pencil Skirts", link: "/shop-list" },
+  //       { label: "Shirt Dresses", link: "/shop-list" },
+  //       { label: "Silk Blouses", link: "/shop-list" },
+  //       { label: "Smart Jumpsuits", link: "/shop-list" },
 
-        { label: "Pointed Heels", link: "/shop-list", badge: "TRENDING" },
-        { label: "Loafers", link: "/shop-list" },
-        { label: "Block Heels", link: "/shop-list" },
-        { label: "Ankle Boots", link: "/shop-list" },
-        { label: "Chic Flats", link: "/shop-list" },
+  //       { label: "Pointed Heels", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Loafers", link: "/shop-list" },
+  //       { label: "Block Heels", link: "/shop-list" },
+  //       { label: "Ankle Boots", link: "/shop-list" },
+  //       { label: "Chic Flats", link: "/shop-list" },
 
-        { label: "Trench Coats", link: "/shop-list" },
-        { label: "Tailored Coats", link: "/shop-list" },
-        { label: "Structured Jackets", link: "/shop-list" },
-        { label: "Cropped Blazers", link: "/shop-list" },
+  //       { label: "Trench Coats", link: "/shop-list" },
+  //       { label: "Tailored Coats", link: "/shop-list" },
+  //       { label: "Structured Jackets", link: "/shop-list" },
+  //       { label: "Cropped Blazers", link: "/shop-list" },
 
-        { label: "Leather Totes", link: "/shop-list", badge: "HOT" },
-        { label: "Statement Belts", link: "/shop-list" },
-        { label: "Minimalist Watches", link: "/shop-list" },
-        { label: "Silk Scarves", link: "/shop-list" },
-        { label: "Delicate Jewelry", link: "/shop-list" },
+  //       { label: "Leather Totes", link: "/shop-list", badge: "HOT" },
+  //       { label: "Statement Belts", link: "/shop-list" },
+  //       { label: "Minimalist Watches", link: "/shop-list" },
+  //       { label: "Silk Scarves", link: "/shop-list" },
+  //       { label: "Delicate Jewelry", link: "/shop-list" },
 
-        { label: "Classic White Shirts", link: "/shop-list" },
-        { label: "Neutral Trousers", link: "/shop-list" },
-        { label: "Black Dresses", link: "/shop-list" },
-        { label: "Nude Pumps", link: "/shop-list" },
-        { label: "Structured Handbags", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Girls' Night Look",
-      dropdown: [
-        { label: "Sequin Dresses", link: "/shop-list" },
-        { label: "Mini Skirts", link: "/shop-list" },
-        { label: "Bodysuits", link: "/shop-list" },
-        { label: "Corset Tops", link: "/shop-list" },
-        { label: "Party Dresses", link: "/shop-list", badge: "HOT" },
+  //       { label: "Classic White Shirts", link: "/shop-list" },
+  //       { label: "Neutral Trousers", link: "/shop-list" },
+  //       { label: "Black Dresses", link: "/shop-list" },
+  //       { label: "Nude Pumps", link: "/shop-list" },
+  //       { label: "Structured Handbags", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Girls' Night Look",
+  //     dropdown: [
+  //       { label: "Sequin Dresses", link: "/shop-list" },
+  //       { label: "Mini Skirts", link: "/shop-list" },
+  //       { label: "Bodysuits", link: "/shop-list" },
+  //       { label: "Corset Tops", link: "/shop-list" },
+  //       { label: "Party Dresses", link: "/shop-list", badge: "HOT" },
 
-        { label: "High Heels", link: "/shop-list" },
-        { label: "Strappy Sandals", link: "/shop-list" },
-        { label: "Platform Heels", link: "/shop-list" },
+  //       { label: "High Heels", link: "/shop-list" },
+  //       { label: "Strappy Sandals", link: "/shop-list" },
+  //       { label: "Platform Heels", link: "/shop-list" },
 
-        { label: "Clutch Bags", link: "/shop-list", badge: "TRENDING" },
-        { label: "Bold Earrings", link: "/shop-list" },
-        { label: "Statement Necklaces", link: "/shop-list" },
+  //       { label: "Clutch Bags", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Bold Earrings", link: "/shop-list" },
+  //       { label: "Statement Necklaces", link: "/shop-list" },
 
-        { label: "Bold Lipsticks", link: "/shop-list" },
-        { label: "Shimmery Jackets", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Smart Casual Staples",
-      dropdown: [
-        { label: "Polo Shirts", link: "/shop-list" },
-        { label: "Chinos", link: "/shop-list" },
-        { label: "Casual Blazers", link: "/shop-list" },
-        { label: "Denim Jackets", link: "/shop-list" },
-        { label: "Button-Down Shirts", link: "/shop-list" },
+  //       { label: "Bold Lipsticks", link: "/shop-list" },
+  //       { label: "Shimmery Jackets", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Smart Casual Staples",
+  //     dropdown: [
+  //       { label: "Polo Shirts", link: "/shop-list" },
+  //       { label: "Chinos", link: "/shop-list" },
+  //       { label: "Casual Blazers", link: "/shop-list" },
+  //       { label: "Denim Jackets", link: "/shop-list" },
+  //       { label: "Button-Down Shirts", link: "/shop-list" },
 
-        { label: "Loafers", link: "/shop-list" },
-        { label: "Casual Sneakers", link: "/shop-list" },
-        { label: "Chelsea Boots", link: "/shop-list", badge: "HOT" },
+  //       { label: "Loafers", link: "/shop-list" },
+  //       { label: "Casual Sneakers", link: "/shop-list" },
+  //       { label: "Chelsea Boots", link: "/shop-list", badge: "HOT" },
 
-        { label: "Leather Belts", link: "/shop-list" },
-        { label: "Casual Watches", link: "/shop-list" },
-        { label: "Messenger Bags", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Back to Campus",
-      dropdown: [
-        { label: "Hoodies", link: "/shop-list" },
-        { label: "Graphic Tees", link: "/shop-list", badge: "TRENDING" },
-        { label: "Joggers", link: "/shop-list" },
-        { label: "Denim", link: "/shop-list" },
-        { label: "Varsity Jackets", link: "/shop-list" },
+  //       { label: "Leather Belts", link: "/shop-list" },
+  //       { label: "Casual Watches", link: "/shop-list" },
+  //       { label: "Messenger Bags", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Back to Campus",
+  //     dropdown: [
+  //       { label: "Hoodies", link: "/shop-list" },
+  //       { label: "Graphic Tees", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Joggers", link: "/shop-list" },
+  //       { label: "Denim", link: "/shop-list" },
+  //       { label: "Varsity Jackets", link: "/shop-list" },
 
-        { label: "Sneakers", link: "/shop-list" },
-        { label: "Backpacks", link: "/shop-list" },
-        { label: "Caps", link: "/shop-list" },
+  //       { label: "Sneakers", link: "/shop-list" },
+  //       { label: "Backpacks", link: "/shop-list" },
+  //       { label: "Caps", link: "/shop-list" },
 
-        { label: "Laptop Sleeves", link: "/shop-list" },
-        { label: "Water Bottles", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Gym & Go",
-      dropdown: [
-        { label: "Sports Bras", link: "/shop-list" },
-        { label: "Leggings", link: "/shop-list" },
-        { label: "Performance Tees", link: "/shop-list" },
-        { label: "Tracksuits", link: "/shop-list", badge: "HOT" },
+  //       { label: "Laptop Sleeves", link: "/shop-list" },
+  //       { label: "Water Bottles", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Gym & Go",
+  //     dropdown: [
+  //       { label: "Sports Bras", link: "/shop-list" },
+  //       { label: "Leggings", link: "/shop-list" },
+  //       { label: "Performance Tees", link: "/shop-list" },
+  //       { label: "Tracksuits", link: "/shop-list", badge: "HOT" },
 
-        { label: "Trainers", link: "/shop-list" },
-        { label: "Running Shoes", link: "/shop-list" },
+  //       { label: "Trainers", link: "/shop-list" },
+  //       { label: "Running Shoes", link: "/shop-list" },
 
-        { label: "Duffel Bags", link: "/shop-list" },
-        { label: "Water Bottles", link: "/shop-list" },
-        { label: "Caps", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Summer Looks",
-      dropdown: [
-        { label: "Swimwear", link: "/shop-list" },
-        { label: "Sundresses", link: "/shop-list", badge: "TRENDING" },
-        { label: "Shorts", link: "/shop-list" },
-        { label: "Linen Shirts", link: "/shop-list" },
-        { label: "Flip Flops", link: "/shop-list" },
+  //       { label: "Duffel Bags", link: "/shop-list" },
+  //       { label: "Water Bottles", link: "/shop-list" },
+  //       { label: "Caps", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Summer Looks",
+  //     dropdown: [
+  //       { label: "Swimwear", link: "/shop-list" },
+  //       { label: "Sundresses", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Shorts", link: "/shop-list" },
+  //       { label: "Linen Shirts", link: "/shop-list" },
+  //       { label: "Flip Flops", link: "/shop-list" },
 
-        { label: "Straw Hats", link: "/shop-list" },
-        { label: "Beach Bags", link: "/shop-list" },
-        { label: "Sunglasses", link: "/shop-list" },
-        { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Travel Light",
-      dropdown: [
-        { label: "Travel Backpacks", link: "/shop-list", badge: "HOT" },
-        { label: "Crossbody Bags", link: "/shop-list" },
-        { label: "Wrinkle-Free Shirts", link: "/shop-list" },
-        { label: "Packable Jackets", link: "/shop-list" },
-        { label: "Comfy Sneakers", link: "/shop-list" },
+  //       { label: "Straw Hats", link: "/shop-list" },
+  //       { label: "Beach Bags", link: "/shop-list" },
+  //       { label: "Sunglasses", link: "/shop-list" },
+  //       { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Travel Light",
+  //     dropdown: [
+  //       { label: "Travel Backpacks", link: "/shop-list", badge: "HOT" },
+  //       { label: "Crossbody Bags", link: "/shop-list" },
+  //       { label: "Wrinkle-Free Shirts", link: "/shop-list" },
+  //       { label: "Packable Jackets", link: "/shop-list" },
+  //       { label: "Comfy Sneakers", link: "/shop-list" },
 
-        { label: "Suitcases", link: "/shop-list" },
-        { label: "Travel Accessories", link: "/shop-list" },
-        { label: "Neck Pillows", link: "/shop-list" },
-      ],
-    },
-    {
-      href: "/collections",
-      label: "Layered Looks",
-      dropdown: [
-        { label: "Overshirts", link: "/shop-list" },
-        { label: "Cardigans", link: "/shop-list", badge: "TRENDING" },
-        { label: "Vests", link: "/shop-list" },
-        { label: "Denim Jackets", link: "/shop-list" },
-        { label: "Bomber Jackets", link: "/shop-list" },
+  //       { label: "Suitcases", link: "/shop-list" },
+  //       { label: "Travel Accessories", link: "/shop-list" },
+  //       { label: "Neck Pillows", link: "/shop-list" },
+  //     ],
+  //   },
+  //   {
+  //     href: "/collections",
+  //     label: "Layered Looks",
+  //     dropdown: [
+  //       { label: "Overshirts", link: "/shop-list" },
+  //       { label: "Cardigans", link: "/shop-list", badge: "TRENDING" },
+  //       { label: "Vests", link: "/shop-list" },
+  //       { label: "Denim Jackets", link: "/shop-list" },
+  //       { label: "Bomber Jackets", link: "/shop-list" },
 
-        { label: "Chunky Scarves", link: "/shop-list" },
-        { label: "Beanies", link: "/shop-list" },
-        { label: "Gloves", link: "/shop-list" },
-      ],
-    },
-  ];
+  //       { label: "Chunky Scarves", link: "/shop-list" },
+  //       { label: "Beanies", link: "/shop-list" },
+  //       { label: "Gloves", link: "/shop-list" },
+  //     ],
+  //   },
+  // ];
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [alignRight, setAlignRight] = useState(false);
@@ -370,19 +372,60 @@ export default function ShopList({
 
   const router = useRouter();
 
-  // ✅ Breadcrumb state
-  const [breadcrumb, setBreadcrumb] = useState<string[]>([
-    "Home",
-    "Collections",
-  ]);
+  // // ✅ Breadcrumb state
+  // const [breadcrumb, setBreadcrumb] = useState<string[]>([
+  //   "Home",
+  //   "Collections",
+  // ]);
 
-  // ✅ Handle dropdown click
-  const handleDropdownClick = (parent: string, child: string) => {
-    setBreadcrumb(["Home", "Collections", parent, child]);
-    router.push(`/collections?${encodeURIComponent(parent)}?category=${encodeURIComponent(child)}`);
-  };
+
+  // // ✅ Handle dropdown click
+  // const handleDropdownClick = (parent: string, child: string) => {
+  //   setBreadcrumb(["Home", "Collections", parent, child]);
+  //   router.push(`/collections?category=${encodeURIComponent(child)}`);
+  // };
+
+  const [products, setProducts] = useState<any[]>([]);
 
   const [hoveredSub, setHoveredSub] = useState<string | null>(null);
+
+  const [navItems, setNavItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchNavItems = async () => {
+      try {
+        const res = await networkInstance.get("category/get-all-categories");
+        // sanitize labels
+        console.log(res.data);
+        const cleanData = res.data.map((item: any) => ({
+          ...item,
+          label: item.label?.trim().replace(/\n/g, ""), // remove \n and spaces
+          dropdown: item.dropdown?.map((drop: any) => ({
+            ...drop,
+            label: drop.label?.trim().replace(/\n/g, ""),
+          })),
+        }));
+        setNavItems(cleanData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchNavItems();
+  }, []);
+
+  // const handleDropdownClick = (parentLabel: string, subLabel: string) => {
+  //   console.log(`Clicked ${subLabel} inside ${parentLabel}`);
+  // };
+
+  console.log(navItems);
+
+  const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
+  const handleDropdownClick = (parentName: string, subName: string) => {
+    setBreadcrumb(["Home", "Collections", parentName, subName]);
+    console.log(
+      `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
+    );
+  };
 
   return (
     <div className="page-content bg-light">
@@ -434,11 +477,12 @@ export default function ShopList({
           style={{
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
             gap: "30px",
             padding: "10px 0",
             borderTop: "1px solid #eee",
             fontSize: "12px",
-            fontWeight: "500",
+            fontWeight: 500,
             textTransform: "uppercase",
             letterSpacing: "0.5px",
             position: "relative",
@@ -450,19 +494,22 @@ export default function ShopList({
             <div
               key={index}
               style={{ position: "relative" }}
-              onMouseEnter={() => setHovered(item.label)}
+              onMouseEnter={() => setHovered(item.name)}
               onMouseLeave={() => setHovered(null)}
             >
+              {/* Top-level nav link */}
               <Link
-                href={item.href}
+                href={"#"}
                 style={{
                   color: "#fff",
                   textDecoration: "none",
-                  padding: "4px 8px",
+                  padding: "6px 10px",
                   borderRadius: "2px",
                   transition: "all 0.3s ease",
                   display: "inline-block",
                   fontSize: "12px",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "white";
@@ -477,58 +524,70 @@ export default function ShopList({
               </Link>
 
               {/* Dropdown */}
-              {item.dropdown && hovered === item.label && (
+              {item.subCategory?.length > 0 && hovered === item.name && (
                 <div
                   ref={dropdownRef}
                   style={{
                     position: "absolute",
                     top: "100%",
-                    left: alignRight ? "auto" : 0,
-                    right: alignRight ? 0 : "auto",
+                    left: 0,
                     backgroundColor: "#fff",
                     border: "1px solid #eee",
                     borderRadius: "6px",
                     width: "700px",
                     padding: "20px 25px",
                     display: "grid",
-                    gridTemplateColumns: "2fr 1fr", // text left, images right
+                    gridTemplateColumns: "2fr 1fr",
                     gap: "20px",
                     zIndex: 1000,
                     boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                   }}
                 >
-                  {/* Left side: links */}
+                  {/* Left side: text */}
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
-                      columnGap: "20px", // horizontal space between columns
-                      rowGap: "4px", // minimal vertical space
+                      columnGap: "20px",
+                      rowGap: "6px",
                       alignItems: "flex-start",
                     }}
                   >
-                    {item.dropdown.map((drop, i) => (
+                    {item.subCategory.map((drop: any, i: number) => (
                       <Link
                         key={i}
-                        href="#"
+                        href={drop.link || "#"}
                         style={{
-                          flex: "0 0 45%", // each link takes ~half width (like 2 columns)
+                          flex: "0 0 45%",
                           color: "#333",
                           textDecoration: "none",
                           fontSize: "13px",
-                          fontWeight: "400",
+                          fontWeight: 400,
                           padding: "2px 0",
                           transition: "all 0.2s ease",
                           whiteSpace: "nowrap",
                         }}
-                        onMouseEnter={() => setHoveredSub(drop.label)}
+                        onMouseEnter={() => setHoveredSub(drop.name)}
                         onMouseLeave={() => setHoveredSub(null)}
                         onClick={(e) => {
                           e.preventDefault();
-                          handleDropdownClick(item.label, drop.label);
+                          handleDropdownClick(item.name, drop.name);
+                          router.push(drop.link || "#"); // ✅ navigate to subcategory
                         }}
                       >
                         {drop.label}
+                        {drop.badge && (
+                          <span
+                            style={{
+                              marginLeft: "6px",
+                              fontSize: "10px",
+                              color: "red",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {drop.badge}
+                          </span>
+                        )}
                       </Link>
                     ))}
                   </div>
@@ -541,18 +600,19 @@ export default function ShopList({
                       gap: "10px",
                     }}
                   >
-                    {categoryData
-                      .find((cat) => cat.name === item.label)
-                      ?.images.map((img, idx) => (
-                        <Image
-                          key={idx}
-                          src={img}
-                          alt={`${item.label}-${idx}`}
-                          width={300}
-                          height={400}
-                          style={{ borderRadius: "8px", objectFit: "cover" }}
-                        />
-                      ))}
+                    {item.images?.map((img: string, idx: number) => (
+                      <Image
+                        key={idx}
+                        src={img}
+                        alt={`${item.name}-${idx}`}
+                        width={300}
+                        height={400}
+                        style={{
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
@@ -591,15 +651,11 @@ export default function ShopList({
                     textDecoration: "none",
                   }}
                   onClick={() => {
-                    // ✅ allow navigation backwards
+                    // ✅ allow backward navigation
                     setBreadcrumb((prev) => prev.slice(0, index + 1));
                     if (crumb === "Home") router.push("/");
                     else if (crumb === "Collections")
                       router.push("/collections");
-                    else
-                      router.push(
-                        `/collections?category=${encodeURIComponent(crumb)}`
-                      );
                   }}
                 >
                   {crumb}
@@ -780,10 +836,12 @@ export default function ShopList({
                                 item.productImages[0]?.url || "/fallback.jpg"
                               }
                               title={item.name}
-                              price={`₦${item.price}`}
+                              price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
-                              category={item.category}
+
+                              category={item.subcategory || ""}
+
                             />
                           </div>
                         ))}
@@ -796,9 +854,7 @@ export default function ShopList({
               {/* Pagination */}
               <div className="row page mt-0">
                 <div className="col-md-6">
-                  <p className="page-text">
-                    Showing 1–5 of {filteredProducts.length} Results
-                  </p>
+                  <p className="page-text">Showing 1–5 of Results</p>
                 </div>
                 <div className="col-md-6">
                   <nav aria-label="Blog Pagination">
