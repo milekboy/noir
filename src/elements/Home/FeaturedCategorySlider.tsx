@@ -217,6 +217,7 @@ const FeaturedCategorySlider = () => {
                 </h6>
 
               </div>
+              </div>
             </Link>
           </SwiperSlide>
         ))}
