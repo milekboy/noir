@@ -184,35 +184,36 @@ const FeaturedCategorySlider = () => {
           <SwiperSlide key={ind}>
             <Link href={`/collections`}>
               <div
-                className={`shop-box style-1 wow fadeInUp me-4 ${
-                  ind % 2 ? "tran" : ""
-                }`}
-                data-wow-delay="0.2s"
-                style={{
-                  transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
-                }}
-              >
-                <div className="dz-media ">
-                  <Image
-                    src={
-                      item.image[0] ||
-                      "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                    }
-                    alt={item.name}
-                    width={500}
-                    height={500}
-                    style={{
-                      objectPosition: "top",
-                    }}
-                    className=""
-                  />
-                  <h6
-                    className="product-name text-[10px] position-absolut"
-                    style={{ transform: "translateY(-70px)" }}
-                  >
-                    <span className="text-black">{item.name}</span>
-                  </h6>
-                </div>
+
+              className={`shop-box style-1 wow fadeInUp me-4 ${
+                ind % 2 ? "tran" : ""
+              }`}
+              data-wow-delay="0.2s"
+              style={{
+                transform: ind % 2 ? "translateY(60px)" : "translateY(0)",
+              }}
+            >
+              <div className="dz-media ">
+                <Image
+                  src={
+                    item.image[0] ||
+                    "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                  }
+                  alt={item.name || "any"}
+                  width={500}
+                  height={500}
+                  style={{
+                    objectPosition: "top"
+                  }}
+                  className=""
+                />
+                <h6
+                  className="product-name text-[10px] position-absolut"
+                  style={{ transform: "translateY(-70px)" }}
+                >
+                  <span className="text-black">{item.name}</span>
+                </h6>
+
               </div>
             </Link>
           </SwiperSlide>

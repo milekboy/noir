@@ -103,7 +103,7 @@ export default function ShopGridCard(props: cardType) {
           `category/get-category/${props.category}`
         );
         if (response?.status === 200) {
-          setCategoryName(response.data.name);
+          setCategoryName(response.data.label);
           console.log(response.data);
         }
       } catch (error) {

@@ -38,6 +38,7 @@ export default function ShopProductDefault({
   category,
 }: ShopProductDefaultProps) {
   const [detailModal, setDetailModal] = useState<boolean>(false);
+  // console.log(category)
   return (
     <>
       <div className="page-content bg-light">
@@ -52,8 +53,8 @@ export default function ShopProductDefault({
              
                 <li className="breadcrumb-item">
                   {" "}
-                  <Link href={`/collections?${category.name}`}>
-                    {category.name}
+                  <Link href={`/collections?${category.label}`}>
+                    {category.label}
                   </Link>{" "}
                 </li>
               
