@@ -16,7 +16,7 @@ export default function ShopCategorySlider({
 }) {
   interface Category {
     _id: string;
-    name: string;
+    label: string;
     image: string[];
     __v: number;
   }
@@ -71,7 +71,7 @@ export default function ShopCategorySlider({
                   item.image[0] ||
                   "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                 }
-                alt={item.name}
+                alt={item.label}
                 width={80}
                 height={80}
                 className="w-full h-full object-cover"
@@ -81,7 +81,7 @@ export default function ShopCategorySlider({
             {/* Text beside image */}
             <h6 className="text-base font-medium whitespace-nowrap" style={{ float: "right" }}>
               <Link href={`/shop-list?category=${item._id}`}>
-                {item.name}
+                {item.label}
               </Link>
             </h6>
           </div>

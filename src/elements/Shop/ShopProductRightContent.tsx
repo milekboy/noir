@@ -1,7 +1,10 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
 import StarRating from "./StarRating";
 import ProductInputButton from "./ProductInputButton";
 import ShopCardColour from "./ShopCardColour";
+
 interface ProductImage {
   url: string;
   public_id: string;
@@ -21,12 +24,16 @@ interface Product {
   updatedAt: string;
   __v: number;
 }
+
 export interface ShopProductRightContentProps {
   product: Product;
 }
+
 export default function ShopProductRightContent({
   product,
 }: ShopProductRightContentProps) {
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+
   return (
     <div className="dz-product-detail style-2 p-t20 ps-0">
       <div className="dz-content">
@@ -44,7 +51,8 @@ export default function ShopProductRightContent({
           </div>
         </div>
         <p className="para-text">{product.description}</p>
-        {/* <></> */}
+
+        {/* Try It On Button */}
         <Link
           href={"/try-on"}
           className="btn btn-secondary"
@@ -54,6 +62,7 @@ export default function ShopProductRightContent({
         >
           Try It On
         </Link>
+
         <style jsx>{`
           @keyframes zooming {
             0%,
@@ -65,20 +74,29 @@ export default function ShopProductRightContent({
             }
           }
         `}</style>
-        <div className="meta-content mt-2 m-b20 d-flex align-items-end">
-          <div className="btn-quantity quantity-sm light d-xl-none d-blcok d-sm-block">
-            <label className="form-label">Quantity</label>
-            <ProductInputButton />
-          </div>
-        </div>
-        <div className="product-num">
+
+        {/* Quantity & Size Section */}
+        <div className="product-num mt-3">
           <div className="btn-quantity light d-xl-block d-sm-none d-none">
             <label className="form-label">Quantity</label>
             <ProductInputButton />
           </div>
-          <div className="d-block">
-            <label className="form-label">Size</label>
-            <div className="btn-group product-size m-0">
+
+          {/* Size Section with Size Guide */}
+          <div className="d-block mt-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <label className="form-label mb-0">Size</label>
+              <button
+                type="button"
+                className="btn btn-link p-0 text-decoration-underline"
+                style={{ fontSize: "14px", color: "#000" }}
+                onClick={() => setShowSizeGuide(true)}
+              >
+                Size Guide
+              </button>
+            </div>
+
+            <div className="btn-group product-size m-0 mt-2">
               <input
                 type="radio"
                 className="btn-check"
@@ -89,6 +107,7 @@ export default function ShopProductRightContent({
               <label className="btn" htmlFor="btnradio101">
                 S
               </label>
+
               <input
                 type="radio"
                 className="btn-check"
@@ -98,6 +117,7 @@ export default function ShopProductRightContent({
               <label className="btn" htmlFor="btnradiol02">
                 M
               </label>
+
               <input
                 type="radio"
                 className="btn-check"
@@ -109,14 +129,83 @@ export default function ShopProductRightContent({
               </label>
             </div>
           </div>
-          <div className="meta-content">
+
+          {/* Color Section */}
+          <div className="meta-content mt-3">
             <label className="form-label">Color</label>
             <div className="d-flex align-items-center color-filter">
               <ShopCardColour />
             </div>
           </div>
         </div>
-        <div className="dz-info">
+
+        {/* SIZE GUIDE MODAL */}
+        {showSizeGuide && (
+          <div
+            className="modal-overlay"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              className="modal-content bg-white p-4 rounded"
+              style={{ width: "500px", maxHeight: "80vh", overflowY: "auto" }}
+            >
+              <h5 className="mb-3">Size Guide</h5>
+              <table className="table table-bordered text-center">
+                <thead>
+                  <tr>
+                    <th>Size</th>
+                    <th>Chest (inches)</th>
+                    <th>Waist (inches)</th>
+                    <th>Hips (inches)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>S</td>
+                    <td>34-36</td>
+                    <td>28-30</td>
+                    <td>35-37</td>
+                  </tr>
+                  <tr>
+                    <td>M</td>
+                    <td>38-40</td>
+                    <td>32-34</td>
+                    <td>39-41</td>
+                  </tr>
+                  <tr>
+                    <td>L</td>
+                    <td>42-44</td>
+                    <td>36-38</td>
+                    <td>43-45</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="text-end">
+                <button
+                  className="btn btn-dark mt-3"
+                  onClick={() => setShowSizeGuide(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Product Info */}
+        <div className="dz-info mt-4">
           <ul>
             <li>
               <strong>SKU:</strong>
@@ -148,51 +237,7 @@ export default function ShopProductRightContent({
               <Link href="/shop-standard">Accessories,</Link>
             </li>
           </ul>
-          <ul className="social-icon">
-            <li>
-              <strong>Share:</strong>
-            </li>
-            <li>
-              <Link href="https://www.facebook.com/dexignzone" target="_blank">
-                <i className="fa-brands fa-facebook-f" />
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://www.linkedin.com/showcase/3686700/admin/"
-                target="_blank"
-              >
-                <i className="fa-brands fa-linkedin-in" />
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://www.instagram.com/dexignzone/"
-                target="_blank"
-              >
-                <i className="fa-brands fa-instagram" />
-              </Link>
-            </li>
-            <li>
-              <Link href="https://www.behance.net/dexignzone" target="_blank">
-                <i className="fa-brands fa-behance" />
-              </Link>
-            </li>
-          </ul>
         </div>
-      </div>
-      <div className="banner-social-media">
-        <ul>
-          <li>
-            <Link href="https://www.instagram.com/dexignzone/">Instagram</Link>
-          </li>
-          <li>
-            <Link href="https://www.facebook.com/dexignzone">Facebook</Link>
-          </li>
-          <li>
-            <Link href="https://twitter.com/dexignzones">twitter</Link>
-          </li>
-        </ul>
       </div>
     </div>
   );
