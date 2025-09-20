@@ -26,6 +26,7 @@ import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import NetworkInstance from "@/app/api/NetworkInstance";
+import { log } from "console";
 
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
@@ -402,11 +403,14 @@ export default function ShopList({
           dropdown: item.dropdown?.map((drop: any) => ({
             ...drop,
             label: drop.label?.trim().replace(/\n/g, ""),
+            
           })),
         }));
         setNavItems(cleanData);
+
       } catch (error) {
         console.error("Error fetching categories:", error);
+        
       }
     };
     fetchNavItems();
@@ -425,6 +429,8 @@ export default function ShopList({
       `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
     );
   };
+
+  const [selectedCollection, setSelectedCollection] = useState("Collections");
 
   return (
     <div className="page-content bg-light">
@@ -450,178 +456,217 @@ export default function ShopList({
             justifyContent: "space-between",
             alignItems: "center",
             padding: "10px 30px",
+            textAlign: "center",
           }}
         >
-          <div style={{ textAlign: "center" }}>
-            <Link href="/" style={{ textDecoration: "none" }}>
-              <h4
-                style={{
-                  color: "black",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  letterSpacing: "1px",
-                  marginLeft: "550px",
-                  marginTop: "10px",
-                }}
-              >
-                MEN'S COLLECTIONS
-              </h4>
-            </Link>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "10px",
+            }}
+          >
+            <h4
+              style={{
+                color: "black",
+                fontWeight: "bold",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                textAlign: "center",
+                margin: 0,
+              }}
+            >
+              {breadcrumb.length > 0
+                ? `${breadcrumb[breadcrumb.length - 1]} Collection`
+                : "Collection"}
+            </h4>
           </div>
+
           <div style={{ width: "80px" }}></div>
         </div>
 
         {/* Category navigation */}
-        <nav
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "30px",
-            padding: "10px 0",
-            borderTop: "1px solid #eee",
-            fontSize: "12px",
-            fontWeight: 500,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            position: "relative",
-            backgroundColor: "#000",
-            zIndex: 100,
-          }}
-        >
-          {navItems.map((item, index) => (
-            <div
-              key={index}
-              style={{ position: "relative" }}
-              onMouseEnter={() => setHovered(item.name)}
-              onMouseLeave={() => setHovered(null)}
-            >
-              {/* Top-level nav link */}
-              <Link
-                href={"#"}
-                style={{
-                  color: "#fff",
-                  textDecoration: "none",
-                  padding: "6px 10px",
-                  borderRadius: "2px",
-                  transition: "all 0.3s ease",
-                  display: "inline-block",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "black";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "white";
-                }}
+        <div>
+          {/* ✅ Navbar */}
+          <nav
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "30px",
+              padding: "10px 0",
+              borderTop: "1px solid #eee",
+              fontSize: "12px",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              position: "relative",
+              backgroundColor: "#000",
+              zIndex: 100,
+            }}
+          >
+            {navItems.map((item: any, index: number) => (
+              <div
+                key={index}
+                style={{ position: "relative" }}
+                onMouseEnter={() => setHovered(item.name)}
+                onMouseLeave={() => setHovered(null)}
               >
-                {item.label}
-              </Link>
-
-              {/* Dropdown */}
-              {item.subCategory?.length > 0 && hovered === item.name && (
-                <div
-                  ref={dropdownRef}
+                {/* Top-level nav link */}
+                <Link
+                  href={item.link || "#"}
                   style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    backgroundColor: "#fff",
-                    border: "1px solid #eee",
-                    borderRadius: "6px",
-                    width: "700px",
-                    padding: "20px 25px",
-                    display: "grid",
-                    gridTemplateColumns: "2fr 1fr",
-                    gap: "20px",
-                    zIndex: 1000,
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                    color: "#fff",
+                    textDecoration: "none",
+                    padding: "6px 10px",
+                    borderRadius: "2px",
+                    transition: "all 0.3s ease",
+                    display: "inline-block",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDropdownClick(item.label, "");
+                    router.push(item.link || "#");
                   }}
                 >
-                  {/* Left side: text */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      columnGap: "20px",
-                      rowGap: "6px",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    {item.subCategory.map((drop: any, i: number) => (
-                      <Link
-                        key={i}
-                        href={drop.link || "#"}
-                        style={{
-                          flex: "0 0 45%",
-                          color: "#333",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 400,
-                          padding: "2px 0",
-                          transition: "all 0.2s ease",
-                          whiteSpace: "nowrap",
-                        }}
-                        onMouseEnter={() => setHoveredSub(drop.name)}
-                        onMouseLeave={() => setHoveredSub(null)}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDropdownClick(item.name, drop.name);
-                          router.push(drop.link || "#"); // ✅ navigate to subcategory
-                        }}
-                      >
-                        {drop.label}
-                        {drop.badge && (
-                          <span
-                            style={{
-                              marginLeft: "6px",
-                              fontSize: "10px",
-                              color: "red",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {drop.badge}
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
+                  {item.label}
+                </Link>
 
-                  {/* Right side: images */}
+                {/* Dropdown */}
+                {item.subCategory?.length > 0 && hovered === item.name && (
                   <div
                     style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      backgroundColor: "#fff",
+                      border: "1px solid #eee",
+                      borderRadius: "6px",
+                      width: "700px",
+                      padding: "20px 25px",
+                      display: "grid",
+                      gridTemplateColumns: "2fr 1fr",
+                      gap: "20px",
+                      zIndex: 1000,
+                      boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                     }}
                   >
-                    {item.images?.map((img: string, idx: number) => (
-                      <Image
-                        key={idx}
-                        src={img}
-                        alt={`${item.name}-${idx}`}
-                        width={300}
-                        height={400}
-                        style={{
-                          borderRadius: "8px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ))}
+                    {/* Left side: text */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        columnGap: "20px",
+                        rowGap: "6px",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      {item.subCategory.map((drop: any, i: number) => (
+                        <Link
+                          key={i}
+                          href={drop.link || "#"}
+                          style={{
+                            flex: "0 0 45%",
+                            color: "#333",
+                            textDecoration: "none",
+                            fontSize: "13px",
+                            fontWeight: 400,
+                            padding: "2px 0",
+                            transition: "all 0.2s ease",
+                            whiteSpace: "nowrap",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDropdownClick(item.label, drop.label);
+                            router.push("#");
+                          }}
+                        >
+                          {drop.label}
+                          {drop.badge && (
+                            <span
+                              style={{
+                                marginLeft: "6px",
+                                fontSize: "10px",
+                                color: "red",
+                                fontWeight: 600,
+                              }}
+                            >
+                              {drop.badge}
+                            </span>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Right side: images */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
+                      {item.images?.map((img: string, idx: number) => (
+                        <Image
+                          key={idx}
+                          src={img}
+                          alt={`${item.name}-${idx}`}
+                          width={300}
+                          height={400}
+                          style={{
+                            borderRadius: "8px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* ✅ Breadcrumbs */}
+          {breadcrumb.length > 0 && (
+            <nav
+              aria-label="breadcrumb"
+              style={{
+                padding: "10px 20px",
+                fontSize: "14px",
+                color: "#444",
+              }}
+            >
+              {breadcrumb.map((crumb: string, idx: number) => (
+                <span key={idx} style={{ marginRight: "6px" }}>
+                  <span
+                    style={{
+                      color: "#000",
+                      fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
+                      cursor:
+                        idx === breadcrumb.length - 1 ? "default" : "pointer",
+                    }}
+                  >
+                    {crumb}
+                  </span>
+                  {idx < breadcrumb.length - 1 && (
+                    <span style={{ margin: "0 6px", color: "#999" }}>
+                      {">"}
+                    </span>
+                  )}
+                </span>
+              ))}
+            </nav>
+          )}
+        </div>
       </header>
 
       {/* ✅ Dynamic Breadcrumb */}
-      <div
+      {/* <div
         style={{
           backgroundColor: "#f9f9f9",
           padding: "10px 30px",
@@ -666,7 +711,7 @@ export default function ShopList({
             ))}
           </ol>
         </nav>
-      </div>
+      </div> */}
 
       <section className="content-inner-3 pt-3">
         <div className="container">

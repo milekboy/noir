@@ -149,33 +149,23 @@ export default function ProductDefaultSlider({
         onSwiper={setThumbsSwiper as any}
         modules={[Thumbs]}
       >
-        <SwiperSlide>
-          <Image
-            src={images[0]?.url}
-            width={100}
-            height={100}
-            alt="thumb1"
-            style={{ cursor: "pointer" }}
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={images[1]?.url || images[0]?.url}
-            width={100}
-            height={100}
-            alt="thumb2"
-            style={{ cursor: "pointer" }}
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={images[2]?.url || images[0]?.url}
-            width={100}
-            height={100}
-            alt="thumb3"
-            style={{ cursor: "pointer" }}
-          />
-        </SwiperSlide>
+        {[0, 1, 2].map((i) => {
+          const img =
+            images.length > 0
+              ? images[i % images.length]
+              : { url: "/placeholder.png" }; // fallback
+          return (
+            <SwiperSlide key={`thumb-${i}`}>
+              <Image
+                src={img.url}
+                width={100}
+                height={100}
+                alt={`thumb-${i}`}
+                style={{ cursor: "pointer" }}
+              />
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

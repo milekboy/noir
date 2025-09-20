@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 
 interface Category {
   _id: string;
-  name: string;
+  label: string;
   image: string[];
   __v: number;
 }
@@ -204,7 +204,7 @@ const FeaturedCategorySlider = () => {
                     item.image[0] ||
                     "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                   }
-                  alt={item.name}
+                  alt={item.label}
                   width={500}
                   height={500}
                   style={{
@@ -216,7 +216,7 @@ const FeaturedCategorySlider = () => {
                   className="product-name text-[10px] position-absolut"
                   style={{ transform: "translateY(-70px)" }}
                 >
-                  <span className="text-black">{item.name}</span>
+                  <span className="text-black">{item.label}</span>
                 </h6>
               </div>
             </div>
