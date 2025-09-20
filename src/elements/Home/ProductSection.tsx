@@ -5,10 +5,9 @@ import { Modal } from "react-bootstrap";
 import { masonryData, headfilterData } from "../../constant/Alldata";
 import ModalSlider from "../../components/ModalSlider";
 import ProductInputButton from "../Shop/ProductInputButton";
-import axios from "axios";
 import Image from "next/image";
 import { CartContext } from "@/components/CartContext";
-import { link } from "fs";
+
 
 interface MenuItem {
   image: string;
@@ -72,6 +71,7 @@ function reducer(state: typeof initialState, action: any) {
 
 const ProductSection = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+ 
   const handleHide = () => {
     dispatch({ type: "SET_DETAIL_MODAL", value: false });
   };
@@ -118,6 +118,7 @@ const ProductSection = () => {
   const [loading, setLoading] = useState(true);
   const networkInstance = NetworkInstance();
   const { setCartCount, fetchCartCount } = useContext(CartContext);
+  const [categoryName, setCategoryName] = useState<string | null>("");
 
   useEffect(() => {
     async function displayProduct() {
@@ -134,6 +135,8 @@ const ProductSection = () => {
 
     displayProduct();
   }, []);
+
+
 
   const addToCart = async (props: any) => {
     const payload: Record<string, any> = {
@@ -170,6 +173,22 @@ const ProductSection = () => {
       console.error("Not added to cart:", err?.response?.data || err, payload);
     }
   };
+
+ const getCategoryName = async (item: any) => {
+   if(item.category){
+        try {
+        const response = await NetworkInstance().get(
+          `category/get-category/${item.category}`
+        );
+        if (response?.status === 200) {
+          setCategoryName(response.data.label);
+          // console.log(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching category name:", error);
+      }
+    }
+ }
 
   // Loading skeleton component
   const LoadingSkeleton = () => {
@@ -354,6 +373,7 @@ const ProductSection = () => {
                 {/* ✅ Wrap whole card in Link */}
                 <Link
                   href={`/product-default/${item._id}`}
+                
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <div className="shop-card" style={{ cursor: "pointer" }}>
@@ -387,9 +407,11 @@ const ProductSection = () => {
                       <div className="shop-meta">
                         {/* ✅ Restored the View button */}
                         <Link
-                          href={`/product-default/${item._id}`}
+                          href={`/collections/${categoryName}/${item._id}`}
                           className="btn btn-secondary btn-md btn-rounded"
-                          onClick={(e) => e.stopPropagation()} // prevent bubbling to card Link
+                          onClick={(e) => e.stopPropagation() } // prevent bubbling to card Link
+                          onMouseEnter={() => getCategoryName(item)}
+                          
                         >
                           <i className="fa-solid fa-eye d-md-none d-block" />
                           <span className="d-md-block d-none">View</span>

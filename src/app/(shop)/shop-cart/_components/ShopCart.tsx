@@ -237,7 +237,7 @@ export default function ShopCart() {
                   </div>
                 </div>
                 <div className="col-md-6 text-end">
-                  <Link href="/shop-standard" className="btn btn-secondary">
+                  <Link href="/shop-list" className="btn btn-secondary">
                     UPDATE CART
                   </Link>
                 </div>

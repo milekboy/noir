@@ -54,9 +54,17 @@ export default function ProductDefaultSlider({
                 }}
               >
                 <i className="feather icon-maximize dz-maximize" />
+                {/* <Image
+                  src={images[0]?.url}
+                  width={100}
+                  height={100}
+                  alt="thumb1"
+                  style={{ cursor: "pointer" }}
+                /> */}
+                
               </Link>
               <Image
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer" }} 
                 width={900}
                 height={900}
                 src={images[0]?.url}
@@ -87,6 +95,13 @@ export default function ProductDefaultSlider({
                   color: "#fff",
                 }}
               >
+                {/* <Image
+                  src={images[0]?.url}
+                  width={100}
+                  height={100}
+                  alt="thumb1"
+                  style={{ cursor: "pointer" }}
+                /> */}
                 <i className="feather icon-maximize dz-maximize" />
               </Link>
               <Image
@@ -116,11 +131,20 @@ export default function ProductDefaultSlider({
                   position: "absolute",
                   top: "10px",
                   right: "10px",
-                  zIndex: 2,
+                  zIndex: 1,
                   fontSize: "20px",
                   color: "#fff",
                 }}
               >
+                
+                  {/* <Image
+                    src={images[0]?.url}
+                    width={100}
+                    height={100}
+                    alt="thumb1"
+                    style={{ cursor: "pointer", display: "" }}
+                    className="hidden"
+                  /> */}
                 <i className="feather icon-maximize dz-maximize" />
               </Link>
               <Image

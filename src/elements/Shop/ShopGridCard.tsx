@@ -1,5 +1,5 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Link from "next/link";
 import { CartContext } from "@/components/CartContext";
 import Image, { StaticImageData } from "next/image";
@@ -18,6 +18,7 @@ export default function ShopGridCard(props: cardType) {
   const [heartIcon, setHeartIcon] = useState(false);
   const [basketIcon, setBasketIcon] = useState(false);
   const { setCartCount, fetchCartCount } = useContext(CartContext);
+  const [categoryName, setCategoryName] = useState<string | null>(null);
 
   const addToCart = async () => {
     const payload: Record<string, any> = {
@@ -68,7 +69,7 @@ export default function ShopGridCard(props: cardType) {
       const response = await NetworkInstance().post("/wishlist", payload, {
         headers: {
           "Content-Type": "application/json",
-          "x-session-id": existingSessionId
+          "x-session-id": existingSessionId,
         },
       });
       if (response?.status === 200 || response?.status === 201) {
@@ -90,6 +91,29 @@ export default function ShopGridCard(props: cardType) {
       );
     }
   };
+  useEffect(() => {
+  //  console.log(props)
+    const fetchCategoryName = async () => {
+      if (!props.category) {
+        setCategoryName(props.title); 
+      }
+    else if(props.category){
+        try {
+        const response = await NetworkInstance().get(
+          `category/get-category/${props.category}`
+        );
+        if (response?.status === 200) {
+          setCategoryName(response.data.label);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching category name:", error);
+      }
+    }
+    };
+
+    fetchCategoryName();
+  }, []);
 
   return (
     <div className="shop-card style-1 ">
@@ -97,7 +121,7 @@ export default function ShopGridCard(props: cardType) {
         <Image width={400} height={400} src={props.image} alt="shop" />
         <div className="shop-meta">
           <Link
-            href={`/product-default/${props._id}`}
+            href={`/collections/${categoryName}/${props._id}`}
             className="btn btn-secondary btn-md btn-rounded"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
