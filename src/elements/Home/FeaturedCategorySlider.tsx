@@ -204,7 +204,7 @@ const FeaturedCategorySlider = () => {
                     item.image[0] ||
                     "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                   }
-                  alt={item.name}
+                  alt={item.name || "any"}
                   width={500}
                   height={500}
                   style={{
