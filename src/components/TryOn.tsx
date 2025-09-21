@@ -14,6 +14,9 @@ const WATCH_URL = "/assets/model/wristwatch.glb";
 // Debug
 const SHOW_FACE_DOTS = false;
 
+const isLargeScreen =
+  typeof window !== "undefined" && window.innerWidth >= 1024;
+
 // Face indices
 const FACE_LEFT_EYE_OUTER = 33;
 const FACE_RIGHT_EYE_OUTER = 263;
@@ -693,11 +696,9 @@ export default function TryOn() {
               const ry = faceLm[FACE_RIGHT_EYE_OUTER].y * H;
               const ipdPx = Math.hypot(rx - lx, ry - ly);
 
-              const desiredScale = THREE.MathUtils.clamp(
-                ipdPx * 0.001,
-                0.08,
-                0.35
-              );
+              const desiredScale = isLargeScreen
+                ? THREE.MathUtils.clamp(ipdPx * 0.001, 0.08, 0.35) //  large screen formula
+                : THREE.MathUtils.clamp(ipdPx * 0.0017, 0.08, 0.35); //  phone (original)
               const ALPHA_SCL = 0.3;
               filtScale.current = THREE.MathUtils.lerp(
                 filtScale.current,
@@ -767,11 +768,9 @@ export default function TryOn() {
               hatAnchorRef.current.position.copy(basePos);
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
-              const hatScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0004,
-                0.035,
-                0.09
-              );
+              const hatScale = isLargeScreen
+                ? THREE.MathUtils.clamp(ipdPx * 0.0006, 0.035, 0.09) //  large screen formula
+                : THREE.MathUtils.clamp(ipdPx * 0.0021, 0.035, 0.09); //  phone (original)
               hatAdjustRef.current.scale.setScalar(hatScale);
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);
 
