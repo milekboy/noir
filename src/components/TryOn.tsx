@@ -187,48 +187,63 @@ export default function TryOn() {
 
   // Loading overlay
   const [modelsReady, setModelsReady] = useState(false);
-  const [visionReady, setVisionReady] = useState(false);
+
+  // Camera facing mode + stream ref
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const streamRef = useRef<MediaStream | null>(null);
 
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
   const logHandFramesRef = useRef(0);
 
-  useEffect(() => {
-    let stream: MediaStream | null = null;
-    let rafId: number | null = null;
-    let stopRaf = false;
+  // ---- CAMERA HELPERS ----
+  const stopStream = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+  };
 
+  const startCamera = async (mode: "user" | "environment") => {
+    stopStream();
     const isIOS =
       typeof navigator !== "undefined" &&
       /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    const startCamera = async () => {
-      try {
-        const idealW = isIOS ? 960 : 1280;
-        const idealH = isIOS ? 540 : 720;
+    const idealW = isIOS ? 960 : 1280;
+    const idealH = isIOS ? 540 : 720;
 
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "user",
-            width: { ideal: idealW },
-            height: { ideal: idealH },
-          },
-          audio: false,
-        });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: mode }, // hint preferred cam
+        width: { ideal: idealW },
+        height: { ideal: idealH },
+      },
+      audio: false,
+    });
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.setAttribute("playsinline", "");
-          videoRef.current.setAttribute("autoplay", "");
-          videoRef.current.muted = true;
-          // @ts-ignore
-          videoRef.current.disablePictureInPicture = true;
-          await videoRef.current.play().catch(() => {});
-        }
-      } catch (e) {
-        console.error("[CAM] error:", e);
-      }
-    };
+    streamRef.current = stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.setAttribute("playsinline", "");
+      videoRef.current.setAttribute("autoplay", "");
+      videoRef.current.muted = true;
+      // @ts-ignore
+      videoRef.current.disablePictureInPicture = true;
+      await videoRef.current.play().catch(() => {});
+    }
+  };
+
+  // Flip button handler
+  const flipCamera = async () => {
+    const next = facingMode === "user" ? "environment" : "user";
+    setFacingMode(next);
+    await startCamera(next);
+  };
+
+  useEffect(() => {
+    let rafId: number | null = null;
+    let stopRaf = false;
 
     const fitCanvas = () => {
       const el = containerRef.current;
@@ -291,7 +306,6 @@ export default function TryOn() {
         numHands: 2,
       });
 
-      setVisionReady(true);
       console.log("[LOCAL] Pose, Face, and Hand models ready");
     };
 
@@ -384,24 +398,22 @@ export default function TryOn() {
       hatOccluderRef.current = hOcc;
 
       // Rectangular wrist occluder (depth-only, no rotation)
-      if (RECT_OCCLUDER_ENABLED) {
-        const rOccGeo = new THREE.BoxGeometry(0.1, 0.06, 0.01);
-        const rOccMat = new THREE.MeshStandardMaterial({
-          color: 0x000000,
-          depthWrite: true,
-          depthTest: true,
-        } as any);
-        (rOccMat as any).colorWrite = false;
-        (rOccMat as any).polygonOffset = true;
-        (rOccMat as any).polygonOffsetFactor = -1;
-        (rOccMat as any).polygonOffsetUnits = -1;
+      const rOccGeo = new THREE.BoxGeometry(0.1, 0.06, 0.01);
+      const rOccMat = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        depthWrite: true,
+        depthTest: true,
+      } as any);
+      (rOccMat as any).colorWrite = false;
+      (rOccMat as any).polygonOffset = true;
+      (rOccMat as any).polygonOffsetFactor = -1;
+      (rOccMat as any).polygonOffsetUnits = -1;
 
-        const rOcc = new THREE.Mesh(rOccGeo, rOccMat);
-        rOcc.name = "WRIST_RECT_OCCLUDER";
-        rOcc.visible = false;
-        scene.add(rOcc); // NOT parented to watchAnchor → stays axis-aligned
-        watchRectOccluderRef.current = rOcc;
-      }
+      const rOcc = new THREE.Mesh(rOccGeo, rOccMat);
+      rOcc.name = "WRIST_RECT_OCCLUDER";
+      rOcc.visible = false;
+      scene.add(rOcc); // NOT parented to watchAnchor → stays axis-aligned
+      watchRectOccluderRef.current = rOcc;
 
       console.log("[THREE] init OK", { w, h });
     };
@@ -682,7 +694,7 @@ export default function TryOn() {
               const ipdPx = Math.hypot(rx - lx, ry - ly);
 
               const desiredScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0017,
+                ipdPx * 0.001,
                 0.08,
                 0.35
               );
@@ -756,7 +768,7 @@ export default function TryOn() {
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
               const hatScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0021,
+                ipdPx * 0.0004,
                 0.035,
                 0.09
               );
@@ -938,19 +950,17 @@ export default function TryOn() {
                 watchAdjustRef.current.position.copy(WATCH_LOCAL_OFFSET);
 
                 // 7) Rect occluder (axis-aligned, no rotation)
-                if (RECT_OCCLUDER_ENABLED && watchRectOccluderRef.current) {
+                if (watchRectOccluderRef.current) {
                   const rect = watchRectOccluderRef.current;
-                  const width =
-                    spanWorld * RECT_WIDTH_MULT + RECT_EXTRA_PAD * 2;
-                  const height =
-                    sWatch * 0.06 * RECT_HEIGHT_MULT + RECT_EXTRA_PAD * 2;
+                  const width = spanWorld * 2.1 + RECT_EXTRA_PAD * 2;
+                  const height = sWatch * 0.06 * 0.7 + RECT_EXTRA_PAD * 2;
                   const depth = RECT_DEPTH_METERS;
 
                   const rectPos = wristWorld
                     .clone()
                     .add(zA.clone().multiplyScalar(RECT_Z_FROM_WRIST));
                   rect.position.copy(rectPos);
-                  rect.quaternion.set(0, 0, 0, 1); // stays axis-aligned
+                  rect.quaternion.set(0, 0, 0, 1); // axis-aligned
                   rect.scale.set(width / 0.1, height / 0.06, depth / 0.01);
                 }
               }
@@ -958,22 +968,18 @@ export default function TryOn() {
           }
 
           // ===== FINAL VISIBILITY GATING (per frame) =====
-          faceGateRef.current = !!faceOpen;
-          handGateRef.current = !!handOpen;
+          faceGateRef.current = !!(faceRef.current && faceLm);
+          handGateRef.current = handOpen; // updated each frame above
 
           if (glassAnchorRef.current)
-            glassAnchorRef.current.visible =
-              faceGateRef.current && showGlassesRef.current;
+            glassAnchorRef.current.visible = !!faceLm && showGlassesRef.current;
           if (occluderRef.current)
-            occluderRef.current.visible =
-              faceGateRef.current && showGlassesRef.current;
+            occluderRef.current.visible = !!faceLm && showGlassesRef.current;
 
           if (hatAnchorRef.current)
-            hatAnchorRef.current.visible =
-              faceGateRef.current && showHatRef.current;
+            hatAnchorRef.current.visible = !!faceLm && showHatRef.current;
           if (hatOccluderRef.current)
-            hatOccluderRef.current.visible =
-              faceGateRef.current && showHatRef.current;
+            hatOccluderRef.current.visible = !!faceLm && showHatRef.current;
 
           if (watchAnchorRef.current)
             watchAnchorRef.current.visible = handGateRef.current;
@@ -996,7 +1002,6 @@ export default function TryOn() {
       };
 
       const hasRVFC =
-        !isIOS &&
         typeof (video as any).requestVideoFrameCallback === "function";
 
       if (hasRVFC) {
@@ -1025,18 +1030,25 @@ export default function TryOn() {
     };
 
     (async () => {
-      await startCamera();
-      fitCanvas();
+      await startCamera(facingMode); // start with current facing mode
+      const fitCanvasNow = () => {
+        const el = containerRef.current;
+        const cv = overlayRef.current;
+        if (!el || !cv) return;
+        const w = el.clientWidth || window.innerWidth;
+        const h = el.clientHeight || window.innerHeight;
+        cv.width = w;
+        cv.height = h;
+      };
+      fitCanvasNow();
 
       await initThree();
-
-      // Load models first → show overlay until these finish
       await Promise.all([loadGlasses(), loadHat(), loadWatch()]);
       setModelsReady(true);
 
       renderThreeLoop();
 
-      await initModels(); // tracking models (MediaPipe)
+      await initModels(); // MediaPipe tasks
       startLoop();
 
       const onResize = () => fitCanvas();
@@ -1056,7 +1068,7 @@ export default function TryOn() {
         runningRef.current = false;
         if (rafId) cancelAnimationFrame(rafId);
         if (threeRafRef.current) cancelAnimationFrame(threeRafRef.current!);
-        if (stream) stream.getTracks().forEach((t) => t.stop());
+        stopStream();
         rendererRef.current?.dispose();
         sceneRef.current = null;
         cameraRef.current = null;
@@ -1064,9 +1076,9 @@ export default function TryOn() {
     })();
 
     return () => cleanupRef.current?.();
-  }, []);
+  }, []); // run once
 
-  // Keep refs synced with toggles; also immediately apply vis using the latest gates
+  // Keep refs synced with toggles
   useEffect(() => {
     showGlassesRef.current = showGlasses;
     if (glassAnchorRef.current)
@@ -1088,6 +1100,10 @@ export default function TryOn() {
     /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const showLoading = !modelsReady; // only show while GLTF models load
+
+  // Mirror both video and canvases together when front camera to keep AR aligned
+  const mirrorStyle =
+    facingMode === "user" ? { transform: "scaleX(-1)" } : undefined;
 
   return (
     <div
@@ -1123,7 +1139,7 @@ export default function TryOn() {
         ← Back
       </button>
 
-      {/* Toggles */}
+      {/* Toggles (top-right) */}
       <div
         style={{
           position: "absolute",
@@ -1162,56 +1178,92 @@ export default function TryOn() {
         </button>
       </div>
 
-      {/* Video */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
+      {/* Flip camera (bottom-right, separate from toggles & outside mirror) */}
+      <button
+        onClick={flipCamera}
+        aria-label="Flip camera"
+        className="d-lg-none"
+        style={{
+          position: "absolute",
+          right: 14,
+          bottom: 14,
+          zIndex: 21,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "10px 12px",
+          borderRadius: 999,
+          border: "1px solid rgba(255,255,255,0.25)",
+          background: "rgba(0,0,0,0.5)",
+          color: "#fff",
+          cursor: "pointer",
+          backdropFilter: "blur(4px)",
+        }}
+      >
+        Flip Camera
+      </button>
+
+      {/* EVERYTHING that must visually mirror together is inside this wrapper */}
+      <div
         style={{
           position: "absolute",
           inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
           zIndex: 1,
+          ...mirrorStyle,
+          transformOrigin: "center",
         }}
-      />
+      >
+        {/* Video */}
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 1,
+          }}
+        />
 
-      {/* Three.js */}
-      <canvas
-        ref={webglRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 2,
-          pointerEvents: "none",
-        }}
-      />
+        {/* Three.js */}
+        <canvas
+          ref={webglRef}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
 
-      {/* 2D overlay */}
-      <canvas
-        ref={overlayRef}
-        style={{
-          display: "none",
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 3,
-          pointerEvents: "none",
-        }}
-      />
+        {/* 2D overlay (hidden) */}
+        <canvas
+          ref={overlayRef}
+          style={{
+            display: "none",
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 3,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
 
       {/* Loading overlay */}
       {showLoading && (
         <>
           <style>{`
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-          `}</style>
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
           <div
             style={{
               position: "absolute",
