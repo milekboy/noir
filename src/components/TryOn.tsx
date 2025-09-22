@@ -696,9 +696,11 @@ export default function TryOn() {
               const ry = faceLm[FACE_RIGHT_EYE_OUTER].y * H;
               const ipdPx = Math.hypot(rx - lx, ry - ly);
 
-              const desiredScale = isLargeScreen
-                ? THREE.MathUtils.clamp(ipdPx * 0.001, 0.08, 0.35) //  large screen formula
-                : THREE.MathUtils.clamp(ipdPx * 0.0017, 0.08, 0.35); //  phone (original)
+              const desiredScale = THREE.MathUtils.clamp(
+                ipdPx * 0.0017,
+                0.08,
+                0.35
+              ); //  phone (original)
               const ALPHA_SCL = 0.3;
               filtScale.current = THREE.MathUtils.lerp(
                 filtScale.current,
