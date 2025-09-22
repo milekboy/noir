@@ -8,7 +8,6 @@ import ProductInputButton from "../Shop/ProductInputButton";
 import Image from "next/image";
 import { CartContext } from "@/components/CartContext";
 
-
 interface MenuItem {
   image: string;
   discount: string;
@@ -71,7 +70,7 @@ function reducer(state: typeof initialState, action: any) {
 
 const ProductSection = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
- 
+
   const handleHide = () => {
     dispatch({ type: "SET_DETAIL_MODAL", value: false });
   };
@@ -136,8 +135,6 @@ const ProductSection = () => {
     displayProduct();
   }, []);
 
-
-
   const addToCart = async (props: any) => {
     const payload: Record<string, any> = {
       productId: props._id,
@@ -174,9 +171,44 @@ const ProductSection = () => {
     }
   };
 
- const getCategoryName = async (item: any) => {
-   if(item.category){
-        try {
+   const addToWishlist = async (item: any) => {
+    const payload: Record<string, any> = {
+      productId: item._id,
+    };
+
+    const existingSessionId = localStorage.getItem("sessionId");
+    if (existingSessionId) {
+      payload.sessionId = existingSessionId;
+    }
+    try {
+      const response = await NetworkInstance().post("/wishlist", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-session-id": existingSessionId,
+        },
+      });
+      if (response?.status === 200 || response?.status === 201) {
+        const sessionId = response.data?.sessionId;
+
+        console.log(response.data.sessionId);
+
+        if (sessionId) {
+          localStorage.setItem("sessionId", sessionId);
+        } else {
+          console.log("No session ID found");
+        }
+      }
+    } catch (err: any) {
+      console.error(
+        "Not added to wishlist:",
+        err?.response?.data || err,
+        payload
+      );
+    }
+  };
+  const getCategoryName = async (item: any) => {
+    if (item.category) {
+      try {
         const response = await NetworkInstance().get(
           `category/get-category/${item.category}`
         );
@@ -188,7 +220,11 @@ const ProductSection = () => {
         console.error("Error fetching category name:", error);
       }
     }
- }
+  };
+
+  useEffect(() => {
+    setCategoryName(categoryName);
+  }, [categoryName]);
 
   // Loading skeleton component
   const LoadingSkeleton = () => {
@@ -372,8 +408,9 @@ const ProductSection = () => {
               >
                 {/* ✅ Wrap whole card in Link */}
                 <Link
-                  href={`/product-default/${item._id}`}
-                
+                  href={`/collections/${categoryName}/${item._id}`}
+                  onMouseEnter={() => getCategoryName(item)}
+                  onMouseLeave={() => setCategoryName("")}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <div className="shop-card" style={{ cursor: "pointer" }}>
@@ -409,9 +446,9 @@ const ProductSection = () => {
                         <Link
                           href={`/collections/${categoryName}/${item._id}`}
                           className="btn btn-secondary btn-md btn-rounded"
-                          onClick={(e) => e.stopPropagation() } // prevent bubbling to card Link
+                          onClick={(e) => e.stopPropagation()} // prevent bubbling to card Link
                           onMouseEnter={() => getCategoryName(item)}
-                          
+                          onMouseLeave={() => setCategoryName("")}
                         >
                           <i className="fa-solid fa-eye d-md-none d-block" />
                           <span className="d-md-block d-none">View</span>
@@ -425,6 +462,7 @@ const ProductSection = () => {
                             e.preventDefault();
                             e.stopPropagation();
                             toggleHeart(ind);
+                            addToWishlist(item);
                           }}
                         >
                           <i className="icon feather icon-heart dz-heart" />
@@ -460,7 +498,9 @@ const ProductSection = () => {
               </div>
             ))}
           </ul>
+        
         )}
+        <div className="d-flex justify-content-center align-items-center my-5"><Link href="/shop-list" className="btn btn-primary bg-black border-black  ">See more products</Link></div>
       </div>
       <Modal
         className="quick-view-modal"
