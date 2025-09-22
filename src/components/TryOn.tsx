@@ -771,7 +771,7 @@ export default function TryOn() {
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
               const hatScale = isLargeScreen
-                ? THREE.MathUtils.clamp(ipdPx * 0.0005, 0.035, 0.09) //  large screen formula
+                ? THREE.MathUtils.clamp(ipdPx * 0.00055, 0.035, 0.09) //  large screen formula
                 : THREE.MathUtils.clamp(ipdPx * 0.0009, 0.035, 0.09); //  phone (original)
               hatAdjustRef.current.scale.setScalar(hatScale);
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);
