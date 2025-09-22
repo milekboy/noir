@@ -171,7 +171,7 @@ const ProductSection = () => {
     }
   };
 
-   const addToWishlist = async (item: any) => {
+  const addToWishlist = async (item: any) => {
     const payload: Record<string, any> = {
       productId: item._id,
     };
@@ -206,25 +206,71 @@ const ProductSection = () => {
       );
     }
   };
+  // Add this near your other state declarations
+  const [categoryMap, setCategoryMap] = useState<{ [key: string]: string }>({});
+
+  // Replace the existing getCategoryName function with this improved version
   const getCategoryName = async (item: any) => {
+    // First check if we already have the category name cached
+    if (categoryMap[item.category]) {
+      setCategoryName(categoryMap[item.category]);
+      return categoryMap[item.category];
+    }
+
     if (item.category) {
       try {
         const response = await NetworkInstance().get(
           `category/get-category/${item.category}`
         );
         if (response?.status === 200) {
+          // Cache the result
+          setCategoryMap((prev) => ({
+            ...prev,
+            [item.category]: response.data.label,
+          }));
           setCategoryName(response.data.label);
-          // console.log(response.data);
+          return response.data.label;
         }
       } catch (error) {
         console.error("Error fetching category name:", error);
+        return "";
+      }
+    }
+    return "";
+  };
+
+  // useEffect(() => {
+  //   setCategoryName(categoryName);
+  // }, [categoryName]);
+
+  // Add this useEffect after your other useEffects
+useEffect(() => {
+  // Pre-fetch all category names
+  const fetchAllCategories = async () => {
+    if (product.length > 0) {
+      const uniqueCategories = [...new Set(product.map(item => item.category))];
+      for (const category of uniqueCategories) {
+        if (!categoryMap[category]) {
+          try {
+            const response = await NetworkInstance().get(
+              `category/get-category/${category}`
+            );
+            if (response?.status === 200) {
+              setCategoryMap(prev => ({
+                ...prev,
+                [category]: response.data.label
+              }));
+            }
+          } catch (error) {
+            console.error(`Error fetching category ${category}:`, error);
+          }
+        }
       }
     }
   };
 
-  useEffect(() => {
-    setCategoryName(categoryName);
-  }, [categoryName]);
+  fetchAllCategories();
+}, [product]);
 
   // Loading skeleton component
   const LoadingSkeleton = () => {
@@ -407,100 +453,118 @@ const ProductSection = () => {
                 key={item._id}
               >
                 {/* ✅ Wrap whole card in Link */}
-                <Link
+                {/* <Link
                   href={`/collections/${categoryName}/${item._id}`}
                   onMouseEnter={() => getCategoryName(item)}
                   onMouseLeave={() => setCategoryName("")}
+                  onClick={() => getCategoryName(item)}
                   style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div className="shop-card" style={{ cursor: "pointer" }}>
-                    <div
-                      className="dz-media"
+                > */}
+                <div className="shop-card" style={{ cursor: "pointer" }}>
+                  <div
+                    className="dz-media"
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "350px",
+                      overflow: "hidden",
+                      position: "relative",
+                      zIndex: -10,
+                    }}
+                  >
+                    <Image
+                      src={
+                        item.productImages[0]?.url ||
+                        "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
+                      }
+                      alt={item.name}
+                      width={200}
+                      height={200}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "350px",
-                        overflow: "hidden",
-                        position: "relative",
-                        zIndex: -10,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
                       }}
-                    >
-                      <Image
-                        src={
-                          item.productImages[0]?.url ||
-                          "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
-                        }
-                        alt={item.name}
-                        width={200}
-                        height={200}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
+                    />
+
+                    <div className="shop-meta">
+                      {/* ✅ Restored the View button */}
+                      <Link
+                        href={`/collections/${
+                          categoryMap[item.category] || "loading"
+                        }/${item._id}`}
+                        className="btn btn-secondary btn-md btn-rounded"
+                        onClick={(e) => {
+                          // If we don't have the category name yet, prevent navigation
+                          if (!categoryMap[item.category]) {
+                            e.preventDefault();
+                            getCategoryName(item).then((categoryName) => {
+                              if (categoryName) {
+                                window.location.href = `/collections/${categoryName}/${item._id}`;
+                              }
+                            });
+                          }
                         }}
-                      />
+                        onMouseEnter={() => getCategoryName(item)}
+                      >
+                        <i className="fa-solid fa-eye d-md-none d-block" />
+                        <span className="d-md-block d-none">View</span>
+                      </Link>
 
-                      <div className="shop-meta">
-                        {/* ✅ Restored the View button */}
-                        <Link
-                          href={`/collections/${categoryName}/${item._id}`}
-                          className="btn btn-secondary btn-md btn-rounded"
-                          onClick={(e) => e.stopPropagation()} // prevent bubbling to card Link
-                          onMouseEnter={() => getCategoryName(item)}
-                          onMouseLeave={() => setCategoryName("")}
-                        >
-                          <i className="fa-solid fa-eye d-md-none d-block" />
-                          <span className="d-md-block d-none">View</span>
-                        </Link>
+                      <div
+                        className={`btn btn-primary meta-icon dz-wishicon ${
+                          state.heartIcon[ind] ? "active" : ""
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleHeart(ind);
+                          addToWishlist(item);
+                        }}
+                      >
+                        <i className="icon feather icon-heart dz-heart" />
+                        <i className="icon feather icon-heart-on dz-heart-fill" />
+                      </div>
 
-                        <div
-                          className={`btn btn-primary meta-icon dz-wishicon ${
-                            state.heartIcon[ind] ? "active" : ""
-                          }`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleHeart(ind);
-                            addToWishlist(item);
-                          }}
-                        >
-                          <i className="icon feather icon-heart dz-heart" />
-                          <i className="icon feather icon-heart-on dz-heart-fill" />
-                        </div>
-
-                        <div
-                          className={`btn btn-primary meta-icon dz-carticon ${
-                            state.basketIcon[ind] ? "active" : ""
-                          }`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleBasket(ind);
-                            addToCart(item);
-                          }}
-                        >
-                          <i className="flaticon flaticon-basket" />
-                          <i className="flaticon flaticon-basket-on dz-heart-fill" />
-                        </div>
+                      <div
+                        className={`btn btn-primary meta-icon dz-carticon ${
+                          state.basketIcon[ind] ? "active" : ""
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleBasket(ind);
+                          addToCart(item);
+                        }}
+                      >
+                        <i className="flaticon flaticon-basket" />
+                        <i className="flaticon flaticon-basket-on dz-heart-fill" />
                       </div>
                     </div>
-
-                    <div className="dz-content">
-                      <h5 className="title">{item.name}</h5>
-                      <h5 className="price">&#8358;{item.price}</h5>
-                    </div>
-                    <div className="product-tag">
-                      <span className="badge">Get 20% Off</span>
-                    </div>
                   </div>
-                </Link>
+
+                  <div className="dz-content">
+                    <h5 className="title">{item.name}</h5>
+                    <h5 className="price">&#8358;{item.price}</h5>
+                  </div>
+                  <div className="product-tag">
+                    <span className="badge">Get 20% Off</span>
+                  </div>
+                </div>
+                {/* </Link> */}
               </div>
             ))}
           </ul>
-        
         )}
-        <div className="d-flex justify-content-center align-items-center my-5"><Link href="/shop-list" className="btn btn-primary bg-black border-black  ">See more products</Link></div>
+        <div className="d-flex justify-content-center align-items-center my-5">
+          <Link
+            href="/shop-list"
+            className="btn btn-primary bg-black border-black  "
+          >
+            See more products
+          </Link>
+        </div>
       </div>
       <Modal
         className="quick-view-modal"
