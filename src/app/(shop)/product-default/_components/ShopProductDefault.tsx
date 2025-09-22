@@ -44,18 +44,18 @@ export default function ShopProductDefault({
       <div className="page-content bg-light">
         <div className="d-sm-flex justify-content-between container-fluid py-3">
           <nav aria-label="breadcrumb" className="breadcrumb-row">
-            <ul className="breadcrumb mb-0">
+            <ul className="breadcrumb mb-0 w-fit">
               <li className="breadcrumb-item">
                 <Link href="/"> Home</Link>
               </li>
               <li className="breadcrumb-item">Collections</li>
               {category && (
              
-                <li className="breadcrumb-item">
-                  {" "}
-                  <Link href={`/collections?${category.label}`}>
+                <li className="breadcrumb-item bg-transparent">
+                
+                  <Link href={`/collections?category=${category.label}`}>
                     {category.label}
-                  </Link>{" "}
+                  </Link>
                 </li>
               
                 

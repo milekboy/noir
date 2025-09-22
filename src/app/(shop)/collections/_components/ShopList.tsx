@@ -26,7 +26,6 @@ import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import NetworkInstance from "@/app/api/NetworkInstance";
-import { log } from "console";
 
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
@@ -61,7 +60,7 @@ export default function ShopList({
     __v: number;
   }
 
-  // const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
   //api call
 
@@ -385,7 +384,7 @@ export default function ShopList({
   //   router.push(`/collections?category=${encodeURIComponent(child)}`);
   // };
 
-  const [products, setProducts] = useState<any[]>([]);
+  // const [products, setProducts] = useState<Product[]>([]);
 
   const [hoveredSub, setHoveredSub] = useState<string | null>(null);
 
@@ -418,6 +417,7 @@ export default function ShopList({
   // };
 
   console.log(navItems);
+  
 
   const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
   const handleDropdownClick = (parentName: string, subName: string) => {
@@ -431,7 +431,7 @@ export default function ShopList({
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
-
+  
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -897,7 +897,7 @@ export default function ShopList({
                               price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
-                              category={item.subcategory || ""}
+                              category={item.category}
                             />
                           </div>
                         ))}
