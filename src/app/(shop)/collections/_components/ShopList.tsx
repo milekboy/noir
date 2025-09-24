@@ -417,7 +417,6 @@ export default function ShopList({
   // };
 
   console.log(navItems);
-  
 
   const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
   const handleDropdownClick = (parentName: string, subName: string) => {
@@ -493,8 +492,8 @@ export default function ShopList({
         </div>
 
         {/* Category navigation */}
+
         <div>
-          {/* ✅ Navbar */}
           <nav
             style={{
               display: "flex",
@@ -510,16 +509,22 @@ export default function ShopList({
               position: "relative",
               backgroundColor: "#000",
               zIndex: 100,
+
+              // ✅ Mobile scrolling
+              // overflowX: window.innerWidth > 764 ? "auto" : "hidden",
+              whiteSpace: "nowrap",
+              scrollbarWidth: "none", // Firefox
+              msOverflowStyle: "none", // IE/Edge
             }}
+            className="mobile-scroll"
           >
             {navItems.map((item: any, index: number) => (
               <div
                 key={index}
-                style={{ position: "relative" }}
-                onMouseEnter={() => setHovered(item.name)}
+                style={{ position: "relative", flex: "0 0 auto" }} // ✅ Prevent shrink
+                onMouseEnter={() => setHovered(item.label)}
                 onMouseLeave={() => setHovered(null)}
               >
-                {/* Top-level nav link */}
                 <Link
                   href={item.link || "#"}
                   style={{
@@ -542,8 +547,7 @@ export default function ShopList({
                   {item.label}
                 </Link>
 
-                {/* Dropdown */}
-                {item.subCategory?.length > 0 && hovered === item.name && (
+                {item.subCategory?.length > 0 && hovered === item.label && (
                   <div
                     style={{
                       position: "absolute",
@@ -561,7 +565,6 @@ export default function ShopList({
                       boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                     }}
                   >
-                    {/* Left side: text */}
                     <div
                       style={{
                         display: "flex",
@@ -608,7 +611,6 @@ export default function ShopList({
                       ))}
                     </div>
 
-                    {/* Right side: images */}
                     <div
                       style={{
                         display: "flex",
@@ -636,7 +638,6 @@ export default function ShopList({
             ))}
           </nav>
 
-          {/* ✅ Breadcrumbs */}
           {breadcrumb.length > 0 && (
             <nav
               aria-label="breadcrumb"
@@ -659,7 +660,7 @@ export default function ShopList({
                     {breadcrumb.length > 3 ? (
                       crumb
                     ) : (
-                      <p style={{fontWeight:!searchParams ? 600 : 400,}}>
+                      <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
                         Home{" "}
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
@@ -682,55 +683,68 @@ export default function ShopList({
             </nav>
           )}
         </div>
+
+        <style jsx>{`
+          .mobile-scroll::-webkit-scrollbar {
+            display: none;
+          }
+
+          @media (max-width: 556px) {
+            .mobile-scroll {
+              justify-content: flex-start !important;
+              gap: 20px !important;
+            }
+          }
+        `}</style>
       </header>
 
       {/* ✅ Dynamic Breadcrumb */}
       {/* <div
-        style={{
-          backgroundColor: "#f9f9f9",
-          padding: "10px 30px",
-          borderBottom: "1px solid #eee",
-          fontSize: "13px",
-        }}
-      >
-        <nav aria-label="breadcrumb">
-          <ol
-            style={{
-              display: "flex",
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              gap: "8px",
-              color: "#555",
-            }}
-          >
-            {breadcrumb.map((crumb, index) => (
-              <li key={index} style={{ display: "flex", alignItems: "center" }}>
-                <Link
-                  href="#"
+              style={{
+                backgroundColor: "#f9f9f9",
+                padding: "10px 30px",
+                borderBottom: "1px solid #eee",
+                fontSize: "13px",
+              }}
+            >
+              <nav aria-label="breadcrumb">
+                <ol
                   style={{
-                    color: index === breadcrumb.length - 1 ? "#000" : "#555",
-                    fontWeight: index === breadcrumb.length - 1 ? "600" : "400",
-                    textDecoration: "none",
-                  }}
-                  onClick={() => {
-                    // ✅ allow backward navigation
-                    setBreadcrumb((prev) => prev.slice(0, index + 1));
-                    if (crumb === "Home") router.push("/");
-                    else if (crumb === "Collections")
-                      router.push("/collections");
+                    display: "flex",
+                    listStyle: "none",
+                    margin: 0,
+                    padding: 0,
+                    gap: "8px",
+                    color: "#555",
                   }}
                 >
-                  {crumb}
-                </Link>
-                {index < breadcrumb.length - 1 && (
-                  <span style={{ margin: "0 6px", color: "#999" }}>/</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-      </div> */}
+                  {breadcrumb.map((crumb, index) => (
+                    <li key={index} style={{ display: "flex", alignItems: "center" }}>
+                      <Link
+                        href="#"
+                        style={{
+                          color: index === breadcrumb.length - 1 ? "#000" : "#555",
+                          fontWeight: index === breadcrumb.length - 1 ? "600" : "400",
+                          textDecoration: "none",
+                        }}
+                        onClick={() => {
+                          // ✅ allow backward navigation
+                          setBreadcrumb((prev) => prev.slice(0, index + 1));
+                          if (crumb === "Home") router.push("/");
+                          else if (crumb === "Collections")
+                            router.push("/collections");
+                        }}
+                      >
+                        {crumb}
+                      </Link>
+                      {index < breadcrumb.length - 1 && (
+                        <span style={{ margin: "0 6px", color: "#999" }}>/</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            </div> */}
 
       <section className="content-inner-3 pt-3">
         <div className="container">
@@ -811,23 +825,19 @@ export default function ShopList({
 
                 {/* Filter button */}
                 <div
-                  className="d-flex align-items-center justify-content-between m-b30"
-                  style={{
-                    float: "right",
-                    marginLeft: "auto",
-                    cursor: "pointer",
-                  }}
+                  className="d-flex align-items-center justify-content-end mb-3 w-100"
+                  style={{ cursor: "pointer" }}
                   onClick={() => setShowFilters((prev) => !prev)}
                 >
                   <h6
-                    className="title mb-0 fw-normal d-flex"
-                    style={{ color: "black" }}
+                    className="title mb-0 fw-normal d-flex align-items-center"
+                    style={{ color: "black", fontSize: "0.95rem" }}
                   >
                     <i
-                      className="flaticon-filter me-3"
+                      className="flaticon-filter me-2"
                       style={{ color: "black" }}
                     />
-                    Filter
+                    <span className="d-none d-sm-inline">Filter</span>
                   </h6>
                 </div>
               </div>
@@ -902,7 +912,7 @@ export default function ShopList({
                               price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
-                              category={item.category}
+                              category={item.category || ""}
                             />
                           </div>
                         ))}

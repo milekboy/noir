@@ -9,10 +9,16 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 // Assets
 const GLASSES_URL = "/assets/model/glasses.glb";
 const HAT_URL = "/assets/model/hat_glb.glb";
-const WATCH_URL = "/assets/model/wristwatch.glb";
+const WATCH_URL = "/assets/model/wristwatch.glb"; // kept but disabled
+const SHOE_URL = "/assets/model/shoes.glb";
 
-// Debug
+// Debug toggles
 const SHOW_FACE_DOTS = false;
+const SHOW_FEET_DEBUG = true; // << draw ankle→heel→toe lines
+const LOG_SHOE_KEEP = false; // << logs what nodes we keep per side
+
+const isLargeScreen =
+  typeof window !== "undefined" && window.innerWidth >= 1024;
 
 // Face indices
 const FACE_LEFT_EYE_OUTER = 33;
@@ -22,110 +28,49 @@ const FACE_CHIN = 152;
 const FACE_LEFT_TEMPLE = 234;
 const FACE_RIGHT_TEMPLE = 454;
 
-// Pose connections
-const POSE_CONNECTIONS: [string, string][] = [
-  ["left_shoulder", "right_shoulder"],
-  ["left_shoulder", "left_elbow"],
-  ["left_elbow", "left_wrist"],
-  ["right_shoulder", "right_elbow"],
-  ["right_elbow", "right_wrist"],
-  ["left_shoulder", "left_hip"],
-  ["right_shoulder", "right_hip"],
-  ["left_hip", "right_hip"],
-  ["left_hip", "left_knee"],
-  ["left_knee", "left_ankle"],
-  ["right_hip", "right_knee"],
-  ["right_knee", "right_ankle"],
-  ["left_ankle", "left_heel"],
-  ["left_heel", "left_foot_index"],
-  ["right_ankle", "right_heel"],
-  ["right_heel", "right_foot_index"],
-  ["left_eye", "right_eye"],
-  ["left_ear", "left_shoulder"],
-  ["right_ear", "right_shoulder"],
-];
-
-// Pose indices → names
-const MP_INDEX_TO_NAME: Record<number, string> = {
-  0: "nose",
-  2: "left_eye",
-  5: "right_eye",
-  7: "left_ear",
-  8: "right_ear",
-  11: "left_shoulder",
-  12: "right_shoulder",
-  13: "left_elbow",
-  14: "right_elbow",
-  15: "left_wrist",
-  16: "right_wrist",
-  23: "left_hip",
-  24: "right_hip",
-  25: "left_knee",
-  26: "right_knee",
-  27: "left_ankle",
-  28: "right_ankle",
-  29: "left_heel",
-  30: "right_heel",
-  31: "left_foot_index",
-  32: "right_foot_index",
-};
-
-// Hands connections (unchanged)
-const HAND_CONNECTIONS: [number, number][] = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4], // thumb
-  [0, 5],
-  [5, 6],
-  [6, 7],
-  [7, 8], // index
-  [5, 9],
-  [9, 10],
-  [10, 11],
-  [11, 12], // middle
-  [9, 13],
-  [13, 14],
-  [14, 15],
-  [15, 16], // ring
-  [13, 17],
-  [17, 18],
-  [18, 19],
-  [19, 20], // pinky
-  [0, 17], // palm base
-];
-
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
-// ---------- Hat tuning knobs ----------
+// ---------- Hat tuning ----------
 const HAT_SCALE_FACTOR = 0.032;
 const HAT_LIFT_FACTOR = 0.08;
 const HAT_FORWARD_OFFSET = -0.23;
 
-// ---------- Watch tuning knobs ----------
-const WATCH_DEPTH = 0.9;
-const WATCH_BASE_SCALE = 6; // initial; gets overridden each frame
-const WATCH_SCALE_MIN = 0.05;
-const WATCH_SCALE_MAX = Infinity;
-const WATCH_WORLD_FACTOR = 30;
-const WATCH_LOCAL_OFFSET = new THREE.Vector3(0.0, 0.0, 0.0);
+// ---------- Watch (disabled) ----------
+const WATCH_ENABLED = false; // << turn off completely
 
-// ---- Watch roll smoothing ----
-const WATCH_ROLL_SMOOTH = 0.35;
-
-// ---- RECTANGLE OCCLUDER (no rotation) ----
-const RECT_OCCLUDER_ENABLED = true;
-const RECT_WIDTH_MULT = 2.1; // × span (index↔pinky)
-const RECT_HEIGHT_MULT = 0.7; // × (sWatch * 0.06) along forearm
-const RECT_DEPTH_METERS = 0.01; // toward camera
-const RECT_Z_FROM_WRIST = 0.01; // offset along outward-normal
-const RECT_EXTRA_PAD = 0.002; // uniform padding
-
-// Model correction so local axes match our anchor basis nicely
-const WATCH_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
-  new THREE.Euler(Math.PI / 2, Math.PI / 2, 0, "XYZ")
+// ---------- Shoes tuning (tracking depth/scale/smoothing) ----------
+const SHOE_DEPTH = 1.15; // world Z depth to place shoe
+const SHOE_SCALE_MULT = 10; // bump size a lot (was 6)
+const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
+  new THREE.Euler(-Math.PI / 2, 0, 0, "XYZ")
 );
 
+// Smoothing + outlier reject
+const EMA_POS = 0.35; // 0..1 (higher = snappier)
+const EMA_ROT = 0.35;
+const EMA_SCALE = 0.35;
+const OUTLIER_MAX_JUMP = 0.26; // meters; ignore bigger jumps
+const MIN_VISIBILITY = 0.6; // MP visibility threshold
+
+// Name heuristic to split paired GLB: anything ending with 001 is "right"
+const isRightName = (n: string) => /(?:001$|_R\b|Right\b)/i.test(n || "");
+
+// ---------- Helpers ----------
+function lpVec(target: THREE.Vector3, next: THREE.Vector3, alpha: number) {
+  target.lerp(next, alpha);
+}
+function slerpQ(
+  target: THREE.Quaternion,
+  next: THREE.Quaternion,
+  alpha: number
+) {
+  target.slerp(next, alpha);
+}
+function safeDist(a: THREE.Vector3, b: THREE.Vector3) {
+  return a.distanceTo(b);
+}
+
+// ---------- Component ----------
 export default function TryTest() {
   const router = useRouter();
 
@@ -152,38 +97,33 @@ export default function TryTest() {
   const glassesLoadedRef = useRef(false);
   const occluderRef = useRef<THREE.Mesh | null>(null);
 
+  // Shoes
+  const leftShoeAnchorRef = useRef<THREE.Group | null>(null);
+  const rightShoeAnchorRef = useRef<THREE.Group | null>(null);
+  const shoesLoadedRef = useRef(false);
+
+  // Shoe smoothing state
+  const Lpos = useRef(new THREE.Vector3());
+  const Lquat = useRef(new THREE.Quaternion());
+  const Lscale = useRef(1);
+  const Rpos = useRef(new THREE.Vector3());
+  const Rquat = useRef(new THREE.Quaternion());
+  const Rscale = useRef(1);
+
   // Hat
   const hatAnchorRef = useRef<THREE.Group | null>(null);
   const hatAdjustRef = useRef<THREE.Group | null>(null);
   const hatLoadedRef = useRef(false);
   const hatOccluderRef = useRef<THREE.Mesh | null>(null);
 
-  // Watch
-  const watchAnchorRef = useRef<THREE.Group | null>(null);
-  const watchAdjustRef = useRef<THREE.Group | null>(null);
-  const watchLoadedRef = useRef(false);
-
-  // Watch smoothing + continuity
-  const watchQuatRef = useRef(new THREE.Quaternion());
-  const prevZRef = useRef(new THREE.Vector3(0, 0, 1));
-
-  // Rect occluder (no rotation)
-  const watchRectOccluderRef = useRef<THREE.Mesh | null>(null);
-
-  // Glasses smoothing
-  const filtPos = useRef(new THREE.Vector3());
-  const filtQuat = useRef(new THREE.Quaternion());
-  const filtScale = useRef(0.12);
-
-  // Toggles (state + refs to avoid stale closures in loop)
+  // Toggles
   const [showGlasses, setShowGlasses] = useState(true);
   const [showHat, setShowHat] = useState(true);
   const showGlassesRef = useRef(true);
   const showHatRef = useRef(true);
 
-  // Tracking-gate refs (updated each frame)
+  // Tracking gates
   const faceGateRef = useRef(false);
-  const handGateRef = useRef(false);
 
   // Loading overlay
   const [modelsReady, setModelsReady] = useState(false);
@@ -194,7 +134,6 @@ export default function TryTest() {
 
   const runningRef = useRef(false);
   const cleanupRef = useRef<() => void>(() => {});
-  const logHandFramesRef = useRef(0);
 
   // ---- CAMERA HELPERS ----
   const stopStream = () => {
@@ -215,7 +154,7 @@ export default function TryTest() {
 
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: { ideal: mode }, // hint preferred cam
+        facingMode: { ideal: mode },
         width: { ideal: idealW },
         height: { ideal: idealH },
       },
@@ -241,6 +180,7 @@ export default function TryTest() {
     await startCamera(next);
   };
 
+  // ---------- Effect ----------
   useEffect(() => {
     let rafId: number | null = null;
     let stopRaf = false;
@@ -338,8 +278,8 @@ export default function TryTest() {
       scene.environment = envTex;
 
       // Lights
-      scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-      const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
       dir.position.set(0.5, 1, 1);
       scene.add(dir);
 
@@ -354,16 +294,21 @@ export default function TryTest() {
       renderer.setSize(w, h, false);
 
       // Anchors
+      const leftShoeAnchor = new THREE.Group();
+      const rightShoeAnchor = new THREE.Group();
+      leftShoeAnchor.visible = false;
+      rightShoeAnchor.visible = false;
+      scene.add(leftShoeAnchor, rightShoeAnchor);
+      leftShoeAnchorRef.current = leftShoeAnchor;
+      rightShoeAnchorRef.current = rightShoeAnchor;
+
       const glassesAnchor = new THREE.Group();
       const hatAnchor = new THREE.Group();
-      const watchAnchor = new THREE.Group();
       glassesAnchor.visible = false;
       hatAnchor.visible = false;
-      watchAnchor.visible = false;
-      scene.add(glassesAnchor, hatAnchor, watchAnchor);
+      scene.add(glassesAnchor, hatAnchor);
       glassAnchorRef.current = glassesAnchor;
       hatAnchorRef.current = hatAnchor;
-      watchAnchorRef.current = watchAnchor;
 
       // Glasses occluder (depth-only)
       const occGeo = new THREE.BoxGeometry(1, 0.5, 0.25);
@@ -396,24 +341,6 @@ export default function TryTest() {
       hOcc.visible = false;
       hatAnchor.add(hOcc);
       hatOccluderRef.current = hOcc;
-
-      // Rectangular wrist occluder (depth-only, no rotation)
-      const rOccGeo = new THREE.BoxGeometry(0.1, 0.06, 0.01);
-      const rOccMat = new THREE.MeshStandardMaterial({
-        color: 0x000000,
-        depthWrite: true,
-        depthTest: true,
-      } as any);
-      (rOccMat as any).colorWrite = false;
-      (rOccMat as any).polygonOffset = true;
-      (rOccMat as any).polygonOffsetFactor = -1;
-      (rOccMat as any).polygonOffsetUnits = -1;
-
-      const rOcc = new THREE.Mesh(rOccGeo, rOccMat);
-      rOcc.name = "WRIST_RECT_OCCLUDER";
-      rOcc.visible = false;
-      scene.add(rOcc); // NOT parented to watchAnchor → stays axis-aligned
-      watchRectOccluderRef.current = rOcc;
 
       console.log("[THREE] init OK", { w, h });
     };
@@ -451,6 +378,66 @@ export default function TryTest() {
             o.material.needsUpdate = true;
           }
         }
+      });
+    };
+
+    // ---------- Loaders ----------
+    const loadShoes = async () => {
+      if (
+        !sceneRef.current ||
+        !leftShoeAnchorRef.current ||
+        !rightShoeAnchorRef.current
+      )
+        return;
+      if (shoesLoadedRef.current) return;
+
+      return new Promise<void>((resolve, reject) => {
+        const loader = new GLTFLoader();
+        loader.load(
+          SHOE_URL,
+          (gltf) => {
+            const src = gltf.scene;
+            makePBRHappy(src);
+            src.updateMatrixWorld(true);
+
+            // Clone hierarchy and hide opposite side in each
+            const leftOnly = src.clone(true);
+            const rightOnly = src.clone(true);
+
+            leftOnly.traverse((o: THREE.Object3D) => {
+              if (isRightName(o.name)) o.visible = false;
+            });
+            rightOnly.traverse((o: THREE.Object3D) => {
+              if (!isRightName(o.name)) o.visible = false;
+            });
+
+            // Optional: log kept nodes
+            if (LOG_SHOE_KEEP) {
+              console.log("[SHOES] left-only kept:");
+              leftOnly.traverse(
+                (o) => o.visible && console.log("  ", o.name || o.type)
+              );
+              console.log("[SHOES] right-only kept:");
+              rightOnly.traverse(
+                (o) => o.visible && console.log("  ", o.name || o.type)
+              );
+            }
+
+            // Model axis fix + initial scale
+            leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
+            rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
+            leftOnly.scale.setScalar(0.1);
+            rightOnly.scale.setScalar(0.1);
+
+            leftShoeAnchorRef.current!.add(leftOnly);
+            rightShoeAnchorRef.current!.add(rightOnly);
+
+            shoesLoadedRef.current = true;
+            resolve();
+          },
+          undefined,
+          (err) => reject(err)
+        );
       });
     };
 
@@ -519,37 +506,6 @@ export default function TryTest() {
       });
     };
 
-    const loadWatch = async () => {
-      if (!sceneRef.current || !watchAnchorRef.current) return;
-      if (watchLoadedRef.current) return;
-
-      return new Promise<void>((resolve, reject) => {
-        const loader = new GLTFLoader();
-        loader.load(
-          WATCH_URL,
-          (gltf) => {
-            const model = gltf.scene;
-            makePBRHappy(model);
-
-            const adjust = new THREE.Group();
-            adjust.name = "WATCH_ADJUST";
-            adjust.add(model);
-
-            // Child gets a fixed correction; live wrist rotation goes on the ANCHOR
-            adjust.quaternion.copy(WATCH_MODEL_CORRECTION);
-            adjust.scale.setScalar(WATCH_BASE_SCALE);
-            watchAdjustRef.current = adjust;
-
-            watchAnchorRef.current!.add(adjust);
-            watchLoadedRef.current = true;
-            resolve();
-          },
-          undefined,
-          (err) => reject(err)
-        );
-      });
-    };
-
     const ndcToWorldAtDistance = (
       ndcX: number,
       ndcY: number,
@@ -570,29 +526,7 @@ export default function TryTest() {
       threeRafRef.current = requestAnimationFrame(renderThreeLoop);
     };
 
-    const parseHandLabel = (raw: any) => {
-      try {
-        let v = raw;
-        while (Array.isArray(v) && v.length > 0) v = v[0];
-        if (!v) return "Hand";
-        if (typeof v === "string") return v;
-        if (typeof v === "object") {
-          return (
-            v.label ||
-            v.categoryName ||
-            v.category ||
-            v.name ||
-            v.displayName ||
-            v.labelName ||
-            v.tag ||
-            "Hand"
-          );
-        }
-      } catch {}
-      return "Hand";
-    };
-
-    // Map MediaPipe landmark (0..1 video coords) → canvas pixels with object-fit: cover
+    // Map MP 0..1 coord → canvas px (object-fit:cover correct)
     function lmToCanvasPx(
       lm: MPPoint,
       videoEl: HTMLVideoElement,
@@ -602,9 +536,8 @@ export default function TryTest() {
       const vidH = videoEl.videoHeight || 0;
       const canW = canvasEl.width;
       const canH = canvasEl.height;
-      if (!vidW || !vidH) return { x: lm.x * canW, y: lm.y * canH }; // fallback
+      if (!vidW || !vidH) return { x: lm.x * canW, y: lm.y * canH };
 
-      // cover scale + center offset
       const scale = Math.max(canW / vidW, canH / vidH);
       const dispW = vidW * scale;
       const dispH = vidH * scale;
@@ -614,20 +547,95 @@ export default function TryTest() {
       return { x: offX + lm.x * dispW, y: offY + lm.y * dispH };
     }
 
+    // ========== Main per-frame loop ==========
     const startLoop = () => {
       const video = videoRef.current!;
       const canvas = overlayRef.current!;
-      if (
-        !video ||
-        !poseRef.current ||
-        !canvas ||
-        !faceRef.current ||
-        !handRef.current
-      )
-        return;
+      if (!video || !poseRef.current || !canvas || !faceRef.current) return;
 
       runningRef.current = true;
       const ctx = canvas.getContext("2d")!;
+
+      // scratch vecs
+      const vA = new THREE.Vector3();
+      const vB = new THREE.Vector3();
+      const vC = new THREE.Vector3();
+
+      // helper to compute shoe transform + smooth
+      const solveFoot = (
+        ankle: MPPoint,
+        heel: MPPoint,
+        toe: MPPoint,
+        posRef: React.MutableRefObject<THREE.Vector3>,
+        quatRef: React.MutableRefObject<THREE.Quaternion>,
+        scaleRef: React.MutableRefObject<number>,
+        anchor: THREE.Group
+      ) => {
+        // visibility gate
+        const visOK =
+          (ankle.visibility ?? 1) > MIN_VISIBILITY &&
+          (heel.visibility ?? 1) > MIN_VISIBILITY &&
+          (toe.visibility ?? 1) > MIN_VISIBILITY;
+        if (!visOK) {
+          anchor.visible = false;
+          return;
+        }
+
+        // to world @ depth
+        const toWorld = (lm: MPPoint) => {
+          const nx = lm.x * 2 - 1;
+          const ny = -(lm.y * 2 - 1);
+          return ndcToWorldAtDistance(nx, ny, SHOE_DEPTH);
+        };
+        const ankleW = toWorld(ankle);
+        const heelW = toWorld(heel);
+        const toeW = toWorld(toe);
+
+        // orientation basis: forward from heel→toe, right from forward×up
+        const forward = vA.copy(toeW).sub(heelW).normalize();
+        const up = vB.set(0, 1, 0);
+        const right = vC.copy(forward).cross(up).normalize();
+        const correctedUp = vB.copy(right).cross(forward).normalize();
+
+        const m = new THREE.Matrix4().makeBasis(right, correctedUp, forward);
+        m.setPosition(ankleW);
+
+        const pos = new THREE.Vector3();
+        const q = new THREE.Quaternion();
+        const s = new THREE.Vector3();
+        m.decompose(pos, q, s);
+
+        // outlier reject on position
+        if (anchor.visible) {
+          if (safeDist(posRef.current, pos) > OUTLIER_MAX_JUMP) {
+            // ignore this frame movement spike
+            pos.copy(posRef.current);
+          }
+        }
+
+        // smooth
+        lpVec(posRef.current, pos, EMA_POS);
+        slerpQ(quatRef.current, q, EMA_ROT);
+
+        // scale from foot length
+        const footLen = heelW.distanceTo(toeW);
+        const desiredScale = THREE.MathUtils.clamp(
+          footLen * SHOE_SCALE_MULT,
+          0.01,
+          100
+        );
+        scaleRef.current = THREE.MathUtils.lerp(
+          scaleRef.current || desiredScale,
+          desiredScale,
+          EMA_SCALE
+        );
+
+        // apply
+        anchor.position.copy(posRef.current);
+        anchor.quaternion.copy(quatRef.current);
+        anchor.scale.setScalar(scaleRef.current);
+        anchor.visible = true;
+      };
 
       const processFrame = async () => {
         if (!runningRef.current) return;
@@ -636,28 +644,107 @@ export default function TryTest() {
         try {
           // Pose
           const poseRes = await poseRef.current.detectForVideo(video, tsMs);
-          const poseLm = poseRes?.landmarks?.[0];
+          const poseLm: MPPoint[] | undefined = poseRes?.landmarks?.[0];
 
-          // Face + head pose
+          // Face (for glasses/hat)
           const faceRes = await faceRef.current.detectForVideo(video, tsMs);
           const faceLm: MPPoint[] | undefined = faceRes?.faceLandmarks?.[0];
           const faceMat: Float32Array | undefined =
             faceRes?.facialTransformationMatrixes?.[0]?.data;
 
-          // Hands
-          const handRes = await handRef.current.detectForVideo(video, tsMs);
-          const handsLm: Array<Array<MPPoint>> = handRes?.landmarks || [];
-          const handednessRaw =
-            (handRes as any)?.handednesses ??
-            (handRes as any)?.handedness ??
-            [];
-
+          // Clear / debug draw
           const W = canvas.width,
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
+          // ===== SHOES =====
+          if (
+            poseLm &&
+            leftShoeAnchorRef.current &&
+            rightShoeAnchorRef.current
+          ) {
+            const leftAnkle = poseLm[27];
+            const rightAnkle = poseLm[28];
+            const leftHeel = poseLm[29];
+            const rightHeel = poseLm[30];
+            const leftToe = poseLm[31];
+            const rightToe = poseLm[32];
+
+            if (leftAnkle && leftHeel && leftToe) {
+              solveFoot(
+                leftAnkle,
+                leftHeel,
+                leftToe,
+                Lpos,
+                Lquat,
+                Lscale,
+                leftShoeAnchorRef.current!
+              );
+            } else {
+              leftShoeAnchorRef.current.visible = false;
+            }
+            if (rightAnkle && rightHeel && rightToe) {
+              solveFoot(
+                rightAnkle,
+                rightHeel,
+                rightToe,
+                Rpos,
+                Rquat,
+                Rscale,
+                rightShoeAnchorRef.current!
+              );
+            } else {
+              rightShoeAnchorRef.current.visible = false;
+            }
+
+            // Debug lines (canvas space)
+            if (SHOW_FEET_DEBUG) {
+              const drawFoot = (
+                a?: MPPoint,
+                h?: MPPoint,
+                t?: MPPoint,
+                color = "#00ff77"
+              ) => {
+                if (!a || !h || !t) return;
+                const A = lmToCanvasPx(a, videoRef.current!, canvas);
+                const Hh = lmToCanvasPx(h, videoRef.current!, canvas);
+                const T = lmToCanvasPx(t, videoRef.current!, canvas);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(Hh.x, Hh.y);
+                ctx.lineTo(T.x, T.y); // heel->toe
+                ctx.stroke();
+                ctx.strokeStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.moveTo(A.x, A.y);
+                ctx.lineTo(Hh.x, Hh.y); // ankle->heel
+                ctx.stroke();
+
+                // little forward vector arrow
+                const midX = (Hh.x + T.x) * 0.5;
+                const midY = (Hh.y + T.y) * 0.5;
+                const dirX = T.x - Hh.x;
+                const dirY = T.y - Hh.y;
+                const len = Math.hypot(dirX, dirY) || 1;
+                const ux = dirX / len,
+                  uy = dirY / len;
+                ctx.beginPath();
+                ctx.moveTo(midX, midY);
+                ctx.lineTo(midX + ux * 24, midY + uy * 24);
+                ctx.stroke();
+              };
+              drawFoot(leftAnkle, leftHeel, leftToe, "#73ff00");
+              drawFoot(rightAnkle, rightHeel, rightToe, "#00e0ff");
+            }
+          } else {
+            if (leftShoeAnchorRef.current)
+              leftShoeAnchorRef.current.visible = false;
+            if (rightShoeAnchorRef.current)
+              rightShoeAnchorRef.current.visible = false;
+          }
+
           // ===== GLASSES =====
-          let faceOpen = !!faceLm;
           if (glassAnchorRef.current && glassAdjustRef.current && faceLm) {
             const anchor = glassAnchorRef.current;
 
@@ -667,9 +754,10 @@ export default function TryTest() {
               const quat = new THREE.Quaternion();
               const scl = new THREE.Vector3();
               m.decompose(pos, quat, scl);
-              const ALPHA_ROT = 0.25;
-              filtQuat.current.slerp(quat, ALPHA_ROT);
-              anchor.quaternion.copy(filtQuat.current);
+              // light smoothing
+              const fq = new THREE.Quaternion().copy(anchor.quaternion);
+              fq.slerp(quat, 0.25);
+              anchor.quaternion.copy(fq);
             }
 
             const L = faceLm[FACE_LEFT_EYE_OUTER];
@@ -679,11 +767,8 @@ export default function TryTest() {
               const my = (L.y * H + R.y * H) * 0.5;
               const ndcX = (mx / W) * 2 - 1;
               const ndcY = -(my / H) * 2 + 1;
-              const targetPos = ndcToWorldAtDistance(ndcX, ndcY, 0.9);
-              targetPos.y -= filtScale.current * 0.02;
-              const ALPHA_POS = 0.3;
-              filtPos.current.lerp(targetPos, ALPHA_POS);
-              anchor.position.copy(filtPos.current);
+              const pos = ndcToWorldAtDistance(ndcX, ndcY, 0.9);
+              anchor.position.lerp(pos, 0.3);
             }
 
             if (faceLm[FACE_LEFT_EYE_OUTER] && faceLm[FACE_RIGHT_EYE_OUTER]) {
@@ -692,46 +777,10 @@ export default function TryTest() {
               const rx = faceLm[FACE_RIGHT_EYE_OUTER].x * W;
               const ry = faceLm[FACE_RIGHT_EYE_OUTER].y * H;
               const ipdPx = Math.hypot(rx - lx, ry - ly);
-
-              const desiredScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0017,
-                0.08,
-                0.35
+              const s = THREE.MathUtils.clamp(ipdPx * 0.0017, 0.08, 0.35);
+              glassAdjustRef.current!.scale.setScalar(
+                THREE.MathUtils.lerp(glassAdjustRef.current!.scale.x, s, 0.3)
               );
-              const ALPHA_SCL = 0.3;
-              filtScale.current = THREE.MathUtils.lerp(
-                filtScale.current,
-                desiredScale,
-                ALPHA_SCL
-              );
-
-              const s = filtScale.current;
-              glassAdjustRef.current!.scale.set(s, s, s);
-
-              if (occluderRef.current) {
-                const Lc = faceLm[FACE_LEFT_TEMPLE];
-                const Rc = faceLm[FACE_RIGHT_TEMPLE];
-                const Fore = faceLm[FACE_FOREHEAD];
-                const Chin = faceLm[FACE_CHIN];
-                const headWidthPx =
-                  Lc && Rc
-                    ? Math.hypot(Rc.x * W - Lc.x * W, Rc.y * H - Lc.y * H)
-                    : ipdPx * 2.6;
-                const headHeightPx =
-                  Fore && Chin
-                    ? Math.hypot(
-                        Chin.x * W - Fore.x * W,
-                        Chin.y * H - Fore.y * H
-                      )
-                    : ipdPx * 3.2;
-
-                occluderRef.current.scale.set(
-                  s * (headWidthPx / (ipdPx || 1)) * 1.1,
-                  s * (headHeightPx / (ipdPx || 1)) * 1.05,
-                  s * 0.75
-                );
-                occluderRef.current.position.set(0, 0, -0.04);
-              }
             }
           }
 
@@ -764,212 +813,22 @@ export default function TryTest() {
               );
               basePos.y += (faceHeightPx / 1000) * HAT_LIFT_FACTOR;
 
-              hatAnchorRef.current.position.copy(basePos);
+              hatAnchorRef.current.position.lerp(basePos, 0.35);
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
-              const hatScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0021,
-                0.035,
-                0.09
+              const hatScale = isLargeScreen
+                ? THREE.MathUtils.clamp(ipdPx * 0.00055, 0.035, 0.09)
+                : THREE.MathUtils.clamp(ipdPx * 0.0009, 0.035, 0.09);
+              const sCurr = hatAdjustRef.current.scale.x;
+              hatAdjustRef.current.scale.setScalar(
+                THREE.MathUtils.lerp(sCurr, hatScale, 0.35)
               );
-              hatAdjustRef.current.scale.setScalar(hatScale);
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);
-
-              if (hatOccluderRef.current) {
-                const Lc = faceLm[FACE_LEFT_TEMPLE];
-                const Rc = faceLm[FACE_RIGHT_TEMPLE];
-                const headWidthPx =
-                  Lc && Rc
-                    ? Math.hypot(Rc.x * W - Lc.x * W, Rc.y * H - Lc.y * H)
-                    : ipdPx * 2.6;
-                const headHeightPx =
-                  Fore && Chin
-                    ? Math.hypot(
-                        Chin.x * W - Fore.x * W,
-                        Chin.y * H - Fore.y * H
-                      )
-                    : ipdPx * 3.2;
-
-                const sHat = hatAdjustRef.current.scale.x;
-                hatOccluderRef.current.scale.set(
-                  sHat * (headWidthPx / (ipdPx || 1)) * 2.4,
-                  sHat * (headHeightPx / (ipdPx || 1)) * 0.8,
-                  sHat * 0.9
-                );
-                hatOccluderRef.current.position.set(0, -0.02, -0.05);
-              }
             }
           }
 
-          // ===== WATCH (basis + slerp + palm/knuckles flip) =====
-          let handOpen = false;
-          if (watchAnchorRef.current && watchAdjustRef.current) {
-            let chosenIndex = -1;
-            if (handsLm.length === 1) chosenIndex = 0;
-            else if (handsLm.length >= 2) {
-              const label0 = parseHandLabel(handednessRaw[0]).toLowerCase();
-              const label1 = parseHandLabel(handednessRaw[1]).toLowerCase();
-              chosenIndex = label0.includes("left")
-                ? 0
-                : label1.includes("left")
-                ? 1
-                : 0;
-            }
-
-            const videoEl = videoRef.current!;
-            const canvasEl = overlayRef.current!;
-            const Wc = canvasEl.width,
-              Hc = canvasEl.height;
-
-            if (
-              chosenIndex >= 0 &&
-              videoEl &&
-              canvasEl &&
-              cameraRef.current &&
-              videoEl.videoWidth !== 0
-            ) {
-              const lm = handsLm[chosenIndex];
-              const wrist = lm?.[0];
-              const indexBase = lm?.[5];
-              const pinkyBase = lm?.[17];
-
-              if (wrist && indexBase && pinkyBase) {
-                handOpen = true;
-
-                // 1) Canvas px → world @ fixed depth
-                const Wp = lmToCanvasPx(wrist, videoEl, canvasEl);
-                const Ip = lmToCanvasPx(indexBase, videoEl, canvasEl);
-                const Pp = lmToCanvasPx(pinkyBase, videoEl, canvasEl);
-
-                const ndcX = (Wp.x / Wc) * 2 - 1;
-                const ndcY = -(Wp.y / Hc) * 2 + 1;
-                const wristWorld = ndcToWorldAtDistance(
-                  ndcX,
-                  ndcY,
-                  WATCH_DEPTH
-                );
-
-                const toWorldAtDepth = (px: number, py: number) => {
-                  const nx = (px / Wc) * 2 - 1;
-                  const ny = -(py / Hc) * 2 + 1;
-                  return ndcToWorldAtDistance(nx, ny, WATCH_DEPTH);
-                };
-                const Iw = toWorldAtDepth(Ip.x, Ip.y);
-                const Pw = toWorldAtDepth(Pp.x, Pp.y);
-
-                // 2) Build basis (x across, y along forearm, z outward)
-                const xAxis = new THREE.Vector3()
-                  .subVectors(Iw, Pw)
-                  .normalize();
-
-                // Approx elbow by mirroring mid across wrist
-                const mid = {
-                  x: (indexBase.x + pinkyBase.x) / 2,
-                  y: (indexBase.y + pinkyBase.y) / 2,
-                };
-                const elbowGuess = {
-                  x: wrist.x + (wrist.x - mid.x),
-                  y: wrist.y + (wrist.y - mid.y),
-                };
-                const ePx = lmToCanvasPx(elbowGuess as any, videoEl, canvasEl);
-                const Ew = toWorldAtDepth(ePx.x, ePx.y);
-
-                let yAxis = new THREE.Vector3()
-                  .subVectors(wristWorld, Ew)
-                  .normalize();
-                const zAxisRaw = new THREE.Vector3()
-                  .crossVectors(xAxis, yAxis)
-                  .normalize();
-
-                // 3) Continuity fix (avoid 180° flips)
-                const xA = xAxis.clone();
-                const zA = zAxisRaw.clone();
-                if (prevZRef.current.dot(zA) < 0) {
-                  xA.multiplyScalar(-1);
-                  zA.multiplyScalar(-1);
-                }
-                prevZRef.current.copy(zA);
-                yAxis = new THREE.Vector3().crossVectors(zA, xA).normalize();
-
-                // 4) Matrix → decompose (hat-style), then smooth
-                const handMat = new THREE.Matrix4().makeBasis(xA, yAxis, zA);
-                handMat.setPosition(wristWorld);
-                const handPos = new THREE.Vector3();
-                const handQuat = new THREE.Quaternion();
-                const handScl = new THREE.Vector3();
-                handMat.decompose(handPos, handQuat, handScl);
-
-                watchQuatRef.current.slerp(handQuat, WATCH_ROLL_SMOOTH);
-                watchAnchorRef.current.position.copy(handPos);
-                watchAnchorRef.current.quaternion.copy(watchQuatRef.current);
-
-                // 5) Flip child 180° around forearm axis if knuckles face camera
-                const camToWrist = new THREE.Vector3()
-                  .subVectors(wristWorld, cameraRef.current!.position)
-                  .normalize();
-                const zTowardCam = zAxisRaw.dot(camToWrist); // + = palm, - = knuckles
-                const needFlip = zTowardCam < -0.12;
-
-                const childQ = WATCH_MODEL_CORRECTION.clone();
-                if (needFlip) {
-                  const flipY = new THREE.Quaternion().setFromAxisAngle(
-                    new THREE.Vector3(0, 1, 0),
-                    Math.PI
-                  );
-                  childQ.premultiply(flipY);
-                }
-                watchAdjustRef.current.quaternion.copy(childQ);
-
-                // 6) Scale from WORLD span at same depth
-                const idxN = {
-                  x: (Ip.x / Wc) * 2 - 1,
-                  y: -(Ip.y / Hc) * 2 + 1,
-                };
-                const pkyN = {
-                  x: (Pp.x / Wc) * 2 - 1,
-                  y: -(Pp.y / Hc) * 2 + 1,
-                };
-                const idxWorld = ndcToWorldAtDistance(
-                  idxN.x,
-                  idxN.y,
-                  WATCH_DEPTH
-                );
-                const pkyWorld = ndcToWorldAtDistance(
-                  pkyN.x,
-                  pkyN.y,
-                  WATCH_DEPTH
-                );
-                const spanWorld = idxWorld.distanceTo(pkyWorld);
-
-                const sWatch = THREE.MathUtils.clamp(
-                  spanWorld * WATCH_WORLD_FACTOR,
-                  WATCH_SCALE_MIN,
-                  WATCH_SCALE_MAX
-                );
-                watchAdjustRef.current.scale.setScalar(sWatch);
-                watchAdjustRef.current.position.copy(WATCH_LOCAL_OFFSET);
-
-                // 7) Rect occluder (axis-aligned, no rotation)
-                if (watchRectOccluderRef.current) {
-                  const rect = watchRectOccluderRef.current;
-                  const width = spanWorld * 2.1 + RECT_EXTRA_PAD * 2;
-                  const height = sWatch * 0.06 * 0.7 + RECT_EXTRA_PAD * 2;
-                  const depth = RECT_DEPTH_METERS;
-
-                  const rectPos = wristWorld
-                    .clone()
-                    .add(zA.clone().multiplyScalar(RECT_Z_FROM_WRIST));
-                  rect.position.copy(rectPos);
-                  rect.quaternion.set(0, 0, 0, 1); // axis-aligned
-                  rect.scale.set(width / 0.1, height / 0.06, depth / 0.01);
-                }
-              }
-            }
-          }
-
-          // ===== FINAL VISIBILITY GATING (per frame) =====
+          // ===== FINAL VISIBILITY GATING =====
           faceGateRef.current = !!(faceRef.current && faceLm);
-          handGateRef.current = handOpen; // updated each frame above
 
           if (glassAnchorRef.current)
             glassAnchorRef.current.visible = !!faceLm && showGlassesRef.current;
@@ -981,12 +840,11 @@ export default function TryTest() {
           if (hatOccluderRef.current)
             hatOccluderRef.current.visible = !!faceLm && showHatRef.current;
 
-          if (watchAnchorRef.current)
-            watchAnchorRef.current.visible = handGateRef.current;
-          if (watchRectOccluderRef.current)
-            watchRectOccluderRef.current.visible = handGateRef.current;
+          if (!WATCH_ENABLED) {
+            // nothing – watch is disabled
+          }
 
-          // --- Optional visuals (kept minimal) ---
+          // Optional face debug
           if (SHOW_FACE_DOTS && faceLm) {
             ctx.fillStyle = "rgba(0,255,0,0.7)";
             for (let i = 0; i < faceLm.length; i += 2) {
@@ -1030,7 +888,7 @@ export default function TryTest() {
     };
 
     (async () => {
-      await startCamera(facingMode); // start with current facing mode
+      await startCamera(facingMode);
       const fitCanvasNow = () => {
         const el = containerRef.current;
         const cv = overlayRef.current;
@@ -1043,7 +901,8 @@ export default function TryTest() {
       fitCanvasNow();
 
       await initThree();
-      await Promise.all([loadGlasses(), loadHat(), loadWatch()]);
+      await Promise.all([loadGlasses(), loadHat(), loadShoes()]);
+
       setModelsReady(true);
 
       renderThreeLoop();
@@ -1099,9 +958,9 @@ export default function TryTest() {
     typeof navigator !== "undefined" &&
     /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  const showLoading = !modelsReady; // only show while GLTF models load
+  const showLoading = !modelsReady;
 
-  // Mirror both video and canvases together when front camera to keep AR aligned
+  // Mirror video+webgl together when using front camera
   const mirrorStyle =
     facingMode === "user" ? { transform: "scaleX(-1)" } : undefined;
 
@@ -1139,7 +998,7 @@ export default function TryTest() {
         ← Back
       </button>
 
-      {/* Toggles (top-right) */}
+      {/* Toggles */}
       <div
         style={{
           position: "absolute",
@@ -1178,7 +1037,7 @@ export default function TryTest() {
         </button>
       </div>
 
-      {/* Flip camera (bottom-right, separate from toggles & outside mirror) */}
+      {/* Flip camera */}
       <button
         onClick={flipCamera}
         aria-label="Flip camera"
@@ -1203,7 +1062,7 @@ export default function TryTest() {
         Flip Camera
       </button>
 
-      {/* EVERYTHING that must visually mirror together is inside this wrapper */}
+      {/* Mirrored wrapper so video+3D stay aligned */}
       <div
         style={{
           position: "absolute",
@@ -1242,11 +1101,10 @@ export default function TryTest() {
           }}
         />
 
-        {/* 2D overlay (hidden) */}
+        {/* 2D overlay (debug) */}
         <canvas
           ref={overlayRef}
           style={{
-            display: "none",
             position: "absolute",
             inset: 0,
             width: "100%",
@@ -1261,9 +1119,9 @@ export default function TryTest() {
       {showLoading && (
         <>
           <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-      `}</style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+          `}</style>
           <div
             style={{
               position: "absolute",

@@ -696,9 +696,11 @@ export default function TryOn() {
               const ry = faceLm[FACE_RIGHT_EYE_OUTER].y * H;
               const ipdPx = Math.hypot(rx - lx, ry - ly);
 
-              const desiredScale = isLargeScreen
-                ? THREE.MathUtils.clamp(ipdPx * 0.001, 0.08, 0.35) //  large screen formula
-                : THREE.MathUtils.clamp(ipdPx * 0.0017, 0.08, 0.35); //  phone (original)
+              const desiredScale = THREE.MathUtils.clamp(
+                ipdPx * 0.0017,
+                0.08,
+                0.35
+              ); //  phone (original)
               const ALPHA_SCL = 0.3;
               filtScale.current = THREE.MathUtils.lerp(
                 filtScale.current,
@@ -769,7 +771,7 @@ export default function TryOn() {
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
               const hatScale = isLargeScreen
-                ? THREE.MathUtils.clamp(ipdPx * 0.0005, 0.035, 0.09) //  large screen formula
+                ? THREE.MathUtils.clamp(ipdPx * 0.00055, 0.035, 0.09) //  large screen formula
                 : THREE.MathUtils.clamp(ipdPx * 0.0009, 0.035, 0.09); //  phone (original)
               hatAdjustRef.current.scale.setScalar(hatScale);
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);

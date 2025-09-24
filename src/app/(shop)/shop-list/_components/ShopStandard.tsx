@@ -46,7 +46,7 @@ export default function ShopStandard() {
   }
   const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
-   const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
     getProducts();
@@ -158,43 +158,39 @@ export default function ShopStandard() {
               </div>
             </div>
 
+            <div
+              className="d-flex justify-content-space-between align-items-center m-b30"
+              style={{ marginTop: "30px" }}
+            >
+              {/* Select boxes (shown/hidden based on state) */}
+              {showFilters && (
+                <div className="d-flex align-items-center">
+                  <SelectBoxFour />
+                  <SelectBoxFive />
+                  <SelectBoxSix />
+                  <SelectBoxSeven />
+                  {/* <SelectBoxEight /> */}
+                </div>
+              )}
+
+              {/* Filter button */}
               <div
-                              className="d-flex justify-content-space-between align-items-center m-b30"
-                              style={{ marginTop: "30px" }}
-                            >
-                              {/* Select boxes (shown/hidden based on state) */}
-                              {showFilters && (
-                                <div className="d-flex align-items-center">
-                                  <SelectBoxFour />
-                                  <SelectBoxFive />
-                                  <SelectBoxSix />
-                                  <SelectBoxSeven />
-                                  {/* <SelectBoxEight /> */}
-                                </div>
-                              )}
-              
-                              {/* Filter button */}
-                              <div
-                                className="d-flex align-items-center justify-content-between m-b30"
-                                style={{
-                                  float: "right",
-                                  marginLeft: "auto",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => setShowFilters((prev) => !prev)}
-                              >
-                                <h6
-                                  className="title mb-0 fw-normal d-flex"
-                                  style={{ color: "black" }}
-                                >
-                                  <i
-                                    className="flaticon-filter me-3"
-                                    style={{ color: "black" }}
-                                  />
-                                  Filter
-                                </h6>
-                              </div>
-                            </div>
+                className="d-flex align-items-center justify-content-end mb-3 w-100"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowFilters((prev) => !prev)}
+              >
+                <h6
+                  className="title mb-0 fw-normal d-flex align-items-center"
+                  style={{ color: "black", fontSize: "0.95rem" }}
+                >
+                  <i
+                    className="flaticon-filter me-2"
+                    style={{ color: "black" }}
+                  />
+                  <span className="d-none d-sm-inline">Filter</span>
+                </h6>
+              </div>
+            </div>
 
             <div className="col-80 col-xl-12">
               <Tab.Container defaultActiveKey={"Grid"}>
