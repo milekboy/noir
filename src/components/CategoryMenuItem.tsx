@@ -76,7 +76,7 @@ export default function CategoryMenuItem() {
                       </li> */}
                         {subcat.items.map((item, ind) => (
                           <li key={ind}>
-                            <Link href={"/collections"}>
+                            <Link href={`/collections?category=${item.name}`}>
                               {item.name}
                               {item.badge && (
                                 <span className="badge bg-primary">NEW</span>

@@ -255,7 +255,7 @@ export default function SwiperTestimonial() {
 
               </div>
               <div className="about-btn">
-                <Link className="btn btn-white btn-md" href="/shop-list">
+                <Link className="btn btn-white btn-md" href={`/collections?category=${item.eventName}`} >
                   {item.eventName}
                 </Link>
               </div>
