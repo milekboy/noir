@@ -182,7 +182,7 @@ const FeaturedCategorySlider = () => {
       >
         {category.map((item, ind) => (
           <SwiperSlide key={ind}>
-            <Link href={`/collections`}>
+            <Link href={`/collections?category=${item.label}`}>
               <div
 
               className={`shop-box style-1 wow fadeInUp me-4 ${

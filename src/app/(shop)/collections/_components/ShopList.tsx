@@ -23,10 +23,9 @@ import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
 import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import NetworkInstance from "@/app/api/NetworkInstance";
-import { log } from "console";
 
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
@@ -61,7 +60,7 @@ export default function ShopList({
     __v: number;
   }
 
-  // const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
   //api call
 
@@ -385,7 +384,7 @@ export default function ShopList({
   //   router.push(`/collections?category=${encodeURIComponent(child)}`);
   // };
 
-  const [products, setProducts] = useState<any[]>([]);
+  // const [products, setProducts] = useState<Product[]>([]);
 
   const [hoveredSub, setHoveredSub] = useState<string | null>(null);
 
@@ -418,6 +417,7 @@ export default function ShopList({
   // };
 
   console.log(navItems);
+  
 
   const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
   const handleDropdownClick = (parentName: string, subName: string) => {
@@ -429,6 +429,9 @@ export default function ShopList({
 
   const [selectedCollection, setSelectedCollection] = useState("Collections");
 
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -475,9 +478,9 @@ export default function ShopList({
                 margin: 0,
               }}
             >
-              {breadcrumb.length > 0
-                ? `${breadcrumb[breadcrumb.length - 1]} Collection`
-                : "Collection"}
+              {
+               breadcrumb[breadcrumb.length-1] === "Home" ? `${categoryParam} Collections` :  breadcrumb.length > 0
+                ? `${breadcrumb[breadcrumb.length - 1]} Collection` : " "}
             </h4>
           </div>
 
@@ -656,7 +659,21 @@ export default function ShopList({
                       cursor: idx === breadcrumb.length - 1 ? "default" : "pointer",
                     }}
                   >
-                    {crumb}
+                    {breadcrumb.length > 3 ? (
+                      crumb
+                    ) : (
+                      <p style={{fontWeight:!searchParams ? 600 : 400,}}>
+                        Home{" "}
+                        <span style={{ margin: "0 6px", color: "#999" }}>
+                          {">"}
+                        </span>{" "}
+                        Collections{" "}
+                        <span style={{ margin: "0 6px", color: "#999" }}>
+                          {">"}
+                        </span>{" "}
+                        {`${categoryParam}`}
+                      </p>
+                    )}
                   </span>
                   {idx < breadcrumb.length - 1 && (
                     <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
@@ -899,8 +916,8 @@ export default function ShopList({
                               price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
+
                               category={item.subcategory || ""}
-                            />
                           </div>
                         ))}
                       </div>

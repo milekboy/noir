@@ -11,6 +11,7 @@ import Categorydropdown from "./CategoryDropdown";
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { usePathname } from "next/navigation";
+import { get } from "http";
 
 interface State {
   headerFix: boolean;
@@ -46,6 +47,18 @@ const initialState = {
   basketShoppingCard: false,
   categoryActive: false,
 };
+interface Images {
+  url: string;
+  public_id: string;
+  filename: string;
+}
+interface WishlistType {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  productImages: Images[];
+}
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -107,7 +120,9 @@ export const CategoryMenu = ({ state, handleToggleClick }: any) => {
 export default function Header2() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [transparent, setTransparent] = useState(true);
+   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const router = usePathname();
+
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
@@ -170,6 +185,23 @@ export default function Header2() {
   }, [cartItems]);
   // console.log("cartItems", cartItems);
 
+  useEffect(() => {
+     const getWishlist = async () => {
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+      const res = await NetworkInstance().get("/wishlist", {
+        headers: {
+          "x-session-id": sessionId,
+        },
+      });
+
+      setWishlist(res.data.wishlist);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+    getWishlist();
+  }, [wishlist]);
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
@@ -298,6 +330,7 @@ export default function Header2() {
                         }
                       >
                         <i className="iconly-Light-Heart2" />
+                        <span className="badge badge-circle">{wishlist.length}</span>
                       </Link>
                     </li>
                     <li className="nav-item cart-link">
