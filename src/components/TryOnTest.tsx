@@ -10,9 +10,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 const GLASSES_URL = "/assets/model/glasses.glb";
 const HAT_URL = "/assets/model/hat_glb.glb";
 const WATCH_URL = "/assets/model/wristwatch.glb";
-
+const SHOE_URL = "/assets/model/shoes.glb";
 // Debug
 const SHOW_FACE_DOTS = false;
+
+const isLargeScreen =
+  typeof window !== "undefined" && window.innerWidth >= 1024;
 
 // Face indices
 const FACE_LEFT_EYE_OUTER = 33;
@@ -96,6 +99,14 @@ const HAND_CONNECTIONS: [number, number][] = [
 ];
 
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
+// ---- Shoe tuning knobs ----
+const SHOE_DEPTH = 1.2; // distance to place in world
+const SHOE_SCALE_MULT = 6; // multiplier for foot length scaling
+const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
+  new THREE.Euler(-Math.PI / 2, 0, 0, "XYZ") // adjust if shoe is rotated wrong
+);
+
+// --- inside component ---
 
 // ---------- Hat tuning knobs ----------
 const HAT_SCALE_FACTOR = 0.032;
@@ -151,6 +162,11 @@ export default function TryTest() {
   const glassAdjustRef = useRef<THREE.Group | null>(null);
   const glassesLoadedRef = useRef(false);
   const occluderRef = useRef<THREE.Mesh | null>(null);
+
+  //Shoes
+  const leftShoeAnchorRef = useRef<THREE.Group | null>(null);
+  const rightShoeAnchorRef = useRef<THREE.Group | null>(null);
+  const shoesLoadedRef = useRef(false);
 
   // Hat
   const hatAnchorRef = useRef<THREE.Group | null>(null);
@@ -354,6 +370,14 @@ export default function TryTest() {
       renderer.setSize(w, h, false);
 
       // Anchors
+      const leftShoeAnchor = new THREE.Group();
+      const rightShoeAnchor = new THREE.Group();
+      leftShoeAnchor.visible = false;
+      rightShoeAnchor.visible = false;
+      scene.add(leftShoeAnchor, rightShoeAnchor);
+      leftShoeAnchorRef.current = leftShoeAnchor;
+      rightShoeAnchorRef.current = rightShoeAnchor;
+
       const glassesAnchor = new THREE.Group();
       const hatAnchor = new THREE.Group();
       const watchAnchor = new THREE.Group();
@@ -451,6 +475,45 @@ export default function TryTest() {
             o.material.needsUpdate = true;
           }
         }
+      });
+    };
+    const loadShoes = async () => {
+      if (
+        !sceneRef.current ||
+        !leftShoeAnchorRef.current ||
+        !rightShoeAnchorRef.current
+      )
+        return;
+      if (shoesLoadedRef.current) return;
+
+      return new Promise<void>((resolve, reject) => {
+        const loader = new GLTFLoader();
+        loader.load(
+          SHOE_URL,
+          (gltf) => {
+            const model = gltf.scene;
+            makePBRHappy(model);
+
+            // Clone for left & right
+            const leftShoe = model.clone();
+            const rightShoe = model.clone();
+
+            // Apply correction so Z points forward
+            leftShoe.quaternion.copy(SHOE_MODEL_CORRECTION);
+            rightShoe.quaternion.copy(SHOE_MODEL_CORRECTION);
+
+            leftShoe.scale.setScalar(0.1);
+            rightShoe.scale.setScalar(0.1);
+
+            leftShoeAnchorRef.current!.add(leftShoe);
+            rightShoeAnchorRef.current!.add(rightShoe);
+
+            shoesLoadedRef.current = true;
+            resolve();
+          },
+          undefined,
+          (err) => reject(err)
+        );
       });
     };
 
@@ -655,6 +718,85 @@ export default function TryTest() {
           const W = canvas.width,
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
+          if (
+            poseLm &&
+            leftShoeAnchorRef.current &&
+            rightShoeAnchorRef.current
+          ) {
+            const leftAnkle = poseLm[27];
+            const rightAnkle = poseLm[28];
+            const leftHeel = poseLm[29];
+            const rightHeel = poseLm[30];
+            const leftToe = poseLm[31];
+            const rightToe = poseLm[32];
+
+            const Wc = canvas.width,
+              Hc = canvas.height;
+            const toWorld = (lm: MPPoint) => {
+              const nx = lm.x * 2 - 1;
+              const ny = -(lm.y * 2 - 1);
+              return ndcToWorldAtDistance(nx, ny, SHOE_DEPTH);
+            };
+
+            function updateShoe(
+              anchor: THREE.Group,
+              ankle: MPPoint,
+              heel: MPPoint,
+              toe: MPPoint
+            ) {
+              const ankleW = toWorld(ankle);
+              const heelW = toWorld(heel);
+              const toeW = toWorld(toe);
+
+              const forward = new THREE.Vector3()
+                .subVectors(toeW, heelW)
+                .normalize();
+              const up = new THREE.Vector3(0, 1, 0);
+              const right = new THREE.Vector3()
+                .crossVectors(forward, up)
+                .normalize();
+              const correctedUp = new THREE.Vector3()
+                .crossVectors(right, forward)
+                .normalize();
+
+              const mat = new THREE.Matrix4().makeBasis(
+                right,
+                correctedUp,
+                forward
+              );
+              mat.setPosition(ankleW);
+
+              // Apply transform
+              const pos = new THREE.Vector3();
+              const quat = new THREE.Quaternion();
+              const scl = new THREE.Vector3();
+              mat.decompose(pos, quat, scl);
+
+              anchor.position.copy(pos);
+              anchor.quaternion.copy(quat);
+              anchor.visible = true;
+
+              const footLength = heelW.distanceTo(toeW);
+              anchor.scale.setScalar(footLength * SHOE_SCALE_MULT);
+            }
+
+            if (leftAnkle && leftHeel && leftToe) {
+              updateShoe(
+                leftShoeAnchorRef.current!,
+                leftAnkle,
+                leftHeel,
+                leftToe
+              );
+            }
+            if (rightAnkle && rightHeel && rightToe) {
+              updateShoe(
+                rightShoeAnchorRef.current!,
+                rightAnkle,
+                rightHeel,
+                rightToe
+              );
+            }
+          }
 
           // ===== GLASSES =====
           let faceOpen = !!faceLm;
@@ -697,7 +839,7 @@ export default function TryTest() {
                 ipdPx * 0.0017,
                 0.08,
                 0.35
-              );
+              ); //  phone (original)
               const ALPHA_SCL = 0.3;
               filtScale.current = THREE.MathUtils.lerp(
                 filtScale.current,
@@ -767,11 +909,9 @@ export default function TryTest() {
               hatAnchorRef.current.position.copy(basePos);
 
               const ipdPx = Math.hypot(R.x * W - L.x * W, R.y * H - L.y * H);
-              const hatScale = THREE.MathUtils.clamp(
-                ipdPx * 0.0021,
-                0.035,
-                0.09
-              );
+              const hatScale = isLargeScreen
+                ? THREE.MathUtils.clamp(ipdPx * 0.00055, 0.035, 0.09) //  large screen formula
+                : THREE.MathUtils.clamp(ipdPx * 0.0009, 0.035, 0.09); //  phone (original)
               hatAdjustRef.current.scale.setScalar(hatScale);
               hatAdjustRef.current.position.set(0, 0.025, HAT_FORWARD_OFFSET);
 
@@ -1043,7 +1183,8 @@ export default function TryTest() {
       fitCanvasNow();
 
       await initThree();
-      await Promise.all([loadGlasses(), loadHat(), loadWatch()]);
+      await Promise.all([loadGlasses(), loadHat(), , loadShoes()]);
+
       setModelsReady(true);
 
       renderThreeLoop();
