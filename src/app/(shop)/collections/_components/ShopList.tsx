@@ -417,7 +417,6 @@ export default function ShopList({
   // };
 
   console.log(navItems);
-  
 
   const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
   const handleDropdownClick = (parentName: string, subName: string) => {
@@ -431,7 +430,7 @@ export default function ShopList({
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
-  
+
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -478,9 +477,11 @@ export default function ShopList({
                 margin: 0,
               }}
             >
-              {
-               breadcrumb[breadcrumb.length-1] === "Home" ? `${categoryParam} Collections` :  breadcrumb.length > 0
-                ? `${breadcrumb[breadcrumb.length - 1]} Collection` : " "}
+              {breadcrumb[breadcrumb.length - 1] === "Home"
+                ? `${categoryParam} Collections`
+                : breadcrumb.length > 0
+                ? `${breadcrumb[breadcrumb.length - 1]} Collection`
+                : " "}
             </h4>
           </div>
 
@@ -488,9 +489,8 @@ export default function ShopList({
         </div>
 
         {/* Category navigation */}
-        
-        <div>
 
+        <div>
           <nav
             style={{
               display: "flex",
@@ -522,7 +522,6 @@ export default function ShopList({
                 onMouseEnter={() => setHovered(item.label)}
                 onMouseLeave={() => setHovered(null)}
               >
-              
                 <Link
                   href={item.link || "#"}
                   style={{
@@ -545,7 +544,6 @@ export default function ShopList({
                   {item.label}
                 </Link>
 
-
                 {item.subCategory?.length > 0 && hovered === item.label && (
                   <div
                     style={{
@@ -564,7 +562,6 @@ export default function ShopList({
                       boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                     }}
                   >
-            
                     <div
                       style={{
                         display: "flex",
@@ -611,7 +608,6 @@ export default function ShopList({
                       ))}
                     </div>
 
-            
                     <div
                       style={{
                         display: "flex",
@@ -638,8 +634,6 @@ export default function ShopList({
               </div>
             ))}
           </nav>
-          
-
 
           {breadcrumb.length > 0 && (
             <nav
@@ -656,13 +650,14 @@ export default function ShopList({
                     style={{
                       color: "#000",
                       fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
-                      cursor: idx === breadcrumb.length - 1 ? "default" : "pointer",
+                      cursor:
+                        idx === breadcrumb.length - 1 ? "default" : "pointer",
                     }}
                   >
                     {breadcrumb.length > 3 ? (
                       crumb
                     ) : (
-                      <p style={{fontWeight:!searchParams ? 600 : 400,}}>
+                      <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
                         Home{" "}
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
@@ -676,7 +671,9 @@ export default function ShopList({
                     )}
                   </span>
                   {idx < breadcrumb.length - 1 && (
-                    <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
+                    <span style={{ margin: "0 6px", color: "#999" }}>
+                      {">"}
+                    </span>
                   )}
                 </span>
               ))}
@@ -685,12 +682,10 @@ export default function ShopList({
         </div>
 
         <style jsx>{`
-
           .mobile-scroll::-webkit-scrollbar {
             display: none;
           }
 
-        
           @media (max-width: 556px) {
             .mobile-scroll {
               justify-content: flex-start !important;
@@ -700,10 +695,8 @@ export default function ShopList({
         `}</style>
       </header>
 
-      
-
-            {/* ✅ Dynamic Breadcrumb */}
-            {/* <div
+      {/* ✅ Dynamic Breadcrumb */}
+      {/* <div
               style={{
                 backgroundColor: "#f9f9f9",
                 padding: "10px 30px",
@@ -916,8 +909,8 @@ export default function ShopList({
                               price={`₦${item.price}`} // ✅ now always 2000
                               showdetailModal={() => setDetailModal(true)}
                               _id={item._id}
-
-                              category={item.subcategory || ""}
+                              category={item.category || ""}
+                            />
                           </div>
                         ))}
                       </div>
