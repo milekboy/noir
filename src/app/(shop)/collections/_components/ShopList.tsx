@@ -428,9 +428,14 @@ export default function ShopList({
   };
 
   const [selectedCollection, setSelectedCollection] = useState("Collections");
+  const [param, setParam] = useState<string | null>("")
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
+
+  useEffect(() => {
+    setParam(categoryParam)
+  }, [categoryParam])
   
   return (
     <div className="page-content bg-light">
@@ -479,7 +484,7 @@ export default function ShopList({
               }}
             >
               {
-               breadcrumb[breadcrumb.length-1] === "Home" ? `${categoryParam} Collections` :  breadcrumb.length > 0
+               breadcrumb[breadcrumb.length-1] === "Home" ? `${param} Collections` :  breadcrumb.length > 0
                 ? `${breadcrumb[breadcrumb.length - 1]} Collection` : " "}
             </h4>
           </div>
