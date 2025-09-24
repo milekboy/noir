@@ -491,24 +491,50 @@ export default function TryTest() {
         loader.load(
           SHOE_URL,
           (gltf) => {
-            const model = gltf.scene;
-            makePBRHappy(model);
+            const src = gltf.scene;
+            makePBRHappy(src);
+            src.updateMatrixWorld(true);
 
-            // Clone for left & right
-            const leftShoe = model.clone();
-            const rightShoe = model.clone();
+            // Helper: mark visibility based on name
+            const isRightName = (n: string) => /(?:001$|_R\b|Right\b)/i.test(n); // your dump uses 001 suffix
 
-            // Apply correction so Z points forward
-            leftShoe.quaternion.copy(SHOE_MODEL_CORRECTION);
-            rightShoe.quaternion.copy(SHOE_MODEL_CORRECTION);
+            // Make two clones of the whole hierarchy,
+            // then hide the other side in each clone.
+            const leftOnly = src.clone(true);
+            const rightOnly = src.clone(true);
 
-            leftShoe.scale.setScalar(0.1);
-            rightShoe.scale.setScalar(0.1);
+            leftOnly.traverse((o: THREE.Object3D) => {
+              if (!o.name) return;
+              if (isRightName(o.name)) o.visible = false; // hide right in left clone
+            });
 
-            leftShoeAnchorRef.current!.add(leftShoe);
-            rightShoeAnchorRef.current!.add(rightShoe);
+            rightOnly.traverse((o: THREE.Object3D) => {
+              if (!o.name) return;
+              if (!isRightName(o.name)) o.visible = false; // hide left in right clone
+            });
+
+            // Apply model correction so +Z faces forward for both
+            leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
+            rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
+
+            leftOnly.scale.setScalar(0.1);
+            rightOnly.scale.setScalar(0.1);
+
+            leftShoeAnchorRef.current!.add(leftOnly);
+            rightShoeAnchorRef.current!.add(rightOnly);
 
             shoesLoadedRef.current = true;
+
+            // Optional: log what survived in each
+            console.log("[SHOES] left-only kept:");
+            leftOnly.traverse((o) => {
+              if (o.visible) console.log("  ", o.name || o.type);
+            });
+            console.log("[SHOES] right-only kept:");
+            rightOnly.traverse((o) => {
+              if (o.visible) console.log("  ", o.name || o.type);
+            });
+
             resolve();
           },
           undefined,
