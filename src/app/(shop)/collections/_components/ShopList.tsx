@@ -857,7 +857,7 @@ export default function ShopList({
                         </Link>
                       </li>
                     </ul>
-                    <span>Showing 1–5 Of {products.length} Result</span>
+                    <span>Showing 1–5 Of {products.length} Results</span>
                   </div>
                   <div className="filter-right-area">
                     <Link
