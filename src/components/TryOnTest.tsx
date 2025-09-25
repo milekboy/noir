@@ -657,11 +657,8 @@ export default function TryTest() {
           ctx.clearRect(0, 0, W, H);
 
           // ===== SHOES (cover-aware mapping + smoothing) =====
-          if (
-            poseLm &&
-            leftShoeAnchorRef.current &&
-            rightShoeAnchorRef.current
-          ) {
+          // ===== FEET DEBUG ONLY =====
+          if (poseLm) {
             const leftAnkle = poseLm[27];
             const rightAnkle = poseLm[28];
             const leftHeel = poseLm[29];
@@ -669,131 +666,30 @@ export default function TryTest() {
             const leftToe = poseLm[31];
             const rightToe = poseLm[32];
 
-            const toWorldFromLm = (lm: MPPoint) => {
-              const px = lmToCanvasPx(
-                lm,
-                videoRef.current!,
-                overlayRef.current!
-              );
-              const nx = (px.x / overlayRef.current!.width) * 2 - 1;
-              const ny = -(px.y / overlayRef.current!.height) * 2 + 1;
-              return ndcToWorldAtDistance(nx, ny, SHOE_DEPTH);
+            const drawFoot = (ankle: MPPoint, heel: MPPoint, toe: MPPoint) => {
+              if (!ankle || !heel || !toe) return;
+
+              const aPx = lmToCanvasPx(ankle, video, canvas);
+              const tPx = lmToCanvasPx(toe, video, canvas);
+              const hPx = lmToCanvasPx(heel, video, canvas);
+
+              // Line ankle → toe
+              ctx.strokeStyle = "lime";
+              ctx.lineWidth = 4;
+              ctx.beginPath();
+              ctx.moveTo(aPx.x, aPx.y);
+              ctx.lineTo(tPx.x, tPx.y);
+              ctx.stroke();
+
+              // Heel marker
+              ctx.fillStyle = "red";
+              ctx.beginPath();
+              ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
+              ctx.fill();
             };
 
-            const solveFoot = (
-              ankle: MPPoint,
-              heel: MPPoint,
-              toe: MPPoint,
-              posRef: React.MutableRefObject<THREE.Vector3>,
-              quatRef: React.MutableRefObject<THREE.Quaternion>,
-              scaleRef: React.MutableRefObject<number>,
-              anchor: THREE.Group
-            ) => {
-              const visOK =
-                (ankle.visibility ?? 1) > MIN_VISIBILITY &&
-                (heel.visibility ?? 1) > MIN_VISIBILITY &&
-                (toe.visibility ?? 1) > MIN_VISIBILITY;
-              if (!visOK) {
-                anchor.visible = false;
-                return;
-              }
-
-              const ankleW = toWorldFromLm(ankle);
-              const heelW = toWorldFromLm(heel);
-              const toeW = toWorldFromLm(toe);
-
-              const forward = new THREE.Vector3()
-                .subVectors(toeW, heelW)
-                .normalize();
-              const right = new THREE.Vector3()
-                .crossVectors(forward, new THREE.Vector3(0, 1, 0))
-                .normalize();
-              const up = new THREE.Vector3()
-                .crossVectors(right, forward)
-                .normalize();
-
-              const m = new THREE.Matrix4()
-                .makeBasis(right, up, forward)
-                .setPosition(ankleW);
-              const pos = new THREE.Vector3();
-              const q = new THREE.Quaternion();
-              const s = new THREE.Vector3();
-              m.decompose(pos, q, s);
-
-              // Outlier rejection
-              if (
-                anchor.visible &&
-                posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
-              ) {
-                pos.copy(posRef.current);
-              }
-
-              // Smoothing
-              posRef.current.lerp(pos, EMA_POS);
-              quatRef.current.slerp(q, EMA_ROT);
-
-              const footLen = heelW.distanceTo(toeW);
-              const targetScale = THREE.MathUtils.clamp(
-                footLen * SHOE_SCALE_MULT,
-                0.01,
-                100
-              );
-              scaleRef.current = THREE.MathUtils.lerp(
-                scaleRef.current || targetScale,
-                targetScale,
-                EMA_SCALE
-              );
-
-              anchor.position.copy(posRef.current);
-              anchor.quaternion.copy(quatRef.current);
-              anchor.scale.setScalar(scaleRef.current);
-              anchor.visible = true;
-
-              // Debug gizmos
-              if (DEBUG_FEET) {
-                const aPx = lmToCanvasPx(ankle, video, canvas);
-                const tPx = lmToCanvasPx(toe, video, canvas);
-                const hPx = lmToCanvasPx(heel, video, canvas);
-                ctx.strokeStyle = "rgba(0,255,0,0.9)";
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(aPx.x, aPx.y);
-                ctx.lineTo(tPx.x, tPx.y);
-                ctx.stroke();
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
-                ctx.beginPath();
-                ctx.arc(hPx.x, hPx.y, 4, 0, Math.PI * 2);
-                ctx.fill();
-              }
-            };
-
-            if (leftAnkle && leftHeel && leftToe) {
-              solveFoot(
-                leftAnkle,
-                leftHeel,
-                leftToe,
-                Lpos,
-                Lquat,
-                Lscale,
-                leftShoeAnchorRef.current!
-              );
-            } else {
-              leftShoeAnchorRef.current.visible = false;
-            }
-
-            if (rightAnkle && rightHeel && rightToe) {
-              solveFoot(
-                rightAnkle,
-                rightHeel,
-                rightToe,
-                Rpos,
-                Rquat,
-                Rscale,
-                rightShoeAnchorRef.current!
-              );
-            } else {
-              rightShoeAnchorRef.current.visible = false;
-            }
+            drawFoot(leftAnkle, leftHeel, leftToe);
+            drawFoot(rightAnkle, rightHeel, rightToe);
           }
 
           // ===== GLASSES =====
