@@ -980,7 +980,7 @@ export default function TryTest() {
       style={{
         position: "relative",
         width: "100%",
-        height: isIOS ? "60vh" : "100vh",
+        height: "100vh",
         background: "black",
         overflow: "hidden",
       }}
