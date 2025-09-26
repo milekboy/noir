@@ -977,8 +977,26 @@ export default function TryTest() {
   return (
     <div
       ref={containerRef}
-      className="position-relative w-100 bg-black overflow-hidden h-100 vh-100 vh-sm-60"
+      className="responsive-container"
+      style={{
+        position: "relative",
+        width: "100%",
+        background: "black",
+        overflow: "hidden",
+      }}
     >
+      <style jsx>{`
+        .responsive-container {
+          height: 100vh; /* default for desktops */
+        }
+
+        @media (max-width: 576px) {
+          .responsive-container {
+            height: 60vh; /* small screens */
+          }
+        }
+      `}</style>
+
       {/* Back */}
       <button
         onClick={() => router.push("/shop-standard")}
