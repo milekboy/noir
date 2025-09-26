@@ -977,13 +977,7 @@ export default function TryTest() {
   return (
     <div
       ref={containerRef}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100vh",
-        background: "black",
-        overflow: "hidden",
-      }}
+      className="position-relative w-100 bg-black overflow-hidden h-100 vh-100 vh-sm-60"
     >
       {/* Back */}
       <button
