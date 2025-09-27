@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Three.js
@@ -14,8 +14,8 @@ const SHOE_URL = "/assets/model/shoes.glb";
 
 // ------------ Debug toggles -------------
 const SHOW_FACE_DOTS = false;
-const DEBUG_FEET = true; // draw ankle→toe line + heel marker
-const SHOW_WATCH = false; // <— hide watch for now
+const DEBUG_FEET = true; // ankle→toe line + heel dot
+const SHOW_WATCH = false; // watch logic left in but hidden
 
 const isLargeScreen =
   typeof window !== "undefined" && window.innerWidth >= 1024;
@@ -28,39 +28,21 @@ const FACE_CHIN = 152;
 const FACE_LEFT_TEMPLE = 234;
 const FACE_RIGHT_TEMPLE = 454;
 
-// Pose indices → names
-const MP_INDEX_TO_NAME: Record<number, string> = {
-  0: "nose",
-  2: "left_eye",
-  5: "right_eye",
-  7: "left_ear",
-  8: "right_ear",
-  11: "left_shoulder",
-  12: "right_shoulder",
-  13: "left_elbow",
-  14: "right_elbow",
-  15: "left_wrist",
-  16: "right_wrist",
-  23: "left_hip",
-  24: "right_hip",
-  25: "left_knee",
-  26: "right_knee",
-  27: "left_ankle",
-  28: "right_ankle",
-  29: "left_heel",
-  30: "right_heel",
-  31: "left_foot_index",
-  32: "right_foot_index",
-};
-
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 // ---- Shoe tuning knobs ----
 const SHOE_DEPTH = 1.1; // world Z from camera
-const SHOE_SCALE_MULT = 12; // bigger shoe
+const SHOE_SCALE_MULT = 12; // base multiplier from (toe↔heel) length
 const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
   new THREE.Euler(-Math.PI / 2, 0, 0, "XYZ")
 );
+
+// --- Orientation/placement knobs (tweak these) ---
+const SHOE_OFFSET_FWD = 0.02; // meters: push shoe forward along foot
+const SHOE_OFFSET_UP = -0.015; // meters: sink slightly so sole touches ground
+const SHOE_SCALE_MIN = 0.08; // clamp
+const SHOE_SCALE_MAX = 0.55; // clamp
+const SHOE_YAW_ONLY = false; // true = ignore pitch/roll for extra stability
 
 // Smoothing / stability
 const EMA_POS = 0.3; // 0..1 (higher = snappier)
@@ -94,7 +76,7 @@ export default function TryTest() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
 
-  // Models
+  // Models (MediaPipe)
   const poseRef = useRef<any | null>(null);
   const faceRef = useRef<any | null>(null);
   const handRef = useRef<any | null>(null);
@@ -393,28 +375,6 @@ export default function TryTest() {
       console.log("[THREE] init OK", { w, h });
     };
 
-    const fitCameraToObject = (obj: THREE.Object3D) => {
-      if (!cameraRef.current) return;
-      const cam = cameraRef.current;
-
-      const box = new THREE.Box3().setFromObject(obj);
-      const size = new THREE.Vector3();
-      const center = new THREE.Vector3();
-      box.getSize(size);
-      box.getCenter(center);
-
-      obj.position.sub(center);
-
-      const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      const fov = (cam.fov * Math.PI) / 180;
-      const dist = maxDim / 2 / Math.tan(fov / 2);
-
-      cam.position.set(0, 0, dist * 1.6);
-      cam.near = Math.max(0.01, dist / 50);
-      cam.far = dist * 50;
-      cam.updateProjectionMatrix();
-    };
-
     const makePBRHappy = (model: THREE.Object3D) => {
       model.traverse((o: any) => {
         if (o.isMesh) {
@@ -447,63 +407,22 @@ export default function TryTest() {
             makePBRHappy(src);
             src.updateMatrixWorld(true);
 
-            // --- 1) Collect mesh centers along X ---
-            const centersX: number[] = [];
-            src.traverse((o: any) => {
-              if (o.isMesh && o.geometry) {
-                o.updateWorldMatrix(true, false);
-                const box = new THREE.Box3().setFromObject(o);
-                const c = new THREE.Vector3();
-                box.getCenter(c);
-                centersX.push(c.x);
-              }
-            });
+            // Your dump showed right parts suffixed "001" (or could be "_R/Right")
+            const isRightName = (n: string) => /(?:001$|_R\b|Right\b)/i.test(n);
 
-            // If nothing to split, just duplicate whole model to both anchors.
-            const medianX = centersX.length
-              ? centersX.slice().sort((a, b) => a - b)[
-                  Math.floor(centersX.length / 2)
-                ]
-              : 0;
-
-            // Helper: mark side by world bbox center.x
-            const markSide = (root: THREE.Object3D, keepRight: boolean) => {
-              let kept = 0;
-              root.traverse((o: any) => {
-                if (o.isMesh && o.geometry) {
-                  const box = new THREE.Box3().setFromObject(o);
-                  const c = new THREE.Vector3();
-                  box.getCenter(c);
-                  const isRight = c.x > medianX;
-                  const visible = keepRight ? isRight : !isRight;
-                  o.visible = visible;
-                  if (visible) kept++;
-                }
-              });
-              return kept;
-            };
-
-            // --- 2) Build two filtered clones ---
             const leftOnly = src.clone(true);
             const rightOnly = src.clone(true);
 
-            let keptL = markSide(leftOnly, false); // keep "left" half
-            let keptR = markSide(rightOnly, true); // keep "right" half
+            leftOnly.traverse((o: THREE.Object3D) => {
+              if (!o.name) return;
+              if (isRightName(o.name)) o.visible = false;
+            });
 
-            // --- 3) Fallback: if one side ended up empty, disable filtering ---
-            if (keptL === 0 || keptR === 0) {
-              console.warn(
-                "[SHOES] Name/geometry split failed; using full model for both sides."
-              );
-              leftOnly.traverse((o: any) => {
-                if (o.isObject3D) o.visible = true;
-              });
-              rightOnly.traverse((o: any) => {
-                if (o.isObject3D) o.visible = true;
-              });
-            }
+            rightOnly.traverse((o: THREE.Object3D) => {
+              if (!o.name) return;
+              if (!isRightName(o.name)) o.visible = false;
+            });
 
-            // --- 4) Orientation + initial scale ---
             leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             leftOnly.scale.setScalar(0.1);
@@ -513,24 +432,6 @@ export default function TryTest() {
             rightShoeAnchorRef.current!.add(rightOnly);
 
             shoesLoadedRef.current = true;
-
-            // Debug: how many meshes survived on each side
-            const countVisibleMeshes = (root: THREE.Object3D) => {
-              let n = 0;
-              root.traverse((o: any) => {
-                if (o.isMesh && o.visible) n++;
-              });
-              return n;
-            };
-            console.log(
-              "[SHOES] visible meshes – left:",
-              countVisibleMeshes(leftOnly),
-              "right:",
-              countVisibleMeshes(rightOnly),
-              "medianX:",
-              medianX.toFixed(3)
-            );
-
             resolve();
           },
           undefined,
@@ -563,7 +464,6 @@ export default function TryTest() {
             glassAnchorRef.current!.add(adjust);
             glassesLoadedRef.current = true;
 
-            fitCameraToObject(adjust);
             resolve();
           },
           undefined,
@@ -714,8 +614,6 @@ export default function TryTest() {
             H = canvas.height;
           ctx.clearRect(0, 0, W, H);
 
-          // ===== SHOES (cover-aware mapping + smoothing) =====
-          // ===== FEET DEBUG ONLY =====
           // ===== SHOES (mapping + smoothing + optional debug) =====
           if (
             poseLm &&
@@ -740,9 +638,9 @@ export default function TryTest() {
               ankle: MPPoint,
               heel: MPPoint,
               toe: MPPoint,
-              posRef: React.MutableRefObject<THREE.Vector3>,
-              quatRef: React.MutableRefObject<THREE.Quaternion>,
-              scaleRef: React.MutableRefObject<number>,
+              posRef: any,
+              quatRef: any,
+              scaleRef: any,
               anchor: THREE.Group
             ) => {
               if (!ankle || !heel || !toe) {
@@ -750,7 +648,6 @@ export default function TryTest() {
                 return;
               }
 
-              // Basic visibility guard from MediaPipe
               const visOK =
                 (ankle.visibility ?? 1) > MIN_VISIBILITY &&
                 (heel.visibility ?? 1) > MIN_VISIBILITY &&
@@ -760,50 +657,60 @@ export default function TryTest() {
                 return;
               }
 
-              // 1) Landmarks → world at a fixed depth
-              const ankleW = toWorldFromLm(ankle);
-              const heelW = toWorldFromLm(heel);
-              const toeW = toWorldFromLm(toe);
+              // 1) Landmarks → world at fixed depth
+              const A = toWorldFromLm(ankle);
+              const H = toWorldFromLm(heel);
+              const T = toWorldFromLm(toe);
 
-              // 2) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
-              const forward = new THREE.Vector3()
-                .subVectors(toeW, heelW)
-                .normalize();
+              // 2) Orientation: forward = toe→heel; clamp to yaw if desired
+              let forward = new THREE.Vector3().subVectors(T, H).normalize();
+              if (SHOE_YAW_ONLY) {
+                forward.y = 0;
+                if (forward.lengthSq() < 1e-6) forward.set(0, 0, 1);
+                forward.normalize();
+              }
+              const worldUp = new THREE.Vector3(0, 1, 0);
               const right = new THREE.Vector3()
-                .crossVectors(forward, new THREE.Vector3(0, 1, 0))
+                .crossVectors(worldUp, forward)
                 .normalize();
               const up = new THREE.Vector3()
-                .crossVectors(right, forward)
+                .crossVectors(forward, right)
                 .normalize();
 
-              // 3) Pose matrix and decompose
+              // 3) Base at mid-foot, with gentle offsets
+              const mid = new THREE.Vector3()
+                .addVectors(H, T)
+                .multiplyScalar(0.5);
+              const pos = mid
+                .clone()
+                .add(forward.clone().multiplyScalar(SHOE_OFFSET_FWD))
+                .add(up.clone().multiplyScalar(SHOE_OFFSET_UP));
+
+              // 4) Build quaternion from basis
               const m = new THREE.Matrix4()
                 .makeBasis(right, up, forward)
-                .setPosition(ankleW);
-              const pos = new THREE.Vector3();
-              const q = new THREE.Quaternion();
-              const s = new THREE.Vector3();
-              m.decompose(pos, q, s);
+                .setPosition(pos);
+              const nextPos = new THREE.Vector3();
+              const nextQuat = new THREE.Quaternion();
+              const tmpS = new THREE.Vector3();
+              m.decompose(nextPos, nextQuat, tmpS);
 
-              // 4) Outlier rejection (teleports)
+              // 5) Outlier rejection + smoothing
               if (
                 anchor.visible &&
-                posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
+                posRef.current.distanceTo(nextPos) > OUTLIER_MAX_JUMP
               ) {
-                // ignore this frame's big jump; keep last good
-                pos.copy(posRef.current);
+                nextPos.copy(posRef.current);
               }
+              posRef.current.lerp(nextPos, EMA_POS);
+              quatRef.current.slerp(nextQuat, EMA_ROT);
 
-              // 5) Exponential smoothing
-              posRef.current.lerp(pos, EMA_POS);
-              quatRef.current.slerp(q, EMA_ROT);
-
-              // 6) Scale from heel↔toe length
-              const footLen = heelW.distanceTo(toeW);
+              // 6) Scale from heel↔toe distance
+              const footLen = H.distanceTo(T);
               const targetScale = THREE.MathUtils.clamp(
                 footLen * SHOE_SCALE_MULT,
-                0.01,
-                100
+                SHOE_SCALE_MIN,
+                SHOE_SCALE_MAX
               );
               scaleRef.current = THREE.MathUtils.lerp(
                 scaleRef.current || targetScale,
@@ -811,19 +718,18 @@ export default function TryTest() {
                 EMA_SCALE
               );
 
-              // 7) Apply to the anchor
+              // 7) Apply
               anchor.position.copy(posRef.current);
               anchor.quaternion.copy(quatRef.current);
               anchor.scale.setScalar(scaleRef.current);
               anchor.visible = true;
 
-              // 8) Optional debug (same visuals you had)
+              // 8) Debug drawing
               if (DEBUG_FEET) {
                 const aPx = lmToCanvasPx(ankle, video, canvas);
                 const tPx = lmToCanvasPx(toe, video, canvas);
                 const hPx = lmToCanvasPx(heel, video, canvas);
 
-                // Line ankle → toe
                 ctx.strokeStyle = "lime";
                 ctx.lineWidth = 4;
                 ctx.beginPath();
@@ -831,7 +737,6 @@ export default function TryTest() {
                 ctx.lineTo(tPx.x, tPx.y);
                 ctx.stroke();
 
-                // Heel marker
                 ctx.fillStyle = "red";
                 ctx.beginPath();
                 ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
@@ -839,7 +744,7 @@ export default function TryTest() {
               }
             };
 
-            // Left shoe ← left landmarks
+            // Left shoe
             if (leftAnkle && leftHeel && leftToe) {
               solveFoot(
                 leftAnkle,
@@ -854,7 +759,7 @@ export default function TryTest() {
               leftShoeAnchorRef.current.visible = false;
             }
 
-            // Right shoe ← right landmarks
+            // Right shoe
             if (rightAnkle && rightHeel && rightToe) {
               solveFoot(
                 rightAnkle,
@@ -1078,23 +983,21 @@ export default function TryTest() {
 
     (async () => {
       await startCamera(facingMode);
-      // size canvases once
-      const fitCanvasNow = () => {
-        const el = containerRef.current;
-        const cv = overlayRef.current;
-        if (!el || !cv) return;
+
+      // size overlay once
+      const el = containerRef.current;
+      const cv = overlayRef.current;
+      if (el && cv) {
         const w = el.clientWidth || window.innerWidth;
         const h = el.clientHeight || window.innerHeight;
         cv.width = w;
         cv.height = h;
-      };
-      fitCanvasNow();
+      }
 
       await initThree();
       await Promise.all([loadGlasses(), loadHat(), loadWatch(), loadShoes()]); // watch may no-op
 
       setModelsReady(true);
-
       renderThreeLoop();
 
       await initModels(); // MediaPipe tasks
@@ -1143,12 +1046,7 @@ export default function TryTest() {
       hatOccluderRef.current.visible = faceGateRef.current && showHat;
   }, [showHat]);
 
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
   const showLoading = !modelsReady;
-
   const mirrorStyle =
     facingMode === "user" ? { transform: "scaleX(-1)" } : undefined;
 
@@ -1165,12 +1063,11 @@ export default function TryTest() {
     >
       <style jsx>{`
         .responsive-container {
-          height: 100vh; /* default for desktops */
+          height: 100vh;
         }
-
         @media (max-width: 576px) {
           .responsive-container {
-            height: 60vh; /* small screens */
+            height: 60vh;
           }
         }
       `}</style>
@@ -1198,7 +1095,7 @@ export default function TryTest() {
         ← Back
       </button>
 
-      {/* Toggles (top-right) */}
+      {/* Toggles */}
       <div
         style={{
           position: "absolute",
@@ -1299,7 +1196,7 @@ export default function TryTest() {
           }}
         />
 
-        {/* 2D overlay (for debug) */}
+        {/* 2D overlay (debug) */}
         <canvas
           ref={overlayRef}
           style={{
@@ -1309,7 +1206,6 @@ export default function TryTest() {
             height: "100%",
             zIndex: 3,
             pointerEvents: "none",
-            // hide dots if you want: display: "none",
           }}
         />
       </div>
