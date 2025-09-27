@@ -447,22 +447,63 @@ export default function TryTest() {
             makePBRHappy(src);
             src.updateMatrixWorld(true);
 
-            // Your dump shows left names like "shoe/part/..." and right with "…001"
-            const isRightName = (n: string) => /(?:001$|_R\b|Right\b)/i.test(n);
+            // --- 1) Collect mesh centers along X ---
+            const centersX: number[] = [];
+            src.traverse((o: any) => {
+              if (o.isMesh && o.geometry) {
+                o.updateWorldMatrix(true, false);
+                const box = new THREE.Box3().setFromObject(o);
+                const c = new THREE.Vector3();
+                box.getCenter(c);
+                centersX.push(c.x);
+              }
+            });
 
+            // If nothing to split, just duplicate whole model to both anchors.
+            const medianX = centersX.length
+              ? centersX.slice().sort((a, b) => a - b)[
+                  Math.floor(centersX.length / 2)
+                ]
+              : 0;
+
+            // Helper: mark side by world bbox center.x
+            const markSide = (root: THREE.Object3D, keepRight: boolean) => {
+              let kept = 0;
+              root.traverse((o: any) => {
+                if (o.isMesh && o.geometry) {
+                  const box = new THREE.Box3().setFromObject(o);
+                  const c = new THREE.Vector3();
+                  box.getCenter(c);
+                  const isRight = c.x > medianX;
+                  const visible = keepRight ? isRight : !isRight;
+                  o.visible = visible;
+                  if (visible) kept++;
+                }
+              });
+              return kept;
+            };
+
+            // --- 2) Build two filtered clones ---
             const leftOnly = src.clone(true);
             const rightOnly = src.clone(true);
 
-            leftOnly.traverse((o: THREE.Object3D) => {
-              if (!o.name) return;
-              if (isRightName(o.name)) o.visible = false;
-            });
+            let keptL = markSide(leftOnly, false); // keep "left" half
+            let keptR = markSide(rightOnly, true); // keep "right" half
 
-            rightOnly.traverse((o: THREE.Object3D) => {
-              if (!o.name) return;
-              if (!isRightName(o.name)) o.visible = false;
-            });
+            // --- 3) Fallback: if one side ended up empty, disable filtering ---
+            if (keptL === 0 || keptR === 0) {
+              console.warn(
+                "[SHOES] Name/geometry split failed; using full model for both sides."
+              );
+              leftOnly.traverse((o: any) => {
+                if (o.isObject3D) o.visible = true;
+              });
+              rightOnly.traverse((o: any) => {
+                if (o.isObject3D) o.visible = true;
+              });
+            }
 
+            // --- 4) Orientation + initial scale ---
             leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             leftOnly.scale.setScalar(0.1);
@@ -472,6 +513,23 @@ export default function TryTest() {
             rightShoeAnchorRef.current!.add(rightOnly);
 
             shoesLoadedRef.current = true;
+
+            // Debug: how many meshes survived on each side
+            const countVisibleMeshes = (root: THREE.Object3D) => {
+              let n = 0;
+              root.traverse((o: any) => {
+                if (o.isMesh && o.visible) n++;
+              });
+              return n;
+            };
+            console.log(
+              "[SHOES] visible meshes – left:",
+              countVisibleMeshes(leftOnly),
+              "right:",
+              countVisibleMeshes(rightOnly),
+              "medianX:",
+              medianX.toFixed(3)
+            );
 
             resolve();
           },
