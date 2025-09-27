@@ -658,7 +658,12 @@ export default function TryTest() {
 
           // ===== SHOES (cover-aware mapping + smoothing) =====
           // ===== FEET DEBUG ONLY =====
-          if (poseLm) {
+          // ===== SHOES (mapping + smoothing + optional debug) =====
+          if (
+            poseLm &&
+            leftShoeAnchorRef.current &&
+            rightShoeAnchorRef.current
+          ) {
             const leftAnkle = poseLm[27];
             const rightAnkle = poseLm[28];
             const leftHeel = poseLm[29];
@@ -666,30 +671,145 @@ export default function TryTest() {
             const leftToe = poseLm[31];
             const rightToe = poseLm[32];
 
-            const drawFoot = (ankle: MPPoint, heel: MPPoint, toe: MPPoint) => {
-              if (!ankle || !heel || !toe) return;
-
-              const aPx = lmToCanvasPx(ankle, video, canvas);
-              const tPx = lmToCanvasPx(toe, video, canvas);
-              const hPx = lmToCanvasPx(heel, video, canvas);
-
-              // Line ankle → toe
-              ctx.strokeStyle = "lime";
-              ctx.lineWidth = 4;
-              ctx.beginPath();
-              ctx.moveTo(aPx.x, aPx.y);
-              ctx.lineTo(tPx.x, tPx.y);
-              ctx.stroke();
-
-              // Heel marker
-              ctx.fillStyle = "red";
-              ctx.beginPath();
-              ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
-              ctx.fill();
+            const toWorldFromLm = (lm: MPPoint) => {
+              const p = lmToCanvasPx(lm, video, canvas); // cover-aware
+              const nx = (p.x / canvas.width) * 2 - 1;
+              const ny = -(p.y / canvas.height) * 2 + 1;
+              return ndcToWorldAtDistance(nx, ny, SHOE_DEPTH);
             };
 
-            drawFoot(leftAnkle, leftHeel, leftToe);
-            drawFoot(rightAnkle, rightHeel, rightToe);
+            const solveFoot = (
+              ankle: MPPoint,
+              heel: MPPoint,
+              toe: MPPoint,
+              posRef: React.MutableRefObject<THREE.Vector3>,
+              quatRef: React.MutableRefObject<THREE.Quaternion>,
+              scaleRef: React.MutableRefObject<number>,
+              anchor: THREE.Group
+            ) => {
+              if (!ankle || !heel || !toe) {
+                anchor.visible = false;
+                return;
+              }
+
+              // Basic visibility guard from MediaPipe
+              const visOK =
+                (ankle.visibility ?? 1) > MIN_VISIBILITY &&
+                (heel.visibility ?? 1) > MIN_VISIBILITY &&
+                (toe.visibility ?? 1) > MIN_VISIBILITY;
+              if (!visOK) {
+                anchor.visible = false;
+                return;
+              }
+
+              // 1) Landmarks → world at a fixed depth
+              const ankleW = toWorldFromLm(ankle);
+              const heelW = toWorldFromLm(heel);
+              const toeW = toWorldFromLm(toe);
+
+              // 2) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
+              const forward = new THREE.Vector3()
+                .subVectors(toeW, heelW)
+                .normalize();
+              const right = new THREE.Vector3()
+                .crossVectors(forward, new THREE.Vector3(0, 1, 0))
+                .normalize();
+              const up = new THREE.Vector3()
+                .crossVectors(right, forward)
+                .normalize();
+
+              // 3) Pose matrix and decompose
+              const m = new THREE.Matrix4()
+                .makeBasis(right, up, forward)
+                .setPosition(ankleW);
+              const pos = new THREE.Vector3();
+              const q = new THREE.Quaternion();
+              const s = new THREE.Vector3();
+              m.decompose(pos, q, s);
+
+              // 4) Outlier rejection (teleports)
+              if (
+                anchor.visible &&
+                posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
+              ) {
+                // ignore this frame's big jump; keep last good
+                pos.copy(posRef.current);
+              }
+
+              // 5) Exponential smoothing
+              posRef.current.lerp(pos, EMA_POS);
+              quatRef.current.slerp(q, EMA_ROT);
+
+              // 6) Scale from heel↔toe length
+              const footLen = heelW.distanceTo(toeW);
+              const targetScale = THREE.MathUtils.clamp(
+                footLen * SHOE_SCALE_MULT,
+                0.01,
+                100
+              );
+              scaleRef.current = THREE.MathUtils.lerp(
+                scaleRef.current || targetScale,
+                targetScale,
+                EMA_SCALE
+              );
+
+              // 7) Apply to the anchor
+              anchor.position.copy(posRef.current);
+              anchor.quaternion.copy(quatRef.current);
+              anchor.scale.setScalar(scaleRef.current);
+              anchor.visible = true;
+
+              // 8) Optional debug (same visuals you had)
+              if (DEBUG_FEET) {
+                const aPx = lmToCanvasPx(ankle, video, canvas);
+                const tPx = lmToCanvasPx(toe, video, canvas);
+                const hPx = lmToCanvasPx(heel, video, canvas);
+
+                // Line ankle → toe
+                ctx.strokeStyle = "lime";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(aPx.x, aPx.y);
+                ctx.lineTo(tPx.x, tPx.y);
+                ctx.stroke();
+
+                // Heel marker
+                ctx.fillStyle = "red";
+                ctx.beginPath();
+                ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            };
+
+            // Left shoe ← left landmarks
+            if (leftAnkle && leftHeel && leftToe) {
+              solveFoot(
+                leftAnkle,
+                leftHeel,
+                leftToe,
+                Lpos,
+                Lquat,
+                Lscale,
+                leftShoeAnchorRef.current!
+              );
+            } else {
+              leftShoeAnchorRef.current.visible = false;
+            }
+
+            // Right shoe ← right landmarks
+            if (rightAnkle && rightHeel && rightToe) {
+              solveFoot(
+                rightAnkle,
+                rightHeel,
+                rightToe,
+                Rpos,
+                Rquat,
+                Rscale,
+                rightShoeAnchorRef.current!
+              );
+            } else {
+              rightShoeAnchorRef.current.visible = false;
+            }
           }
 
           // ===== GLASSES =====
