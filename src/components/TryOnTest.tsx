@@ -98,6 +98,7 @@ export default function TryTest() {
   const poseRef = useRef<any | null>(null);
   const faceRef = useRef<any | null>(null);
   const handRef = useRef<any | null>(null);
+
   // Three.js
   const webglRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -672,7 +673,7 @@ export default function TryTest() {
       const offX = (canW - dispW) * 0.5;
       const offY = (canH - dispH) * 0.5;
 
-      return { x: offX + lm.x * dispW, y: offY * lm.y * dispH };
+      return { x: offX + lm.x * dispW, y: offY + lm.y * dispH };
     }
 
     const startLoop = () => {
