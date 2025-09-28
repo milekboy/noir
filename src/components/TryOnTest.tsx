@@ -765,7 +765,12 @@ export default function TryTest() {
               const heelW = toWorldFromLm(heel);
               const toeW = toWorldFromLm(toe);
 
-              // 2) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
+              // 2) Calculate foot center position (between heel and toe)
+              const footCenter = new THREE.Vector3()
+                .addVectors(heelW, toeW)
+                .multiplyScalar(0.5);
+
+              // 3) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
               const forward = new THREE.Vector3()
                 .subVectors(toeW, heelW)
                 .normalize();
@@ -776,16 +781,16 @@ export default function TryTest() {
                 .crossVectors(right, forward)
                 .normalize();
 
-              // 3) Pose matrix and decompose
+              // 4) Pose matrix using foot center position
               const m = new THREE.Matrix4()
                 .makeBasis(right, up, forward)
-                .setPosition(ankleW);
+                .setPosition(footCenter);
               const pos = new THREE.Vector3();
               const q = new THREE.Quaternion();
               const s = new THREE.Vector3();
               m.decompose(pos, q, s);
 
-              // 4) Outlier rejection (teleports)
+              // 5) Outlier rejection (teleports)
               if (
                 anchor.visible &&
                 posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
@@ -794,11 +799,11 @@ export default function TryTest() {
                 pos.copy(posRef.current);
               }
 
-              // 5) Exponential smoothing
+              // 6) Exponential smoothing
               posRef.current.lerp(pos, EMA_POS);
               quatRef.current.slerp(q, EMA_ROT);
 
-              // 6) Scale from heel↔toe length
+              // 7) Scale from heel↔toe length
               const footLen = heelW.distanceTo(toeW);
               const targetScale = THREE.MathUtils.clamp(
                 footLen * SHOE_SCALE_MULT,
@@ -811,23 +816,27 @@ export default function TryTest() {
                 EMA_SCALE
               );
 
-              // 7) Apply to the anchor
+              // 8) Apply to the anchor
               anchor.position.copy(posRef.current);
               anchor.quaternion.copy(quatRef.current);
               anchor.scale.setScalar(scaleRef.current);
               anchor.visible = true;
 
-              // 8) Optional debug (same visuals you had)
+              // 9) Optional debug (updated to show foot center)
               if (DEBUG_FEET) {
                 const aPx = lmToCanvasPx(ankle, video, canvas);
                 const tPx = lmToCanvasPx(toe, video, canvas);
                 const hPx = lmToCanvasPx(heel, video, canvas);
 
-                // Line ankle → toe
+                // Calculate foot center in pixels for debug
+                const footCenterX = (hPx.x + tPx.x) / 2;
+                const footCenterY = (hPx.y + tPx.y) / 2;
+
+                // Line heel → toe (foot length)
                 ctx.strokeStyle = "lime";
                 ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.moveTo(aPx.x, aPx.y);
+                ctx.moveTo(hPx.x, hPx.y);
                 ctx.lineTo(tPx.x, tPx.y);
                 ctx.stroke();
 
@@ -835,6 +844,18 @@ export default function TryTest() {
                 ctx.fillStyle = "red";
                 ctx.beginPath();
                 ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Toe marker
+                ctx.fillStyle = "blue";
+                ctx.beginPath();
+                ctx.arc(tPx.x, tPx.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Foot center marker (where shoe is positioned)
+                ctx.fillStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(footCenterX, footCenterY, 8, 0, Math.PI * 2);
                 ctx.fill();
               }
             };
