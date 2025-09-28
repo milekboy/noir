@@ -98,7 +98,6 @@ export default function TryTest() {
   const poseRef = useRef<any | null>(null);
   const faceRef = useRef<any | null>(null);
   const handRef = useRef<any | null>(null);
-
   // Three.js
   const webglRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
