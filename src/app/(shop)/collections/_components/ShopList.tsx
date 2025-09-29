@@ -14,11 +14,7 @@ import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
 import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
 // import SelectBoxEight from "@/elements/Shop/SelectBoxEight"; // ❌ commented (not used)
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-import categoryData, {
-  shopStyleData,
-  categories,
-  CategoryData,
-} from "@/constant/Alldata"; // ✅ named import
+
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
@@ -26,6 +22,7 @@ import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import NetworkInstance from "@/app/api/NetworkInstance";
+
 
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
@@ -424,10 +421,25 @@ export default function ShopList({
     console.log(
       `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
     );
+    
   };
 
+  interface CategoryProps{
+    id: string;
+    image: []
+    label: string
+    subCategory:SubCategoryProps[]
+  }
+interface SubCategoryProps {
+   id: string;
+    label: string;
+    image: string[];
+    badge: string;
+
+}
   const [selectedCollection, setSelectedCollection] = useState("Collections");
-  const [param, setParam] = useState<string | null>("")
+  const [param, setParam] = useState<string | null>("");
+  const [categoryData, setCategoryData] = useState<CategoryProps>()
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
@@ -435,7 +447,22 @@ export default function ShopList({
   useEffect(() => {
     setParam(categoryParam)
   }, [categoryParam])
-  
+
+  // Select default category data based on the category query parameter
+  useEffect(() => {
+    if (!categoryParam || !navItems || navItems.length === 0) return;
+    const target = categoryParam.trim().toLowerCase();
+    const match = navItems.find((it: any) => it?.label?.trim()?.toLowerCase() === target);
+    if (match) {
+      setCategoryData(match);
+    }
+  }, [categoryParam, navItems])
+
+  useEffect(() => {
+    categoryData?.label
+    // setCategoryData()
+    // console.log(categoryData, "categorydata")
+  }, [categoryData])
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -591,6 +618,7 @@ export default function ShopList({
                           onClick={(e) => {
                             e.preventDefault();
                             handleDropdownClick(item.label, drop.label);
+                            setCategoryData(item)
                             router.push("#");
                           }}
                         >
@@ -802,9 +830,7 @@ export default function ShopList({
               <div className="row">
                 <div className="col-xl-12">
                   <ShopCategorySlider
-                    onCategorySelect={function (id: string): void {
-                      throw new Error("Function not implemented.");
-                    }}
+                    categorySelect={categoryData?.subCategory ?? []}
                   />
                 </div>
               </div>

@@ -173,9 +173,9 @@ export default function ShopWithCategory() {
               <h4 className="mb-3">Category</h4>
               <div className="row">
                 <div className="col-xl-12">
-                  <ShopCategorySlider
+                  {/* <ShopCategorySlider
                     onCategorySelect={(id: string) => setSelectedCategory(id)}
-                  />
+                  /> */}
                 </div>
               </div>
               <Tab.Container defaultActiveKey={"Grid"}>
