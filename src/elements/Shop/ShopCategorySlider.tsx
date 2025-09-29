@@ -1,41 +1,35 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import Image from "next/image";
 
-import "swiper/css";
-import "swiper/css/bundle";
+// import "swiper/css";
+// import "swiper/css/bundle";
 
-export default function ShopCategorySlider({
-  onCategorySelect,
-}: {
-  onCategorySelect: (id: string) => void;
-}) {
-  interface Category {
-    _id: string;
+interface SubCategoryProps {
+   id: string;
     label: string;
     image: string[];
-    __v: number;
-  }
+    badge: string;
 
-  const [category, setCategory] = useState<Category[]>([]);
-  const networkInstance = NetworkInstance();
+}
+export default function ShopCategorySlider({ categorySelect = [] }: { categorySelect?: SubCategoryProps[] }) {
+  
+  // const [category, setCategory] = useState<Category[]>([]);
+  
+  // useEffect(() => {
+  //   getProducts();
+  // }, []);
 
-  useEffect(() => {
-    getProducts();
-  }, []);
-
-  const getProducts = async () => {
-    try {
-      const res = await networkInstance.get("category/get-all-categories");
-      setCategory(res.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  // const getProducts = async () => {
+  //   try {
+  //     const res = await networkInstance.get("category/get-all-categories");
+  //     setCategory(res.data);
+  //   } catch (error) {
+  //     console.error("Error fetching categories:", error);
+  //   }
+  // };
 
   return (
     <Swiper
@@ -57,10 +51,10 @@ export default function ShopCategorySlider({
         320: { slidesPerView: 1 },
       }}
     >
-      {category.map((item, index) => (
+      {categorySelect.map((item: any, index: number) => (
         <SwiperSlide key={index}>
           <div
-            onClick={() => onCategorySelect(item._id)}
+            // onClick={() => onCategorySelect(item._id)}
             className="flex items-center gap-4 p-3 border rounded-md bg-white hover:shadow-sm transition cursor-pointer"
             style={{ display: "flex", alignItems: "center" }}
           >
@@ -68,7 +62,7 @@ export default function ShopCategorySlider({
             <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded">
               <Image
                 src={
-                  item.image[0] ||
+                  item.image?.[0] ||
                   "https://res.cloudinary.com/dk6wshewb/image/upload/v1751085914/uploads/yx8zj5qvm8fgpiad93t4.jpg"
                 }
                 alt={item.label}
@@ -79,10 +73,11 @@ export default function ShopCategorySlider({
             </div>
 
             {/* Text beside image */}
-            <h6 className="text-base font-medium whitespace-nowrap" style={{ float: "right" }}>
-              <Link href={`/shop-list?category=${item._id}`}>
-                {item.label}
-              </Link>
+            <h6
+              className="text-base font-medium whitespace-nowrap"
+              style={{ float: "right" }}
+            >
+              <Link href={`/shop-list?category=${item.id}`}>{item.label}</Link>
             </h6>
           </div>
         </SwiperSlide>
