@@ -758,35 +758,33 @@ export default function TryTest() {
                 return;
               }
 
-              // Basic visibility guard from MediaPipe
               const visOK =
                 (ankle.visibility ?? 1) > MIN_VISIBILITY &&
                 (heel.visibility ?? 1) > MIN_VISIBILITY &&
                 (toe.visibility ?? 1) > MIN_VISIBILITY;
+
               if (!visOK) {
                 anchor.visible = false;
                 return;
               }
 
-              // 1) Landmarks → world at a fixed depth
+              // 1️⃣ Convert MP landmarks to world points at fixed depth
               const ankleW = toWorldFromLm(ankle);
               const heelW = toWorldFromLm(heel);
               const toeW = toWorldFromLm(toe);
-              const kneeW = toWorldFromLm(knee);
 
-              // 2) Calculate foot center position (between heel and toe)
+              // 2️⃣ Foot center = midway between heel and toe
               const footCenter = new THREE.Vector3()
                 .addVectors(heelW, toeW)
                 .multiplyScalar(0.5);
 
-              // 3) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
+              // 3️⃣ Build local foot basis (X=right, Y=up, Z=forward)
               const forward = new THREE.Vector3()
                 .subVectors(toeW, heelW)
-                .normalize(); // foot direction
+                .normalize(); // toe → heel
               const upGuess = new THREE.Vector3()
-                .subVectors(ankleW, kneeW)
-                .normalize(); // leg up
-              // Gram–Schmidt to make a right-handed basis
+                .subVectors(ankleW, heelW)
+                .normalize(); // ankle → heel
               const right = new THREE.Vector3()
                 .crossVectors(forward, upGuess)
                 .normalize();
@@ -794,29 +792,29 @@ export default function TryTest() {
                 .crossVectors(right, forward)
                 .normalize();
 
-              // 4) Pose matrix using foot center position
+              // 4️⃣ Create matrix and decompose
               const m = new THREE.Matrix4()
                 .makeBasis(right, up, forward)
                 .setPosition(footCenter);
+
               const pos = new THREE.Vector3();
               const q = new THREE.Quaternion();
               const s = new THREE.Vector3();
               m.decompose(pos, q, s);
 
-              // 5) Outlier rejection (teleports)
+              // 5️⃣ Outlier filtering
               if (
                 anchor.visible &&
                 posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
               ) {
-                // ignore this frame's big jump; keep last good
                 pos.copy(posRef.current);
               }
 
-              // 6) Exponential smoothing
+              // 6️⃣ EMA smoothing
               posRef.current.lerp(pos, EMA_POS);
               quatRef.current.slerp(q, EMA_ROT);
 
-              // 7) Scale from heel↔toe length
+              // 7️⃣ Scale from heel↔toe length
               const footLen = heelW.distanceTo(toeW);
               const targetScale = THREE.MathUtils.clamp(
                 footLen * SHOE_SCALE_MULT,
@@ -829,47 +827,36 @@ export default function TryTest() {
                 EMA_SCALE
               );
 
-              // 8) Apply to the anchor
+              // 8️⃣ Apply to anchor
               anchor.position.copy(posRef.current);
               anchor.quaternion.copy(quatRef.current);
               anchor.scale.setScalar(scaleRef.current);
               anchor.visible = true;
 
-              // 9) Optional debug (updated to show foot center)
+              // 9️⃣ Optional debug markers (ankle, heel, toe)
               if (DEBUG_FEET) {
                 const aPx = lmToCanvasPx(ankle, video, canvas);
-                const tPx = lmToCanvasPx(toe, video, canvas);
                 const hPx = lmToCanvasPx(heel, video, canvas);
-
-                // Calculate foot center in pixels for debug
-                const footCenterX = (hPx.x + tPx.x) / 2;
-                const footCenterY = (hPx.y + tPx.y) / 2;
-
-                // Line heel → toe (foot length)
+                const tPx = lmToCanvasPx(toe, video, canvas);
                 ctx.strokeStyle = "lime";
-                ctx.lineWidth = 4;
+                ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.moveTo(hPx.x, hPx.y);
                 ctx.lineTo(tPx.x, tPx.y);
                 ctx.stroke();
 
-                // Heel marker
                 ctx.fillStyle = "red";
                 ctx.beginPath();
                 ctx.arc(hPx.x, hPx.y, 6, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Toe marker
+                ctx.fill(); // heel
                 ctx.fillStyle = "blue";
                 ctx.beginPath();
                 ctx.arc(tPx.x, tPx.y, 6, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Foot center marker (where shoe is positioned)
+                ctx.fill(); // toe
                 ctx.fillStyle = "yellow";
                 ctx.beginPath();
-                ctx.arc(footCenterX, footCenterY, 8, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.arc(aPx.x, aPx.y, 6, 0, Math.PI * 2);
+                ctx.fill(); // ankle
               }
             };
 
