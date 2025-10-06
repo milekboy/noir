@@ -56,11 +56,17 @@ const MP_INDEX_TO_NAME: Record<number, string> = {
 type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 
 // ---- Shoe tuning knobs ----
-const SHOE_DEPTH = 1.1; // world Z from camera
-const SHOE_SCALE_MULT = 12; // bigger shoe
+
 const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
   new THREE.Euler(-Math.PI / 2, 0, 0, "XYZ")
 );
+// --- Shoes: easy tuning knobs ---
+const SHOE_DEPTH = 1.05; // 0.95–1.15 (closer/farther from camera ray)
+const SHOE_SCALE_MULT = 7.5; // 7–11 (overall size from heel↔toe)
+const SHOE_MODEL_OFFSET = new THREE.Vector3(0, -0.028, -0.01);
+//                                   ↑down (sole)  ↑back (toward heel)
+// If pointing is a bit off, nudge yaw a little:
+const SHOE_YAW_NUDGE = 0.0; // radians; try ±0.15
 
 // Smoothing / stability
 const EMA_POS = 0.3; // 0..1 (higher = snappier)
@@ -508,7 +514,8 @@ export default function TryTest() {
             rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             leftOnly.scale.setScalar(0.1);
             rightOnly.scale.setScalar(0.1);
-
+            leftOnly.position.copy(SHOE_MODEL_OFFSET);
+            rightOnly.position.copy(SHOE_MODEL_OFFSET);
             leftShoeAnchorRef.current!.add(leftOnly);
             rightShoeAnchorRef.current!.add(rightOnly);
 
@@ -739,6 +746,7 @@ export default function TryTest() {
             const solveFoot = (
               ankle: MPPoint,
               heel: MPPoint,
+              knee: MPPoint,
               toe: MPPoint,
               posRef: React.MutableRefObject<THREE.Vector3>,
               quatRef: React.MutableRefObject<THREE.Quaternion>,
@@ -764,6 +772,7 @@ export default function TryTest() {
               const ankleW = toWorldFromLm(ankle);
               const heelW = toWorldFromLm(heel);
               const toeW = toWorldFromLm(toe);
+              const kneeW = toWorldFromLm(knee);
 
               // 2) Calculate foot center position (between heel and toe)
               const footCenter = new THREE.Vector3()
@@ -773,9 +782,13 @@ export default function TryTest() {
               // 3) Build a right-handed basis: x=right, y=up, z=forward (toe→heel)
               const forward = new THREE.Vector3()
                 .subVectors(toeW, heelW)
-                .normalize();
+                .normalize(); // foot direction
+              const upGuess = new THREE.Vector3()
+                .subVectors(ankleW, kneeW)
+                .normalize(); // leg up
+              // Gram–Schmidt to make a right-handed basis
               const right = new THREE.Vector3()
-                .crossVectors(forward, new THREE.Vector3(0, 1, 0))
+                .crossVectors(forward, upGuess)
                 .normalize();
               const up = new THREE.Vector3()
                 .crossVectors(right, forward)
@@ -866,6 +879,7 @@ export default function TryTest() {
                 leftAnkle,
                 leftHeel,
                 leftToe,
+                poseLm[25] /*left_knee*/,
                 Lpos,
                 Lquat,
                 Lscale,
@@ -881,6 +895,7 @@ export default function TryTest() {
                 rightAnkle,
                 rightHeel,
                 rightToe,
+                poseLm[26] /*right_knee*/,
                 Rpos,
                 Rquat,
                 Rscale,
