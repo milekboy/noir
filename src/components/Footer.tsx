@@ -7,7 +7,7 @@ import SubscribeNewsletter from "./SubscribeNewsletter";
 import Image from "next/image";
 import Link from "next/link";
 import { color } from "three/src/nodes/TSL.js";
-import HelpSupport from "./HelpSupport";
+
 
 interface footertype{
     footerStyle? : string
