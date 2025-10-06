@@ -71,8 +71,11 @@ const MainSection = () => {
   }, []);
 
   return (
+    
     <Fragment>
+      
       {/* ---------- Hero Section ---------- */}
+  
       <div
         className="h-100vh mb-5 bg-primar"
         style={{
