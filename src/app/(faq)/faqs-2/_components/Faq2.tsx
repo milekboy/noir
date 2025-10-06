@@ -51,7 +51,7 @@ const Faq2 = () => {
                                 <nav aria-label="breadcrumb text-align-start" className="breadcrumb-row mb-lg-4 mb-3">
                                     <ul className="breadcrumb">
                                         <li className="breadcrumb-item"><Link href="/"> Home</Link></li>
-                                        <li className="breadcrumb-item">Faq’s 2</li>
+                                        <li className="breadcrumb-item">FAQ</li>
                                     </ul>
                                 </nav>	
                             </div>

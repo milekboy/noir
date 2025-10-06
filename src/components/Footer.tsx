@@ -1,11 +1,13 @@
 // import {motion} from 'framer-motion'
 import IMAGES from "../constant/theme";
-import { Company, FooterMenu, WidgetData 
+import { Company, FooterMenu, WidgetData, 
 } 
 from "../constant/Alldata";
 import SubscribeNewsletter from "./SubscribeNewsletter";
 import Image from "next/image";
 import Link from "next/link";
+import { color } from "three/src/nodes/TSL.js";
+
 
 interface footertype{
     footerStyle? : string
@@ -41,6 +43,7 @@ const Footer = (props : footertype) => {
                                     <li>
                                         <p><span>Phone</span> : (+234) 80 234 453 3509</p>
                                     </li>
+                                    
                                 </ul>
                                 <div className="subscribe_widget">
                                     <h6 className="title fw-medium text-capitalize">subscribe to our newsletter</h6>	
@@ -67,7 +70,7 @@ const Footer = (props : footertype) => {
                             </div> */}
 
                              <div className="widget widget_services" style={{marginLeft: "40px"}}>
-                                <h5 className="footer-title">Customer Care</h5>
+                                <h5 className="footer-title" style={{ color: "white" }}>Customer Care</h5>
                                 <ul>
                                     {WidgetData.map((item, i)=>(
                                         <li key={i}><Link style={{color: "#fff"}} href="#">{item.name}</Link></li>
@@ -87,7 +90,7 @@ const Footer = (props : footertype) => {
                         </div> */}
                         <div className="col-xl-2 col-md-4 col-sm-4 col-6">
                             <div className="widget widget_services">
-                                <h5 className="footer-title">Company</h5>
+                                <h5 className="footer-title" style={{ color: "white" }}>Company</h5>
                                 <ul>
                                     {Company.map((item, i)=>(
                                         <li key={i}><Link style={{color: "#fff"}} href="#">{item.name}</Link></li>
@@ -97,7 +100,8 @@ const Footer = (props : footertype) => {
                         </div>
                         <div className="col-xl-2 col-md-4 col-sm-4">
                             <div className="widget widget_services">
-                                <h5 className="footer-title">Categories</h5>
+                                <h5 className="footer-title"  style={{ color: "white" }}>Categories</h5>
+                                <Link href="/HelpSupport">Help & Support</Link>
                                 <ul>
                                     {FooterMenu.map((item,ind)=>(
                                         <li key={ind}><Link style={{color: "#fff"}} href={"/shop-with-category"}>{item.name}</Link></li>
