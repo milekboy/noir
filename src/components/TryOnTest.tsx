@@ -58,7 +58,7 @@ type MPPoint = { x: number; y: number; z?: number; visibility?: number };
 // ---- Shoe tuning knobs ----
 
 const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
-  new THREE.Euler(-Math.PI / 2, 0, 0, "XYZ")
+  new THREE.Euler(Math.PI / 2, 0, Math.PI, "XYZ")
 );
 // --- Shoes: easy tuning knobs ---
 const SHOE_DEPTH = 1.05; // 0.95–1.15 (closer/farther from camera ray)
@@ -746,7 +746,6 @@ export default function TryTest() {
             const solveFoot = (
               ankle: MPPoint,
               heel: MPPoint,
-              knee: MPPoint,
               toe: MPPoint,
               posRef: React.MutableRefObject<THREE.Vector3>,
               quatRef: React.MutableRefObject<THREE.Quaternion>,
@@ -773,18 +772,18 @@ export default function TryTest() {
               const heelW = toWorldFromLm(heel);
               const toeW = toWorldFromLm(toe);
 
-              // 2️⃣ Foot center = midway between heel and toe
+              // 2️⃣ Center = midpoint between heel and toe (not using knee)
               const footCenter = new THREE.Vector3()
                 .addVectors(heelW, toeW)
                 .multiplyScalar(0.5);
 
-              // 3️⃣ Build local foot basis (X=right, Y=up, Z=forward)
+              // 3️⃣ Build local basis
               const forward = new THREE.Vector3()
                 .subVectors(toeW, heelW)
-                .normalize(); // toe → heel
+                .normalize(); // heel→toe
               const upGuess = new THREE.Vector3()
                 .subVectors(ankleW, heelW)
-                .normalize(); // ankle → heel
+                .normalize(); // heel→ankle
               const right = new THREE.Vector3()
                 .crossVectors(forward, upGuess)
                 .normalize();
@@ -792,11 +791,10 @@ export default function TryTest() {
                 .crossVectors(right, forward)
                 .normalize();
 
-              // 4️⃣ Create matrix and decompose
+              // 4️⃣ Compose rotation + position
               const m = new THREE.Matrix4()
                 .makeBasis(right, up, forward)
                 .setPosition(footCenter);
-
               const pos = new THREE.Vector3();
               const q = new THREE.Quaternion();
               const s = new THREE.Vector3();
@@ -806,11 +804,10 @@ export default function TryTest() {
               if (
                 anchor.visible &&
                 posRef.current.distanceTo(pos) > OUTLIER_MAX_JUMP
-              ) {
+              )
                 pos.copy(posRef.current);
-              }
 
-              // 6️⃣ EMA smoothing
+              // 6️⃣ Smoothing
               posRef.current.lerp(pos, EMA_POS);
               quatRef.current.slerp(q, EMA_ROT);
 
@@ -822,7 +819,7 @@ export default function TryTest() {
                 100
               );
               scaleRef.current = THREE.MathUtils.lerp(
-                scaleRef.current || targetScale,
+                scaleRef.current,
                 targetScale,
                 EMA_SCALE
               );
@@ -835,9 +832,22 @@ export default function TryTest() {
 
               // 9️⃣ Optional debug markers (ankle, heel, toe)
               if (DEBUG_FEET) {
-                const aPx = lmToCanvasPx(ankle, video, canvas);
-                const hPx = lmToCanvasPx(heel, video, canvas);
-                const tPx = lmToCanvasPx(toe, video, canvas);
+                const aPx = lmToCanvasPx(
+                  ankle,
+                  videoRef.current!,
+                  overlayRef.current!
+                );
+                const hPx = lmToCanvasPx(
+                  heel,
+                  videoRef.current!,
+                  overlayRef.current!
+                );
+                const tPx = lmToCanvasPx(
+                  toe,
+                  videoRef.current!,
+                  overlayRef.current!
+                );
+                const ctx = overlayRef.current!.getContext("2d")!;
                 ctx.strokeStyle = "lime";
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -859,14 +869,13 @@ export default function TryTest() {
                 ctx.fill(); // ankle
               }
             };
-
             // Left shoe ← left landmarks
             if (leftAnkle && leftHeel && leftToe) {
               solveFoot(
                 leftAnkle,
                 leftHeel,
                 leftToe,
-                poseLm[25] /*left_knee*/,
+
                 Lpos,
                 Lquat,
                 Lscale,
@@ -882,7 +891,7 @@ export default function TryTest() {
                 rightAnkle,
                 rightHeel,
                 rightToe,
-                poseLm[26] /*right_knee*/,
+
                 Rpos,
                 Rquat,
                 Rscale,
