@@ -1,6 +1,6 @@
 // components/CartContext.js
 "use client";
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import NetworkInstance from "@/app/api/NetworkInstance";
 
 export const CartContext = createContext();
@@ -34,3 +34,11 @@ export const CartProvider = ({ children }) => {
     </CartContext.Provider>
   );
 };
+
+export default function useCartContext() {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useAuthContext must be used within an AuthProvider");
+  }
+  return context;
+}

@@ -1,7 +1,7 @@
 "use client";
 import { Offcanvas } from "react-bootstrap";
 import IMAGES from "../constant/theme";
-import { Fragment, useEffect, useReducer, useState } from "react";
+import { Fragment, useContext, useEffect, useReducer, useState } from "react";
 import Link from "next/link";
 import HeadSearchBar from "./HeadSearchBar";
 import HeaderSideShoppingCard from "./HeaderSideShopingCard";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import { usePathname } from "next/navigation";
 import { get } from "http";
+import useCartContext, { CartContext, CartProvider } from "./CartContext";
 
 interface State {
   headerFix: boolean;
@@ -87,13 +88,14 @@ function reducer(state: State, action: Action): State {
 
 export const CategoryMenu = ({ state, handleToggleClick }: any) => {
   return (
-    <div className="browse-category-menu  bg-primar d-md-none d-lg-block" >
+    <div className="browse-category-menu  bg-primar d-md-none d-lg-block">
       <div className="d-flex ">
         <Link
           href="#"
-          className={`category-btn  bg-blac ${state.categoryActive ? "active" : ""} `}
+          className={`category-btn  bg-blac ${
+            state.categoryActive ? "active" : ""
+          } `}
           onClick={handleToggleClick}
-         
         >
           <div className="category-menu me-3 ">
             <span></span>
@@ -120,9 +122,11 @@ export const CategoryMenu = ({ state, handleToggleClick }: any) => {
 export default function Header2() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [transparent, setTransparent] = useState(true);
-   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const router = usePathname();
-
+  // const context = useContext(CartContext);
+  // const {CartContext} = context
+  const { CartContext } = useCartContext();
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
@@ -186,40 +190,98 @@ export default function Header2() {
   // console.log("cartItems", cartItems);
 
   useEffect(() => {
-     const getWishlist = async () => {
-    try {
-      const sessionId = localStorage.getItem("sessionId");
-      const res = await NetworkInstance().get("/wishlist", {
-        headers: {
-          "x-session-id": sessionId,
-        },
-      });
+    const getWishlist = async () => {
+      try {
+        const sessionId = localStorage.getItem("sessionId");
+        const res = await NetworkInstance().get("/wishlist", {
+          headers: {
+            "x-session-id": sessionId,
+          },
+        });
 
-      setWishlist(res.data.wishlist);
-    } catch (error) {
-      console.error("Error fetching wishlist:", error);
-    }
-  };
+        setWishlist(res.data.wishlist);
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
     getWishlist();
   }, [wishlist]);
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
-      
-
+        <div className="bg-black d-flex align-items-center  px-5 justify-content-between">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-fle justify-content-between align-items-center gap-2 ">
+              <span className="px-1 bg-white rounded-sm fs-6">02</span>
+              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Days</span>
+              <span className="px-1 bg-white rounded-sm">02</span>
+              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Hr</span>
+              <span className="px-1 bg-white rounded-sm">03</span>
+              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Min</span>
+              <span className="px-1 bg-white rounded-sm"  style={{fontSize:"16px!important"}}>34</span>
+              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Sec</span>
+            </div>
+            {/* <p className="bg-primary">Limited Offer New Arrivals 🎉</p> */}
+          </div>
+          <div className="">
+            <Link
+              href={"/help-and-support"}
+              className="text-white me-2 text-underline text-lg"
+            >
+              Help
+            </Link>
+            <span className="me-2">|</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 32 32"
+            >
+              <path fill="#fff" d="M10 4H22V28H10z"></path>
+              <path
+                d="M5,4h6V28H5c-2.208,0-4-1.792-4-4V8c0-2.208,1.792-4,4-4Z"
+                fill="#3b8655"
+              ></path>
+              <path
+                d="M25,4h6V28h-6c-2.208,0-4-1.792-4-4V8c0-2.208,1.792-4,4-4Z"
+                transform="rotate(180 26 16)"
+                fill="#3b8655"
+              ></path>
+              <path
+                d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+                opacity=".15"
+              ></path>
+              <path
+                d="M27,5H5c-1.657,0-3,1.343-3,3v1c0-1.657,1.343-3,3-3H27c1.657,0,3,1.343,3,3v-1c0-1.657-1.343-3-3-3Z"
+                fill="#fff"
+                opacity=".2"
+              ></path>
+            </svg>
+          </div>
+        </div>
         <div
           className={`sticky-header main-bar-wraper navbar-expand-lg   ${
             state.headerFix ? "is-fixed" : ""
           }`}
         >
-          <div className={`main-bar clearfix ${transparent ? "bg-transparent" : ""}`} style={{boxShadow : transparent ? "none" : "0 2px 10px rgba(0,0,0,0.1)"}}>
+          <div
+            className={`main-bar clearfix ${
+              transparent ? "bg-transparent" : ""
+            }`}
+            style={{
+              boxShadow: transparent ? "none" : "0 2px 10px rgba(0,0,0,0.1)",
+            }}
+          >
             <div className="container clearfix d-lg-flex d-block">
               {/* <!-- Website Logo --> */}
               {/* <CategoryMenu state={state} handleToggleClick={handleToggleClick} /> */}
               <div className="logo-header  d-md-flex justify-content-start flex-row logo-dark d-lg-none">
-                 <CategoryMenu state={state} handleToggleClick={handleToggleClick} />
+                <CategoryMenu
+                  state={state}
+                  handleToggleClick={handleToggleClick}
+                />
                 <Link href="/">
-                <Image src={IMAGES.logo} alt="logo" className=""  />
+                  <Image src={IMAGES.logo} alt="logo" className="" />
                 </Link>
               </div>
 
@@ -247,22 +309,30 @@ export default function Header2() {
                 />
                 <div className="logo-heade logs">
                   <Link href="/">
-                  <Image src={IMAGES.logo} alt="logo" className="w-md-100"/>
+                    <Image src={IMAGES.logo} alt="logo" className="w-md-100" />
                   </Link>
                 </div>
-                  <div>
-                    
+                <div></div>
+                <div></div>
+                {router === "/collections" || router === "/shop-list" ? (
+                  <div className="w-100  text-center d-lg-flex justify-content-center d-none ms-5">
+                    <input
+                      type="text"
+                      className="rounded-end p-2 rounded-3 rounded-end-0 w-50 fs-6 border border-black px-3"
+                      placeholder="Search product, collections or code"
+                      style={{ fontSize: "14px!important" }}
+                    />
+                    <span
+                      className=" rounded-start rounded-start-0 rounded-3 bg-black text-white px-4"
+                      style={{ padding: "10px", cursor: "pointer" }}
+                    >
+                      {" "}
+                      <i className="iconly-Light-Search" />
+                    </span>
                   </div>
-                  <div>
-
-                  </div>
-                 { router === "/collections" || router === "/shop-list" ? (<div className="w-100  text-center d-lg-flex justify-content-center d-none ms-5">
-                    <input type="text" className="rounded-end p-2 rounded-3 rounded-end-0 w-50 fs-6 border border-black px-3"  placeholder="Search product, collections or code" style={{fontSize:"14px!important"}}/>
-                    <span className=" rounded-start rounded-start-0 rounded-3 bg-black text-white px-4" style={{padding: "10px", cursor:"pointer"}}>  <i className="iconly-Light-Search" /></span>
-                  </div>) : null}
+                ) : null}
                 {/* ---------------------------------------- */}
                 <ul className="nav navbar-nav  w-100 d-md-none d-sm-none">
-
                   <Header2Menus />
                 </ul>
                 <div className="dz-social-icon d-none">
@@ -312,15 +382,20 @@ export default function Header2() {
                         Login / Register
                       </Link>
                     </li>
-                   { router === "/collections" || router === "/shop-list" ? null :  (<li className="nav-item search-link">
-                      <Link
-                        href={"#"}
-                        className="nav-link"
-                        onClick={() => dispatch({ type: "TOGGLE_SEARCH_BAR" })}
-                      >
-                        <i className="iconly-Light-Search" />
-                      </Link>
-                    </li>)}
+                    {router === "/collections" ||
+                    router === "/shop-list" ? null : (
+                      <li className="nav-item search-link">
+                        <Link
+                          href={"#"}
+                          className="nav-link"
+                          onClick={() =>
+                            dispatch({ type: "TOGGLE_SEARCH_BAR" })
+                          }
+                        >
+                          <i className="iconly-Light-Search" />
+                        </Link>
+                      </li>
+                    )}
                     <li className="nav-item wishlist-link">
                       <Link
                         className="nav-link"
@@ -330,7 +405,9 @@ export default function Header2() {
                         }
                       >
                         <i className="iconly-Light-Heart2" />
-                        <span className="badge badge-circle">{wishlist.length}</span>
+                        <span className="badge badge-circle">
+                          {wishlist.length}
+                        </span>
                       </Link>
                     </li>
                     <li className="nav-item cart-link">
@@ -342,7 +419,10 @@ export default function Header2() {
                         }
                       >
                         <i className="iconly-Broken-Buy" />
-                        <span className="badge badge-circle">{cartItems.length}</span>
+                        <span className="badge badge-circle">
+                          {cartItems.length}
+                        </span>
+                        {/* <span className="badge badge-circle">{CartContext}</span> */}
                       </Link>
                     </li>
                   </ul>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Nav } from "react-bootstrap";
 
 const faqContentData = [
     {time:0.8, title:'How can I contact customer support?', para:'If your order has not yet shipped, you can contact us to change your shipping address. If your order has already shipped, we may not be able to change the address.'},
@@ -7,6 +8,14 @@ const faqContentData = [
     {time:1.4, title:'Do you offer gift wrapping?', para:'Yes, we offer gift wrapping for an additional fee. You can select this option during checkout.'},
     {time:1.6, title:'Do you offer international shipping?', para:'Yes, we offer international shipping to select countries. Please check our shipping page for more information.'},
     {time:1.8, title:'What is your return policy?', para:'We offer a 30-day return policy for most products. If you are not satisfied with your purchase, please contact us for instructions on how to return the item.'},
+]
+const headDataTitle = [
+    { name:'General', keytitle:'General', icon:'icon-box'},
+    { name:'Returns', keytitle:'Returns', icon:'icon-shopping-cart'},
+    { name:'Gift', keytitle:'Gift', icon:'icon-gift'},
+    { name:'Refunds', keytitle:'Refunds', icon:'icon-dollar-sign'},
+    { name:'Payments', keytitle:'Payments', icon:'icon-credit-card'},
+    { name:'Shipping', keytitle:'Shipping', icon:'icon-truck'},
 ]
 
 const Faq1 = () => {
@@ -36,6 +45,16 @@ const Faq1 = () => {
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+                             <div className="dz-tabs style-1 tab-space">
+                                <Nav as="ul" className="nav nav-tabs">
+                                    {headDataTitle.map(({name, keytitle, icon}, ind)=>(
+                                        <li  className="px-5  border rounded-2xl d-flex flex-column"  key={ind}>
+                                             <i className={`icon feather ${icon} `} style={{fontSize:"30px"}} />
+                                             <span>{name}</span>
+                                        </li>
+                                    ))}
+                                </Nav>
                             </div>
                         </div>
                     </div>
