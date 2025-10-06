@@ -104,7 +104,7 @@ const Faq2 = () => {
                     <li className="breadcrumb-item">
                       <Link href="/"> Home</Link>
                     </li>
-                    <li className="breadcrumb-item">Faq’s 2</li>
+                    <li className="breadcrumb-item">FAQ</li>
                   </ul>
                 </nav>
               </div>

@@ -116,6 +116,7 @@ const Faq1 = () => {
                         style={{ marginTop: "0px!important" }}
                       >
                         {searchSuggestion?.map((item, ind) => (
+                            <Link href="/faqs-2" className="faq-link"> 
                           <li
                             className="px-3 py-2 position-relative"
                             key={ind}
@@ -123,6 +124,7 @@ const Faq1 = () => {
                           >
                             {item.title}
                           </li>
+                          </Link> 
                         ))}
                       </ul>
                     </div>
@@ -135,6 +137,7 @@ const Faq1 = () => {
                     <li
                       className="px-5  border rounded-2xl d-flex flex-column"
                       key={ind}
+                       style={{marginRight: "20px", padding: "10px", alignItems: "center", justifyContent: "center", borderRadius: "15px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", cursor: "pointer", transition: "transform 0.2s"}}
                     >
                       <i
                         className={`icon feather ${icon} `}
