@@ -29,7 +29,7 @@ const Faq1 = () => {
                             <nav className="breadcrumb-row">
                                 <ul className="breadcrumb mb-lg-4 mb-3">
                                     <li className="breadcrumb-item"><Link href="/"> Home</Link></li>
-                                    <li className="breadcrumb-item">Faq’s 1</li>
+                                    <li className="breadcrumb-item">FAQ</li>
                                 </ul>
                             </nav>
                             <div className="search_widget">
@@ -46,15 +46,18 @@ const Faq1 = () => {
                                     </div>
                                 </form>
                             </div>
-                             <div className="dz-tabs style-1 tab-space">
-                                <Nav as="ul" className="nav nav-tabs">
+                             <div className="dz-tabs style-1 tab-space" style={{marginLeft: "100px", alignItems: "center", justifyContent: "center"}}>
+                              <Nav as="ul" className="nav nav-tabs">
+                                
                                     {headDataTitle.map(({name, keytitle, icon}, ind)=>(
-                                        <li  className="px-5  border rounded-2xl d-flex flex-column"  key={ind}>
+                                       <Link href="/faqs-2" className="faq-link">  <li  className="px-5  border rounded-2xl d-flex flex-column"  key={ind} style={{marginRight: "20px", padding: "10px", alignItems: "center", justifyContent: "center", borderRadius: "15px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", cursor: "pointer", transition: "transform 0.2s"}}>
                                              <i className={`icon feather ${icon} `} style={{fontSize:"30px"}} />
                                              <span>{name}</span>
                                         </li>
+                                        </Link> 
                                     ))}
                                 </Nav>
+                          
                             </div>
                         </div>
                     </div>
