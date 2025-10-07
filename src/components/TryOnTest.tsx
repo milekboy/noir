@@ -63,7 +63,9 @@ const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
 // --- Shoes: easy tuning knobs ---
 const SHOE_DEPTH = 1.05; // 0.95–1.15 (closer/farther from camera ray)
 const SHOE_SCALE_MULT = 7.5; // 7–11 (overall size from heel↔toe)
-const SHOE_MODEL_OFFSET = new THREE.Vector3(0, -0.12, -0.01);
+const LEFT_SHOE_OFFSET = new THREE.Vector3(0, -0.12, -0.01);
+const RIGHT_SHOE_OFFSET = new THREE.Vector3(0, -0.3, 0.01);
+
 //                                   ↑down (sole)  ↑back (toward heel)
 // If pointing is a bit off, nudge yaw a little:
 const SHOE_YAW_NUDGE = 0.0; // radians; try ±0.15
@@ -512,10 +514,15 @@ export default function TryTest() {
             // --- 4) Orientation + initial scale ---
             leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
+            // Mirror correction for left shoe
+            leftOnly.scale.set(-0.1, 0.1, 0.1); // negative X flips direction
+            rightOnly.scale.set(0.1, 0.1, 0.1);
+
             leftOnly.scale.setScalar(0.1);
             rightOnly.scale.setScalar(0.1);
-            leftOnly.position.copy(SHOE_MODEL_OFFSET);
-            rightOnly.position.copy(SHOE_MODEL_OFFSET);
+            leftOnly.position.copy(LEFT_SHOE_OFFSET);
+            rightOnly.position.copy(RIGHT_SHOE_OFFSET);
+
             leftShoeAnchorRef.current!.add(leftOnly);
             rightShoeAnchorRef.current!.add(rightOnly);
 
@@ -791,10 +798,12 @@ export default function TryTest() {
                 .crossVectors(right, forward)
                 .normalize();
 
-              // 4️⃣ Compose rotation + position
+              const forwardFixed = forward.clone().multiplyScalar(-1);
+
               const m = new THREE.Matrix4()
-                .makeBasis(right, up, forward)
+                .makeBasis(right, up, forwardFixed)
                 .setPosition(footCenter);
+
               const pos = new THREE.Vector3();
               const q = new THREE.Quaternion();
               const s = new THREE.Vector3();
