@@ -63,7 +63,7 @@ const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
 // --- Shoes: easy tuning knobs ---
 const SHOE_DEPTH = 1.05; // 0.95–1.15 (closer/farther from camera ray)
 const SHOE_SCALE_MULT = 7.5; // 7–11 (overall size from heel↔toe)
-const SHOE_MODEL_OFFSET = new THREE.Vector3(0, -0.028, -0.01);
+const SHOE_MODEL_OFFSET = new THREE.Vector3(0, -0.12, -0.01);
 //                                   ↑down (sole)  ↑back (toward heel)
 // If pointing is a bit off, nudge yaw a little:
 const SHOE_YAW_NUDGE = 0.0; // radians; try ±0.15
