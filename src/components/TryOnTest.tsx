@@ -64,7 +64,7 @@ const SHOE_MODEL_CORRECTION = new THREE.Quaternion().setFromEuler(
 const SHOE_DEPTH = 1.05; // 0.95–1.15 (closer/farther from camera ray)
 const SHOE_SCALE_MULT = 7.5; // 7–11 (overall size from heel↔toe)
 const LEFT_SHOE_OFFSET = new THREE.Vector3(0, -0.12, -0.01);
-const RIGHT_SHOE_OFFSET = new THREE.Vector3(0, -0.3, 0.01);
+const RIGHT_SHOE_OFFSET = new THREE.Vector3(0, -0.12, -0.01);
 
 //                                   ↑down (sole)  ↑back (toward heel)
 // If pointing is a bit off, nudge yaw a little:
@@ -515,8 +515,8 @@ export default function TryTest() {
             leftOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             rightOnly.quaternion.copy(SHOE_MODEL_CORRECTION);
             // Mirror correction for left shoe
-            leftOnly.scale.set(-0.1, 0.1, 0.1); // negative X flips direction
-            rightOnly.scale.set(0.1, 0.1, 0.1);
+            // leftOnly.scale.set(-0.1, 0.1, 0.1); // negative X flips direction
+            // rightOnly.scale.set(0.1, 0.1, 0.1);
 
             leftOnly.scale.setScalar(0.1);
             rightOnly.scale.setScalar(0.1);
