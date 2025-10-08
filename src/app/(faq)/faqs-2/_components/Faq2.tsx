@@ -157,23 +157,22 @@ const Faq2 = () => {
                     </div>
                   </form>
                 </div>
-                  <center>
-                       <div className="d-flex justify-content-center position-absolute align-items-center  " style={{left: "0", right: "0"}}>
+                  
+                       <div className="d-flex justify-content-center position-absolute align-items-cente  " style={{left: window.innerWidth > 685 ? "40" : "0", right: window.innerWidth > 685 ? "none" : "0"}}>
                         <div
-                          className="z-1 bg-white position-relative rounded-md"
+                          className="z-1  position-relative rounded-md"
                           style={{
                             marginTop: "0px",
                             width: "400px",
-                            zIndex: "9999",
                           }}
                         >
-                          <ul
-                            className=" text-black  bg-white "
+                          {searchSuggestion?.length ? (<ul
+                            className=" text-black  bg-white p-3"
                             style={{ marginTop: "0px!important" }}
                           >
                            {
                             searchSuggestion?.map((item, ind) => (
-                              <li className="px-3 py-2 position-relative" key={ind} style={{cursor: "pointer"}}>
+                              <li className="px-3 py-2 position-relative text-start" key={ind} style={{cursor: "pointer"}}>
                                 {item.headtext}
                               </li>
                             ))
@@ -181,10 +180,10 @@ const Faq2 = () => {
                             
                            }
                            
-                          </ul>
+                          </ul>): null}
                         </div>
                       </div>
-                   </center>
+                 
               </div>
               <Tab.Content>
                 <Tab.Pane eventKey={`General`}>
