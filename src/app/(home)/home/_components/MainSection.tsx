@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import Link from "next/link";
 import { Fragment, useState, useEffect } from "react";
@@ -46,7 +46,7 @@ const MainSection = () => {
 
   const nextImage = (currentImage + 1) % heroImages.length;
   // console.log(window.scrollY)
- 
+
   // Check screen size and handle scroll
   useEffect(() => {
     const checkScreenSize = () => {
@@ -83,10 +83,11 @@ const MainSection = () => {
           width: "100%",
           height: "100vh",
           overflow: "hidden",
-          transform: (scrolled && isMobileOrTablet) ? "translateY(-20px)" : "none"
+          transform:
+            scrolled && isMobileOrTablet ? "translateY(-20px)" : "none",
         }}
       >
-        <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar" >
+        <div className="hero-banner d-flex justify-content-start align-items-center h-auto bg-primar">
           <div className="container">
             <div className="row justify-content-start">
               <div
@@ -98,7 +99,7 @@ const MainSection = () => {
                   Discover the latest trends in fashion and style with our
                   exclusive collections.
                 </p>
-                <Link href="/try-on" className="btn btn-primary w-50">
+                <Link href="/try-test" className="btn btn-primary w-50">
                   Try Now
                 </Link>
               </div>
@@ -154,10 +155,7 @@ const MainSection = () => {
           </div>
         </section>
 
-        <section
-          className="overflow-hidden py-5"
-          style={{ background: "" }}
-        >
+        <section className="overflow-hidden py-5" style={{ background: "" }}>
           <div className="container">
             <LatestoCollection />
           </div>
@@ -231,9 +229,7 @@ const MainSection = () => {
           </button>
 
           <div
-
             className="modal-body d-flex p-0 promo-body"
-
             style={{
               // minHeight: "650px",
               height: "auto",
@@ -328,10 +324,16 @@ const MainSection = () => {
               </p>
 
               <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
-                <Link href="/shop-list" className="btn btn-primary btn-md w-100">
+                <Link
+                  href="/shop-list"
+                  className="btn btn-primary btn-md w-100"
+                >
                   Shop Now
                 </Link>
-                <Link href="/login" className="btn btn-outline-dark btn-md w-100">
+                <Link
+                  href="/login"
+                  className="btn btn-outline-dark btn-md w-100"
+                >
                   Sign Up
                 </Link>
               </div>
