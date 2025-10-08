@@ -9,4 +9,4 @@ const Faq2Page = () =>{
         </MainLayout>
     )
 }
-export default Faq2Pagegit 
+export default Faq2Page
