@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const TryOn = dynamic(() => import("@/components/TryOn"), { ssr: false });
+const TryOn = dynamic(() => import("@/elements/Home/TryOn"), { ssr: false });
 
 import CommanLayout from "@/components/CommanLayout";
 

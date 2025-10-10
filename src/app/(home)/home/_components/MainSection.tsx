@@ -96,7 +96,7 @@ const MainSection = () => {
                   Discover the latest trends in fashion and style with our
                   exclusive collections.
                 </p>
-                <Link href="/try-test" className="btn btn-primary w-50">
+                <Link href="/try-on" className="btn btn-primary w-50">
                   Try Now
                 </Link>
               </div>
