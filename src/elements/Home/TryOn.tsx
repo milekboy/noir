@@ -74,7 +74,8 @@ const TryOn = () => {
           position: "absolute",
           inset: 0,
           background: "rgba(0, 0, 0, 0.55)",
-          zIndex: 2,
+          zIndex: 1,
+          pointerEvents: "none",
         }}
       />
 
@@ -82,7 +83,7 @@ const TryOn = () => {
       <div
         style={{
           position: "relative",
-          zIndex: 3,
+          zIndex: 10,
           padding: "40px",
           maxWidth: "720px",
           backdropFilter: "blur(12px)",
@@ -117,7 +118,7 @@ const TryOn = () => {
           We’re crafting something futuristic for your fashion experience. Soon,
           you’ll be able to{" "}
           <strong style={{ color: "#fff" }}>virtually try on</strong> every
-          outfit and see your perfect fit — powered by AI.
+          outfit and see your perfect fit powered by AI.
         </h2>
 
         <p
@@ -128,8 +129,8 @@ const TryOn = () => {
             marginBottom: "40px",
           }}
         >
-          It’s not just fashion — it’s innovation meeting your mirror. Stay
-          tuned for the official launch.
+          It’s not just fashion it’s innovation meeting your mirror. Stay tuned
+          for the official launch.
         </p>
 
         <div
@@ -152,7 +153,9 @@ const TryOn = () => {
               fontWeight: 600,
               textDecoration: "none",
               color: "#fff",
-              transition: "all 0.3s ease",
+              zIndex: 15,
+              position: "relative",
+              display: "inline-block",
             }}
           >
             Back Home
