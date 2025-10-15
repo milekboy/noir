@@ -88,6 +88,17 @@ const Faq2 = () => {
   }
     }, 1000);
   }, [searchValue]);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }
+}, []);
   return (
     <div className="page-content bg-light">
       <section className="px-3">
@@ -158,12 +169,12 @@ const Faq2 = () => {
                   </form>
                 </div>
                   
-                       <div className="d-flex justify-content-center position-absolute align-items-cente  " style={{left: window.innerWidth > 685 ? "40" : "0", right: window.innerWidth > 685 ? "none" : "0"}}>
+                       <div className="d-flex justify-content-center position-absolute align-items-cente  " style={{left: windowWidth > 685 ? "40" : "0", right: windowWidth > 685 ? "none" : "0"}}>
                         <div
                           className="z-1  position-relative rounded-md"
                           style={{
                             marginTop: "0px",
-                            width: "400px",
+                            width: "400px", 
                           }}
                         >
                           {searchSuggestion?.length ? (<ul
