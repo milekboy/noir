@@ -1,3 +1,4 @@
+"use cliengit "
 import MainLayout from "@/components/MainLayout";
 import Faq2 from "./_components/Faq2";
 
@@ -8,4 +9,4 @@ const Faq2Page = () =>{
         </MainLayout>
     )
 }
-export default Faq2Page;
+export default Faq2Page

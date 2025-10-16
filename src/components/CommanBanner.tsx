@@ -10,7 +10,10 @@ interface texttype {
 
 const CommanBanner = ({image,mainText,parentText,currentText} : texttype) => {
     return (
-        <div className="dz-bnr-in bg-secondary overlay-black-light " style={{backgroundImage:`url(${image})`}}>
+        <div className="dz-bnr-in bg-secondar overlay-black-ligh py-3" 
+        // style={{backgroundImage:`url(${image})`}}
+        style={{backgroundColor: "white"}}
+        >
             <div className="container  d-flex justify-content-center align-items-center py-2">
                 <div className="dz-bnr-inr-entry  w-lg-25">
                     <h1 className="text-center">{mainText}</h1>

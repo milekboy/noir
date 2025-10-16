@@ -77,7 +77,7 @@ const Faq1 = () => {
                   <li className="breadcrumb-item">
                     <Link href="/"> Home</Link>
                   </li>
-                  <li className="breadcrumb-item">Faq’s 1</li>
+                  <li className="breadcrumb-item">Help and Support</li>
                 </ul>
               </nav>
               <div className="search_widget">
@@ -101,7 +101,7 @@ const Faq1 = () => {
                     </div>
                   </div>
                 </form>
-                <center>
+               
                   <div className="d-flex justify-content-center  position-absolute  align-items-center  " style={{left: "0", right: "0"}}>
                     <div
                       className="z-1 bg-white position-relative rounded-md"
@@ -112,13 +112,13 @@ const Faq1 = () => {
                       }}
                     >
                       <ul
-                        className=" text-black  bg-white "
+                        className=" text-black  bg-white p-3 "
                         style={{ marginTop: "0px!important" }}
                       >
                         {searchSuggestion?.map((item, ind) => (
-                            <Link href="/faqs-2" className="faq-link"> 
+                            <Link href="/faqs-2" className="faq-link "> 
                           <li
-                            className="px-3 py-2 position-relative"
+                            className="px-3 py-2 position-relative text-start"
                             key={ind}
                             style={{ cursor: "pointer" }}
                           >
@@ -129,11 +129,12 @@ const Faq1 = () => {
                       </ul>
                     </div>
                   </div>
-                </center>
+              
               </div>
               <div className="dz-tabs style-1 tab-space">
                 <Nav as="ul" className="nav nav-tabs">
                   {headDataTitle.map(({ name, keytitle, icon }, ind) => (
+                    <Link href="/faqs-2" className="faq-link ">
                     <li
                       className="px-5  border rounded-2xl d-flex flex-column"
                       key={ind}
@@ -145,6 +146,7 @@ const Faq1 = () => {
                       />
                       <span>{name}</span>
                     </li>
+                    </Link> 
                   ))}
                 </Nav>
               </div>
