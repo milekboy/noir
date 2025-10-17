@@ -46,12 +46,12 @@ const TryOn = () => {
           position: "absolute",
           inset: 0,
           zIndex: 0,
-          filter: "brightness(0.5)",
+          filter: "brightness(1.2)",
         }}
       />
 
       {/* Background transitions */}
-      {backgrounds.map((bg, i) => (
+      {/* {backgrounds.map((bg, i) => (
         <div
           key={i}
           style={{
@@ -66,7 +66,7 @@ const TryOn = () => {
             zIndex: 1,
           }}
         />
-      ))}
+      ))} */}
 
       {/* Semi-dark overlay for text visibility */}
       <div
@@ -88,7 +88,7 @@ const TryOn = () => {
           maxWidth: "720px",
           backdropFilter: "blur(12px)",
           borderRadius: "18px",
-          background: "rgba(0,0,0,0.5)",
+          background: "rgba(0,0,0,0.4)",
           boxShadow: "0 6px 25px rgba(0,0,0,0.5)",
         }}
       >

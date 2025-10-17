@@ -196,7 +196,7 @@ export default function ShopStandard() {
               <Tab.Container defaultActiveKey={"Grid"}>
                 <div className="filter-wrapper">
                   <div className="filter-left-area">
-                    <ul className="filter-tag">
+                    {/* <ul className="filter-tag">
                       <li>
                         <Link href={"#"} className="tag-btn">
                           Dresses
@@ -216,7 +216,7 @@ export default function ShopStandard() {
                         </Link>
                       </li>
                     </ul>
-                    <span>Showing 1–5 of 50 Results</span>
+                    <span>Showing 1–5 of 50 Results</span> */}
                   </div>
                   <div className="filter-right-area">
                     <Link
