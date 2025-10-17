@@ -249,7 +249,7 @@ export const TradingSliderBlogdata = [
 //Footer data start
 
 export const WidgetData = [
-  { name: "Customer Care" },
+  { name: "Customer Care", link: "/help-and-support" },
   { name: "Shipping" },
   { name: "Orders & Payments" },
   { name: "Returns" },
