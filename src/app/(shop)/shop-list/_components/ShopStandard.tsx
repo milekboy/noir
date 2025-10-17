@@ -18,6 +18,7 @@ import SelectBoxFour from "@/elements/Shop/SelectBoxFour";
 import SelectBoxFive from "@/elements/Shop/SelectBoxFive";
 import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
 import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
+import ShopCategorySlider from "@/elements/Shop/ShopCategorySlider";
 
 export default function ShopStandard() {
   const handleResetFilters = () => {
@@ -85,6 +86,22 @@ export default function ShopStandard() {
       price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
     return matchColor && matchSize && matchPrice;
   });
+
+  const [category, setCategory] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchNavItems = async () => {
+      try {
+        const res = await networkInstance.get("category/get-all-categories");
+        // sanitize labels
+        const result = res.data;
+
+        setCategory(result);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchNavItems();
+  }, []);
   return (
     <div className="page-content bg-light">
       <CommanBanner
@@ -93,8 +110,19 @@ export default function ShopStandard() {
         mainText=" Shop List"
         image={IMAGES.BackBg1.src}
       />
+      
       <section className="content-inner-3 pt-3 z-index-unset">
         <div className="container-fluid">
+         
+        <div className="container">
+          <p className="text-black" style={{fontWeight:800, fontSize: "19px"}}>New In</p>
+          <div className="row ">
+          <div className="col-xl-12">
+            <ShopCategorySlider categorySelect={category ?? []} />
+          </div>
+        </div>
+        </div>
+      
           <div className="row">
             <div className="col-20 col-xl-3">
               <div className="sticky-xl-top">
