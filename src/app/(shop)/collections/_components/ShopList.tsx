@@ -23,7 +23,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import NetworkInstance from "@/app/api/NetworkInstance";
 
-
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
 export default function ShopList({
@@ -421,48 +420,48 @@ export default function ShopList({
     console.log(
       `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
     );
-    
   };
 
-  interface CategoryProps{
+  interface CategoryProps {
     id: string;
-    image: []
-    label: string
-    subCategory:SubCategoryProps[]
+    image: [];
+    label: string;
+    subCategory: SubCategoryProps[];
   }
-interface SubCategoryProps {
-   id: string;
+  interface SubCategoryProps {
+    id: string;
     label: string;
     image: string[];
     badge: string;
-
-}
+  }
   const [selectedCollection, setSelectedCollection] = useState("Collections");
   const [param, setParam] = useState<string | null>("");
-  const [categoryData, setCategoryData] = useState<CategoryProps>()
+  const [categoryData, setCategoryData] = useState<CategoryProps>();
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   useEffect(() => {
-    setParam(categoryParam)
-  }, [categoryParam])
+    setParam(categoryParam);
+  }, [categoryParam]);
 
   // Select default category data based on the category query parameter
   useEffect(() => {
     if (!categoryParam || !navItems || navItems.length === 0) return;
     const target = categoryParam.trim().toLowerCase();
-    const match = navItems.find((it: any) => it?.label?.trim()?.toLowerCase() === target);
+    const match = navItems.find(
+      (it: any) => it?.label?.trim()?.toLowerCase() === target
+    );
     if (match) {
       setCategoryData(match);
     }
-  }, [categoryParam, navItems])
+  }, [categoryParam, navItems]);
 
   useEffect(() => {
-    categoryData?.label
+    categoryData?.label;
     // setCategoryData()
     // console.log(categoryData, "categorydata")
-  }, [categoryData])
+  }, [categoryData]);
   return (
     <div className="page-content bg-light">
       {/* <CommanBanner
@@ -509,9 +508,11 @@ interface SubCategoryProps {
                 margin: 0,
               }}
             >
-              {
-               breadcrumb[breadcrumb.length-1] === "Home" ? `${param} Collections` :  breadcrumb.length > 0
-                ? `${breadcrumb[breadcrumb.length - 1]} Collection` : " "}
+              {breadcrumb[breadcrumb.length - 1] === "Home"
+                ? `${ param ? param : ""} Collections`
+                : breadcrumb.length > 0
+                ? `${breadcrumb[breadcrumb.length - 1]} Collections`
+                : " "}
             </h4>
           </div>
 
@@ -553,7 +554,7 @@ interface SubCategoryProps {
                 onMouseLeave={() => setHovered(null)}
               >
                 <Link
-                  href={item.link || "#"}
+                  href={`/collections?category=${item.label}`}
                   style={{
                     color: "#fff",
                     textDecoration: "none",
@@ -568,7 +569,8 @@ interface SubCategoryProps {
                   onClick={(e) => {
                     e.preventDefault();
                     handleDropdownClick(item.label, "");
-                    router.push(item.link || "#");
+                    router.push(`/collections?category=${item.label}`);
+                    window.location.reload();
                   }}
                 >
                   {item.label}
@@ -618,7 +620,7 @@ interface SubCategoryProps {
                           onClick={(e) => {
                             e.preventDefault();
                             handleDropdownClick(item.label, drop.label);
-                            setCategoryData(item)
+                            setCategoryData(item);
                             router.push("#");
                           }}
                         >
@@ -677,7 +679,17 @@ interface SubCategoryProps {
             >
               {breadcrumb.map((crumb: string, idx: number) => (
                 <span key={idx} style={{ marginRight: "6px" }}>
-                  <span
+                  <Link
+                    href={`${
+                      breadcrumb[idx] === "Collections"
+                        ? "/collections"
+                        : breadcrumb[idx] === "Home"
+                        ? "/"
+                        : `/collections?category=${encodeURIComponent(crumb)}`
+                    }`}
+                    onClick={() => {
+                      window.location.reload();
+                    }}
                     style={{
                       color: "#000",
                       fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
@@ -689,18 +701,28 @@ interface SubCategoryProps {
                       crumb
                     ) : (
                       <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
-                        Home{" "}
+                       <Link href={"/"}> Home{" "}</Link>
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                        Collections{" "}
-                        <span style={{ margin: "0 6px", color: "#999" }}>
-                          {">"}
-                        </span>{" "}
-                        {`${categoryParam}`}
+                      <Link href={"/collections"}>  Collections{" "}</Link>
+                        {
+                        categoryParam &&  (<>
+                            {" "}
+                            <span style={{ margin: "0 6px", color: "#999" }}>
+                              {">"}
+                            </span>{" "}
+                            <Link
+                              href={`/collections?category=${categoryParam}`}
+                            >
+                              {" "}
+                              {`${categoryParam}`}
+                            </Link>
+                          </>)
+                        }
                       </p>
                     )}
-                  </span>
+                  </Link>
                   {idx < breadcrumb.length - 1 && (
                     <span style={{ margin: "0 6px", color: "#999" }}>
                       {">"}
@@ -824,9 +846,9 @@ interface SubCategoryProps {
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              <h4 className="mb-3" style={{ color: "black" }}>
+             {param && <h4 className="mb-3" style={{ color: "black" }}>
                 New In
-              </h4>
+              </h4>}
               <div className="row">
                 <div className="col-xl-12">
                   <ShopCategorySlider
