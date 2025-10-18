@@ -99,8 +99,10 @@ export default function ShopList({
   const handleResetFilters = () => {
     setSelectedColors([]);
     setSelectedSizes([]);
+    setBreadcrumb(["Home"]);
     setSelectedPriceRange(null);
     setSelectedCategoryId(null);
+    router.push("/collections");
   };
 
   useEffect(() => {
@@ -198,14 +200,6 @@ export default function ShopList({
   }, [categoryData]);
   return (
     <div className="page-content bg-light">
-      {/* <CommanBanner
-        mainText="Collections"
-        currentText="Collections"
-        parentText="Home"
-        image={IMAGES.BackBg1.src}
-      /> */}
-
-      {/* Header */}
       <header
         style={{
           width: "100%",
@@ -303,8 +297,12 @@ export default function ShopList({
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleDropdownClick(item.label, "");
+                    handleDropdownClick(item.label, item.label); // ✅ pass same label so breadcrumb shows
+                    setCategoryData(item);
                     setSelectedCategoryId(item.id);
+                    router.push(
+                      `/collections?category=${encodeURIComponent(item.label)}`
+                    );
                   }}
                 >
                   {item.label}
