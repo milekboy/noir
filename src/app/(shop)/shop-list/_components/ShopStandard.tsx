@@ -37,7 +37,7 @@ export default function ShopStandard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [showFilters, setShowFilters] = useState(true);
   const [detailModal, setDetailModal] = useState(false);
-  const [mobileSidebar, setMobileSidebar] = useState(false);
+
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
