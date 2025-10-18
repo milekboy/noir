@@ -77,7 +77,7 @@ export default function ShopCategorySlider({ categorySelect = [] }: { categorySe
               className="text-base font-medium whitespace-nowrap"
               style={{ float: "right" }}
             >
-              <Link href={`/shop-list?category=${item.id}`}>{item.label}</Link>
+              <Link href={`/collections?category=${item.label}`}>{item.label}</Link>
             </h6>
           </div>
         </SwiperSlide>
