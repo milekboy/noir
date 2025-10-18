@@ -248,12 +248,12 @@ export default function Header2() {
     <Fragment>
       <header className="site-header mo-left header style-2">
         <div className="bg-black d-flex align-items-center  px-5 py-1 justify-content-between ">
-          <div className="d-flex justify-content-between align-items-center gap-2 mx-auto">
+          <div className="d-flex justify-content-between align-items-center gap-2 mx-auto text-white">
             LunchSale! Up to 50% Off on Selected Items.
-            <div className="d-fle justify-content-between align-items-center gap-2 ">
+            <div className="d-fle justify-content-between align-items-center gap-2 text-secondary">
               <span
                 className="px-1 bg-white rounded-sm "
-                style={{ fontSize: "14px!important" }}
+                // style={{ fontSize: "14px!important" }}
               >
                 {timeLeft.days}
               </span>

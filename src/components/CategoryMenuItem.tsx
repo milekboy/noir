@@ -79,7 +79,7 @@ export default function CategoryMenuItem() {
                             <Link href={`/collections?category=${item.name}`}>
                               {item.name}
                               {item.badge && (
-                                <span className="badge bg-primary">NEW</span>
+                                <span className="badge bg-primary">{item.badge}</span>
                               )}
                             </Link>
                           </li>
