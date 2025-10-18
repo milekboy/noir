@@ -27,8 +27,6 @@ export default function CategoryMenuItem() {
       console.error("Error fetching products:", error);
     }
   };
-  // create an array of objects of all the categories from the uncommented code below with all the details including subcategories and links
-  // then map through the array to display the categories and subcategories in the menu below
 
   return (
     <ul className="nav navbar-nav">
@@ -40,7 +38,11 @@ export default function CategoryMenuItem() {
         )
         .map((item, ind) => (
           <li className="has-mega-menu cate-drop " key={ind}>
-            <Link href="/collections">
+            <Link
+              href={`/collections?category=${encodeURIComponent(
+                item.name.trim()
+              )}`}
+            >
               <i className="icon feather icon-arrow-right" />
               <span>{item.name}</span>
               <span className="menu-icon">
