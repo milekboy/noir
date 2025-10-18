@@ -265,10 +265,7 @@ export default function ShopList({
               position: "relative",
               backgroundColor: "#000",
               zIndex: 100,
-
               whiteSpace: "nowrap",
-              scrollbarWidth: "none", // Firefox
-              msOverflowStyle: "none", // IE/Edge
             }}
             className="mobile-scroll"
           >
@@ -467,14 +464,18 @@ export default function ShopList({
         </div>
 
         <style jsx>{`
-          .mobile-scroll::-webkit-scrollbar {
-            display: none;
-          }
-
-          @media (max-width: 556px) {
+          @media (max-width: 576px) {
             .mobile-scroll {
+              overflow-x: auto;
+              overflow-y: hidden;
+              scrollbar-width: none; /* Firefox */
+              -ms-overflow-style: none; /* IE/Edge */
               justify-content: flex-start !important;
               gap: 20px !important;
+            }
+
+            .mobile-scroll::-webkit-scrollbar {
+              display: none; /* Chrome/Safari */
             }
           }
         `}</style>
@@ -549,10 +550,9 @@ export default function ShopList({
                 )}
 
                 <div
-                  className="d-flex align-items-center justify-content-end mb-3 w-100"
+                  className="d-flex align-items-center justify-content-end mb-3 w-100 filter-container"
                   style={{ gap: "10px" }}
                 >
-                  {/* Filter button */}
                   <div
                     className="d-flex align-items-center"
                     style={{ cursor: "pointer" }}
@@ -570,7 +570,6 @@ export default function ShopList({
                     </h6>
                   </div>
 
-                  {/* Reset button */}
                   <button
                     type="button"
                     onClick={handleResetFilters}
@@ -578,6 +577,16 @@ export default function ShopList({
                   >
                     RESET
                   </button>
+
+                  <style jsx>{`
+                    @media (max-width: 576px) {
+                      .filter-container {
+                        flex-direction: column !important;
+                        align-items: flex-end !important;
+                        gap: 6px !important;
+                      }
+                    }
+                  `}</style>
                 </div>
               </div>
 
