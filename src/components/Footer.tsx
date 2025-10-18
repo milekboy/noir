@@ -46,7 +46,7 @@ const Footer = (props : footertype) => {
                                     
                                 </ul>
                                 <div className="subscribe_widget">
-                                    <h6 className="title fw-medium text-capitalize">subscribe to our newsletter</h6>	
+                                    <h6 className="title fw-medium text-capitalize text-white">subscribe to our newsletter</h6>	
                                     <SubscribeNewsletter />
                                 </div>
                             </div>
@@ -73,7 +73,7 @@ const Footer = (props : footertype) => {
                                 <h5 className="footer-title" style={{ color: "white" }}>Customer Care</h5>
                                 <ul>
                                     {WidgetData.map((item, i)=>(
-                                        <li key={i}><Link style={{color: "#fff"}} href="#">{item.name}</Link></li>
+                                        <li key={i}><Link style={{color: "#fff"}} href="/help-and-support">{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>
@@ -101,10 +101,10 @@ const Footer = (props : footertype) => {
                         <div className="col-xl-2 col-md-4 col-sm-4">
                             <div className="widget widget_services">
                                 <h5 className="footer-title"  style={{ color: "white" }}>Categories</h5>
-                                <Link href="/HelpSupport">Help & Support</Link>
+                                {/* <Link href="/HelpSupport">Help & Support</Link> */}
                                 <ul>
                                     {FooterMenu.map((item,ind)=>(
-                                        <li key={ind}><Link style={{color: "#fff"}} href={"/shop-with-category"}>{item.name}</Link></li>
+                                        <li key={ind}><Link style={{color: "#fff"}} href={"/collections"}>{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>

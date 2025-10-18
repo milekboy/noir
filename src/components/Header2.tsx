@@ -206,24 +206,93 @@ export default function Header2() {
     };
     getWishlist();
   }, [wishlist]);
+
+  const [targetDate] = useState(() => {
+    const t = new Date();
+    // example: 13 days, 2 hours, 3 minutes, 34 seconds from now
+    t.setDate(t.getDate() + 13);
+    t.setHours(t.getHours() + 2);
+    t.setMinutes(t.getMinutes() + 3);
+    t.setSeconds(t.getSeconds() + 34);
+    return t;
+  });
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    function update() {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+      if (distance <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      setTimeLeft({ days, hours, minutes, seconds });
+    }
+
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [targetDate]);
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
-        <div className="bg-black d-flex align-items-center  px-5 justify-content-between">
-          <div className="d-flex justify-content-between align-items-center">
+        <div className="bg-black d-flex align-items-center  px-5 py-1 justify-content-between ">
+          <div className="d-flex justify-content-between align-items-center gap-2 mx-auto">
+            LunchSale! Up to 50% Off on Selected Items.
             <div className="d-fle justify-content-between align-items-center gap-2 ">
-              <span className="px-1 bg-white rounded-sm fs-6">02</span>
-              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Days</span>
-              <span className="px-1 bg-white rounded-sm">02</span>
-              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Hr</span>
-              <span className="px-1 bg-white rounded-sm">03</span>
-              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Min</span>
-              <span className="px-1 bg-white rounded-sm"  style={{fontSize:"16px!important"}}>34</span>
-              <span className="px-1 text-white fs-6" style={{fontSize:"14px!important"}}>Sec</span>
+              <span
+                className="px-1 bg-white rounded-sm "
+                style={{ fontSize: "14px!important" }}
+              >
+                {timeLeft.days}
+              </span>
+              <span
+                className="px-1 text-white fs-6"
+                style={{ fontSize: "14px!important" }}
+              >
+                Days
+              </span>
+              <span className="px-1 bg-white rounded-sm">{timeLeft.hours}</span>
+              <span
+                className="px-1 text-white fs-6"
+                style={{ fontSize: "14px!important" }}
+              >
+                Hr
+              </span>
+              <span className="px-1 bg-white rounded-sm">{timeLeft.minutes}</span>
+              <span
+                className="px-1 text-white fs-6"
+                style={{ fontSize: "14px!important" }}
+              >
+                Min
+              </span>
+              <span
+                className="px-1 bg-white rounded-sm"
+                style={{ fontSize: "16px!important" }}
+              >
+               {timeLeft.seconds}
+              </span>
+              <span
+                className="px-1 text-white fs-6"
+                style={{ fontSize: "14px!important" }}
+              >
+                Sec
+              </span>
             </div>
             {/* <p className="bg-primary">Limited Offer New Arrivals 🎉</p> */}
           </div>
-          <div className="">
+          <div className=" ">
             <Link
               href={"/help-and-support"}
               className="text-white me-2 text-underline text-lg"
