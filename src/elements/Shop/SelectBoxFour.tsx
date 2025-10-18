@@ -2,16 +2,19 @@ import { useState } from "react";
 import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "₦5,000", category: "(16)" },
-  { title: "₦10,000", category: "(19)" },
-  { title: "₦25,000", category: "(16)" },
-  { title: "₦50,000", category: "(36)" },
-  { title: "₦150,000", category: "(46)" },
-  { title: "₦250,000", category: "(16)" },
-  { title: "₦500,000", category: "(17)" },
+  { title: "₦5,000" },
+  { title: "₦7,500" },
+  { title: "₦8,000" },
+  { title: "₦8,500" },
+  { title: "₦9,000" },
+  { title: "₦9,500" },
+  { title: "₦10,000" },
 ];
-
-export default function SelectBoxOne() {
+export default function SelectBoxOne({
+  onApply,
+}: {
+  onApply: (range: [number, number]) => void;
+}) {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [showMenu, setShowMenu] = useState(false);
 
@@ -26,10 +29,18 @@ export default function SelectBoxOne() {
     const selected = Object.keys(checkedItems).filter(
       (key) => checkedItems[key]
     );
-    alert("Selected prices: " + selected.join(", "));
-    setShowMenu(false); // ✅ close after apply
-  };
+    if (selected.length > 0) {
+      const numericValues = selected.map((s) => Number(s.replace(/[₦,]/g, "")));
+      const min = Math.min(...numericValues);
+      const max = Math.max(...numericValues);
 
+      onApply([min, max]);
+      setShowMenu(false);
+    } else {
+      onApply([0, Infinity]);
+      setShowMenu(false);
+    }
+  };
   return (
     <Dropdown
       className="select-dropdown"
@@ -83,30 +94,25 @@ export default function SelectBoxOne() {
             {/* Price label */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
-              <span style={{ color: "#888", float: "right" }}>
-                {data.category}
-              </span>
             </div>
           </Dropdown.Item>
         ))}
 
         {/* Apply button */}
         <div style={{ padding: "10px", borderTop: "1px solid #eee" }}>
-          <a href="/collections">
-            <Button
-              // onClick={handleApply}
-              style={{
-                backgroundColor: "black",
-                color: "white",
-                border: "none",
-                padding: "10px",
-                borderRadius: "6px",
-                width: "100%", // ✅ Full width
-              }}
-            >
-              Apply
-            </Button>
-          </a>
+          <Button
+            onClick={handleApply}
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              border: "none",
+              padding: "10px",
+              borderRadius: "6px",
+              width: "100%",
+            }}
+          >
+            Apply
+          </Button>
         </div>
       </Dropdown.Menu>
     </Dropdown>

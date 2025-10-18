@@ -2,16 +2,20 @@ import { useState } from "react";
 import { Dropdown, Button } from "react-bootstrap";
 
 export const dataItemValue = [
-  { title: "XS", category: "(6)" },
-  { title: "S", category: "(8)" },
-  { title: "M", category: "(10)" },
-  { title: "M/L", category: "(12)" },
-  { title: "L", category: "(14)" },
-  { title: "XL", category: "(16)" },
-  { title: "XXL", category: "(18)" },
+  { title: "XS", category: "6" },
+  { title: "S", category: "8" },
+  { title: "M", category: "10" },
+  { title: "M/L", category: "12" },
+  { title: "L", category: "14" },
+  { title: "XL", category: "16" },
+  { title: "XXL", category: "18" },
 ];
 
-export default function SelectBoxOne() {
+export default function SelectBoxOne({
+  onApply,
+}: {
+  onApply: (selectedCategories: number[]) => void;
+}) {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [showMenu, setShowMenu] = useState(false);
 
@@ -22,13 +26,17 @@ export default function SelectBoxOne() {
     }));
   };
 
-  // ✅ Apply button closes the menu
   const handleApply = () => {
     const selected = Object.keys(checkedItems).filter(
       (key) => checkedItems[key]
     );
-    alert("Selected sizes: " + selected.join(", "));
-    setShowMenu(false); // close dropdown
+
+    const selectedCategories = dataItemValue
+      .filter((item) => selected.includes(item.title))
+      .map((item) => Number(item.category));
+
+    onApply(selectedCategories);
+    setShowMenu(false);
   };
 
   return (
@@ -84,9 +92,6 @@ export default function SelectBoxOne() {
             {/* Size and count */}
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 500 }}>{data.title}</span>{" "}
-              <span style={{ color: "#888", float: "right" }}>
-                {data.category}
-              </span>
             </div>
           </Dropdown.Item>
         ))}
@@ -98,21 +103,19 @@ export default function SelectBoxOne() {
             borderTop: "1px solid #eee",
           }}
         >
-          <a href="/collections">
-            <Button
-              // onClick={handleApply}
-              style={{
-                backgroundColor: "black",
-                color: "white",
-                border: "none",
-                padding: "10px",
-                borderRadius: "6px",
-                width: "100%", // ✅ Full width
-              }}
-            >
-              Apply
-            </Button>
-          </a>
+          <Button
+            onClick={handleApply}
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              border: "none",
+              padding: "10px",
+              borderRadius: "6px",
+              width: "100%", // ✅ Full width
+            }}
+          >
+            Apply
+          </Button>
         </div>
       </Dropdown.Menu>
     </Dropdown>
