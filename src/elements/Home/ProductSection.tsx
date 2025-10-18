@@ -244,33 +244,35 @@ const ProductSection = () => {
   // }, [categoryName]);
 
   // Add this useEffect after your other useEffects
-useEffect(() => {
-  // Pre-fetch all category names
-  const fetchAllCategories = async () => {
-    if (product.length > 0) {
-      const uniqueCategories = [...new Set(product.map(item => item.category))];
-      for (const category of uniqueCategories) {
-        if (!categoryMap[category]) {
-          try {
-            const response = await NetworkInstance().get(
-              `category/get-category/${category}`
-            );
-            if (response?.status === 200) {
-              setCategoryMap(prev => ({
-                ...prev,
-                [category]: response.data.label
-              }));
+  useEffect(() => {
+    // Pre-fetch all category names
+    const fetchAllCategories = async () => {
+      if (product.length > 0) {
+        const uniqueCategories = [
+          ...new Set(product.map((item) => item.category)),
+        ];
+        for (const category of uniqueCategories) {
+          if (!categoryMap[category]) {
+            try {
+              const response = await NetworkInstance().get(
+                `category/get-category/${category}`
+              );
+              if (response?.status === 200) {
+                setCategoryMap((prev) => ({
+                  ...prev,
+                  [category]: response.data.label,
+                }));
+              }
+            } catch (error) {
+              console.error(`Error fetching category ${category}:`, error);
             }
-          } catch (error) {
-            console.error(`Error fetching category ${category}:`, error);
           }
         }
       }
-    }
-  };
+    };
 
-  fetchAllCategories();
-}, [product]);
+    fetchAllCategories();
+  }, [product]);
 
   // Loading skeleton component
   const LoadingSkeleton = () => {
@@ -559,7 +561,7 @@ useEffect(() => {
         )}
         <div className="d-flex justify-content-center align-items-center my-5">
           <Link
-            href="/shop-list"
+            href="/collections"
             className="btn btn-primary bg-black border-black  "
           >
             See more products

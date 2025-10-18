@@ -27,9 +27,6 @@ export default function CategoryMenuItem() {
       console.error("Error fetching products:", error);
     }
   };
-  // create an array of objects of all the categories from the uncommented code below with all the details including subcategories and links
-  // then map through the array to display the categories and subcategories in the menu below
-
 
   return (
     <ul className="nav navbar-nav">
@@ -41,21 +38,16 @@ export default function CategoryMenuItem() {
         )
         .map((item, ind) => (
           <li className="has-mega-menu cate-drop " key={ind}>
-            <Link href="/collections">
+            <Link
+              href={`/collections?category=${encodeURIComponent(
+                item.name.trim()
+              )}`}
+            >
               <i className="icon feather icon-arrow-right" />
               <span>{item.name}</span>
               <span className="menu-icon">
                 <i className="icon feather icon-chevron-right" />
               </span>
-              {/* {item.name === "Women" ? (
-                <span className="menu-icon">
-                  <i className="icon feather icon-chevron-right" />
-                </span>
-              ) : item.name === "Men\n\n" ? (
-                <span className="menu-icon">
-                  <i className="icon feather icon-chevron-right" />
-                </span>
-              ) : null} */}
             </Link>
             {item.name ? (
               <div className="mega-menu ms- ">
@@ -63,17 +55,9 @@ export default function CategoryMenuItem() {
                   {item.subcategories.map((subcat, ind) => (
                     <div key={ind} className="col-md-3 col-sm-4 col-6">
                       <Link href={"/collections"} className="menu-title">
-                        {/* Clothing
-                         */}
                         {subcat.title}
                       </Link>
                       <ul>
-                        {/* <li>
-                        <Link href={"/shop-standard"}>New in Clothing</Link>
-                      </li>
-                      <li>
-                        <Link href={"/shop-standard"}>Chinos</Link>
-                      </li> */}
                         {subcat.items.map((item, ind) => (
                           <li key={ind}>
                             <Link href={`/collections?category=${item.name}`}>
@@ -84,11 +68,9 @@ export default function CategoryMenuItem() {
                             </Link>
                           </li>
                         ))}
-                       
                       </ul>{" "}
                     </div>
                   ))}
-               
                 </div>
               </div>
             ) : null}
@@ -96,5 +78,4 @@ export default function CategoryMenuItem() {
         ))}
     </ul>
   );
-
 }

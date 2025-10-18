@@ -71,11 +71,9 @@ const MainSection = () => {
   }, []);
 
   return (
-    
     <Fragment>
-      
       {/* ---------- Hero Section ---------- */}
-  
+
       <div
         className="h-100vh mb-5 bg-primar"
         style={{
@@ -325,7 +323,7 @@ const MainSection = () => {
 
               <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
                 <Link
-                  href="/shop-list"
+                  href="/collections"
                   className="btn btn-primary btn-md w-100"
                 >
                   Shop Now

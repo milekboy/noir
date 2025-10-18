@@ -141,7 +141,7 @@ const TryOn = () => {
             flexWrap: "wrap",
           }}
         >
-          <Link href="/shop-list" className="btn btn-primary w-50">
+          <Link href="/collections" className="btn btn-primary w-50">
             Go to Shop
           </Link>
           <Link

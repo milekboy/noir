@@ -14,7 +14,7 @@ import SelectBoxSix from "@/elements/Shop/SelectBoxSix";
 import SelectBoxSeven from "@/elements/Shop/SelectBoxSeven";
 // import SelectBoxEight from "@/elements/Shop/SelectBoxEight"; // ❌ commented (not used)
 import ShopSidebar from "@/elements/Shop/ShopSidebar";
-
+import { dataItemValue as sizeData } from "@/elements/Shop/SelectBoxSix";
 import ShopGridCard from "@/elements/Shop/ShopGridCard";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
@@ -30,12 +30,6 @@ export default function ShopList({
 }: {
   selectedCategory: string | null;
 }) {
-  const handleResetFilters = () => {
-    setSelectedColor(null);
-    setSelectedSize(null);
-    setSelectedPriceRange([1000, 10000]);
-  };
-
   interface ProductImage {
     url: string;
     public_id: string;
@@ -70,7 +64,7 @@ export default function ShopList({
       const res = await networkInstance.get("product/get-all-products");
 
       setProducts(res.data);
-      console.log(res.data);
+      console.log("p", res.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -78,282 +72,38 @@ export default function ShopList({
 
   const [detailModal, setDetailModal] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
+
+  const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState<
-    [number, number]
-  >([1000, 10000]);
+    [number, number] | null
+  >(null);
 
   const onPriceChange = (range: [number, number]) =>
     setSelectedPriceRange(range);
-  const onColorChange = (color: string) => setSelectedColor(color);
-  const onSizeChange = (size: string) => setSelectedSize(Number(size));
+  const onColorChange = (colors: string[]) => setSelectedColors(colors);
 
-  // const filteredCategory =
-  //   selectedCategory && products.length > 0
-  //     ? products.filter((item) => item.category === selectedCategory)
-  //     : products;
-
-  // const filteredProducts = filteredCategory.filter((item) => {
-  //   const price = item.price;
-  //   const matchColor = selectedColor ? item.color === selectedColor : true;
-  //   const matchSize = selectedSize
-  //     ? item.size === selectedSize.toString()
-  //     : true;
-  //   const matchPrice =
-  //     price >= selectedPriceRange[0] && price <= selectedPriceRange[1];
-  //   return matchColor && matchSize && matchPrice;
-  // });
+  const onSizeChange = (sizes: number[]) => {
+    setSelectedSizes(sizes);
+  };
 
   const [showFilters, setShowFilters] = useState(true);
 
   const [hovered, setHovered] = useState<string | null>(null);
 
-  // const navItems = [
-  //   {
-  //     href: "/collections",
-  //     label: "Women",
-  //     dropdown: [
-  //       { label: "New in Clothing", link: "/shop-list" },
-  //       { label: "Dresses", link: "/shop-list", badge: "HOT" },
-  //       { label: "Blazers & Co-ords", link: "/shop-list" },
-  //       { label: "Cardigans", link: "/shop-list", badge: "NEW" },
-  //       { label: "Hoodies & Sweatshirts", link: "/shop-list" },
-  //       { label: "Jackets & Coats", link: "/shop-list" },
-  //       { label: "Jeans", link: "/shop-list" },
-  //       { label: "Tops & Blouses", link: "/shop-list" },
-  //       { label: "Skirts & Shorts", link: "/shop-list" },
-  //       { label: "Trousers & Leggings", link: "/shop-list" },
-  //       { label: "Suits & Tailoring", link: "/shop-list" },
-
-  //       { label: "New in Shoes", link: "/shop-list" },
-  //       { label: "Heels", link: "/shop-list" },
-  //       { label: "Boots & Ankle Boots", link: "/shop-list" },
-  //       { label: "Loafers & Mules", link: "/shop-list" },
-  //       { label: "Sneakers", link: "/shop-list" },
-  //       { label: "Sandals & Slides", link: "/shop-list" },
-
-  //       { label: "Handbags", link: "/shop-list" },
-  //       { label: "Mini Bags", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Belts", link: "/shop-list" },
-  //       { label: "Sunglasses", link: "/shop-list" },
-  //       { label: "Hats & Caps", link: "/shop-list" },
-  //       { label: "Scarves", link: "/shop-list" },
-  //       { label: "Jewelry", link: "/shop-list" },
-  //       { label: "Watches", link: "/shop-list" },
-
-  //       { label: "Summer Dresses", link: "/shop-list" },
-  //       { label: "Winter Coats", link: "/shop-list" },
-  //       { label: "Rainwear", link: "/shop-list" },
-  //       { label: "Holiday Shop", link: "/shop-list", badge: "HOT" },
-  //       { label: "Resort Wear", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Men",
-  //     dropdown: [
-  //       { label: "New in Clothing", link: "/shop-list" },
-  //       { label: "Chinos", link: "/shop-list" },
-  //       { label: "Cardigans", link: "/shop-list", badge: "NEW" },
-  //       { label: "Hoodies and Sweatshirts", link: "/shop-list" },
-  //       { label: "Jackets and Coats", link: "/shop-list" },
-  //       { label: "Jeans", link: "/shop-list" },
-  //       { label: "Shirts", link: "/shop-list" },
-  //       { label: "T-Shirts & Polos", link: "/shop-list" },
-  //       { label: "Shorts", link: "/shop-list" },
-  //       { label: "Suits & Tailoring", link: "/shop-list" },
-
-  //       { label: "New in Shoes", link: "/shop-list" },
-  //       { label: "Sneakers", link: "/shop-list" },
-  //       { label: "Boots", link: "/shop-list" },
-  //       { label: "Loafers", link: "/shop-list" },
-  //       { label: "Sandals & Slides", link: "/shop-list" },
-  //       { label: "Formal Shoes", link: "/shop-list" },
-
-  //       { label: "Bags & Backpacks", link: "/shop-list" },
-  //       { label: "Belts", link: "/shop-list" },
-  //       { label: "Sunglasses", link: "/shop-list" },
-  //       { label: "Caps & Hats", link: "/shop-list" },
-  //       { label: "Scarves & Gloves", link: "/shop-list" },
-  //       { label: "Wallets", link: "/shop-list" },
-  //       { label: "Watches", link: "/shop-list", badge: "TRENDING" },
-
-  //       { label: "Gym T-Shirts", link: "/shop-list" },
-  //       { label: "Performance Shorts", link: "/shop-list" },
-  //       { label: "Track Pants", link: "/shop-list" },
-  //       { label: "Sports Jackets", link: "/shop-list" },
-  //       { label: "Running Shoes", link: "/shop-list" },
-  //       { label: "Sports Bags", link: "/shop-list" },
-
-  //       { label: "Summer Essentials", link: "/shop-list" },
-  //       { label: "Winter Coats", link: "/shop-list" },
-  //       { label: "Rain Jackets", link: "/shop-list" },
-  //       { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
-  //       { label: "Resort Wear", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Corporate but Chic",
-  //     dropdown: [
-  //       { label: "Blazers", link: "/shop-list", badge: "HOT" },
-  //       { label: "Tailored Trousers", link: "/shop-list" },
-  //       { label: "Pencil Skirts", link: "/shop-list" },
-  //       { label: "Shirt Dresses", link: "/shop-list" },
-  //       { label: "Silk Blouses", link: "/shop-list" },
-  //       { label: "Smart Jumpsuits", link: "/shop-list" },
-
-  //       { label: "Pointed Heels", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Loafers", link: "/shop-list" },
-  //       { label: "Block Heels", link: "/shop-list" },
-  //       { label: "Ankle Boots", link: "/shop-list" },
-  //       { label: "Chic Flats", link: "/shop-list" },
-
-  //       { label: "Trench Coats", link: "/shop-list" },
-  //       { label: "Tailored Coats", link: "/shop-list" },
-  //       { label: "Structured Jackets", link: "/shop-list" },
-  //       { label: "Cropped Blazers", link: "/shop-list" },
-
-  //       { label: "Leather Totes", link: "/shop-list", badge: "HOT" },
-  //       { label: "Statement Belts", link: "/shop-list" },
-  //       { label: "Minimalist Watches", link: "/shop-list" },
-  //       { label: "Silk Scarves", link: "/shop-list" },
-  //       { label: "Delicate Jewelry", link: "/shop-list" },
-
-  //       { label: "Classic White Shirts", link: "/shop-list" },
-  //       { label: "Neutral Trousers", link: "/shop-list" },
-  //       { label: "Black Dresses", link: "/shop-list" },
-  //       { label: "Nude Pumps", link: "/shop-list" },
-  //       { label: "Structured Handbags", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Girls' Night Look",
-  //     dropdown: [
-  //       { label: "Sequin Dresses", link: "/shop-list" },
-  //       { label: "Mini Skirts", link: "/shop-list" },
-  //       { label: "Bodysuits", link: "/shop-list" },
-  //       { label: "Corset Tops", link: "/shop-list" },
-  //       { label: "Party Dresses", link: "/shop-list", badge: "HOT" },
-
-  //       { label: "High Heels", link: "/shop-list" },
-  //       { label: "Strappy Sandals", link: "/shop-list" },
-  //       { label: "Platform Heels", link: "/shop-list" },
-
-  //       { label: "Clutch Bags", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Bold Earrings", link: "/shop-list" },
-  //       { label: "Statement Necklaces", link: "/shop-list" },
-
-  //       { label: "Bold Lipsticks", link: "/shop-list" },
-  //       { label: "Shimmery Jackets", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Smart Casual Staples",
-  //     dropdown: [
-  //       { label: "Polo Shirts", link: "/shop-list" },
-  //       { label: "Chinos", link: "/shop-list" },
-  //       { label: "Casual Blazers", link: "/shop-list" },
-  //       { label: "Denim Jackets", link: "/shop-list" },
-  //       { label: "Button-Down Shirts", link: "/shop-list" },
-
-  //       { label: "Loafers", link: "/shop-list" },
-  //       { label: "Casual Sneakers", link: "/shop-list" },
-  //       { label: "Chelsea Boots", link: "/shop-list", badge: "HOT" },
-
-  //       { label: "Leather Belts", link: "/shop-list" },
-  //       { label: "Casual Watches", link: "/shop-list" },
-  //       { label: "Messenger Bags", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Back to Campus",
-  //     dropdown: [
-  //       { label: "Hoodies", link: "/shop-list" },
-  //       { label: "Graphic Tees", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Joggers", link: "/shop-list" },
-  //       { label: "Denim", link: "/shop-list" },
-  //       { label: "Varsity Jackets", link: "/shop-list" },
-
-  //       { label: "Sneakers", link: "/shop-list" },
-  //       { label: "Backpacks", link: "/shop-list" },
-  //       { label: "Caps", link: "/shop-list" },
-
-  //       { label: "Laptop Sleeves", link: "/shop-list" },
-  //       { label: "Water Bottles", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Gym & Go",
-  //     dropdown: [
-  //       { label: "Sports Bras", link: "/shop-list" },
-  //       { label: "Leggings", link: "/shop-list" },
-  //       { label: "Performance Tees", link: "/shop-list" },
-  //       { label: "Tracksuits", link: "/shop-list", badge: "HOT" },
-
-  //       { label: "Trainers", link: "/shop-list" },
-  //       { label: "Running Shoes", link: "/shop-list" },
-
-  //       { label: "Duffel Bags", link: "/shop-list" },
-  //       { label: "Water Bottles", link: "/shop-list" },
-  //       { label: "Caps", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Summer Looks",
-  //     dropdown: [
-  //       { label: "Swimwear", link: "/shop-list" },
-  //       { label: "Sundresses", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Shorts", link: "/shop-list" },
-  //       { label: "Linen Shirts", link: "/shop-list" },
-  //       { label: "Flip Flops", link: "/shop-list" },
-
-  //       { label: "Straw Hats", link: "/shop-list" },
-  //       { label: "Beach Bags", link: "/shop-list" },
-  //       { label: "Sunglasses", link: "/shop-list" },
-  //       { label: "Holiday Outfits", link: "/shop-list", badge: "HOT" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Travel Light",
-  //     dropdown: [
-  //       { label: "Travel Backpacks", link: "/shop-list", badge: "HOT" },
-  //       { label: "Crossbody Bags", link: "/shop-list" },
-  //       { label: "Wrinkle-Free Shirts", link: "/shop-list" },
-  //       { label: "Packable Jackets", link: "/shop-list" },
-  //       { label: "Comfy Sneakers", link: "/shop-list" },
-
-  //       { label: "Suitcases", link: "/shop-list" },
-  //       { label: "Travel Accessories", link: "/shop-list" },
-  //       { label: "Neck Pillows", link: "/shop-list" },
-  //     ],
-  //   },
-  //   {
-  //     href: "/collections",
-  //     label: "Layered Looks",
-  //     dropdown: [
-  //       { label: "Overshirts", link: "/shop-list" },
-  //       { label: "Cardigans", link: "/shop-list", badge: "TRENDING" },
-  //       { label: "Vests", link: "/shop-list" },
-  //       { label: "Denim Jackets", link: "/shop-list" },
-  //       { label: "Bomber Jackets", link: "/shop-list" },
-
-  //       { label: "Chunky Scarves", link: "/shop-list" },
-  //       { label: "Beanies", link: "/shop-list" },
-  //       { label: "Gloves", link: "/shop-list" },
-  //     ],
-  //   },
-  // ];
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [alignRight, setAlignRight] = useState(false);
+  const handleResetFilters = () => {
+    setSelectedColors([]);
+    setSelectedSizes([]);
+    setBreadcrumb(["Home"]);
+    setSelectedPriceRange(null);
+    setSelectedCategoryId(null);
+    router.push("/collections");
+  };
 
   useEffect(() => {
     if (dropdownRef.current) {
@@ -368,20 +118,6 @@ export default function ShopList({
 
   const router = useRouter();
 
-  // // ✅ Breadcrumb state
-  // const [breadcrumb, setBreadcrumb] = useState<string[]>([
-  //   "Home",
-  //   "Collections",
-  // ]);
-
-  // // ✅ Handle dropdown click
-  // const handleDropdownClick = (parent: string, child: string) => {
-  //   setBreadcrumb(["Home", "Collections", parent, child]);
-  //   router.push(`/collections?category=${encodeURIComponent(child)}`);
-  // };
-
-  // const [products, setProducts] = useState<Product[]>([]);
-
   const [hoveredSub, setHoveredSub] = useState<string | null>(null);
 
   const [navItems, setNavItems] = useState<any[]>([]);
@@ -391,7 +127,7 @@ export default function ShopList({
       try {
         const res = await networkInstance.get("category/get-all-categories");
         // sanitize labels
-        console.log(res.data);
+        // console.log(res.data);
         const cleanData = res.data.map((item: any) => ({
           ...item,
           label: item.label?.trim().replace(/\n/g, ""), // remove \n and spaces
@@ -412,14 +148,14 @@ export default function ShopList({
   //   console.log(`Clicked ${subLabel} inside ${parentLabel}`);
   // };
 
-  console.log(navItems);
+  // console.log(navItems);
 
   const [breadcrumb, setBreadcrumb] = useState<string[]>(["Home"]);
   const handleDropdownClick = (parentName: string, subName: string) => {
     setBreadcrumb(["Home", "Collections", parentName, subName]);
-    console.log(
-      `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
-    );
+    // console.log(
+    //   `Breadcrumb updated: Home > Collections > ${parentName} > ${subName}`
+    // );
   };
 
   interface CategoryProps {
@@ -459,19 +195,11 @@ export default function ShopList({
 
   useEffect(() => {
     categoryData?.label;
-    // setCategoryData()
+
     // console.log(categoryData, "categorydata")
   }, [categoryData]);
   return (
     <div className="page-content bg-light">
-      {/* <CommanBanner
-        mainText="Collections"
-        currentText="Collections"
-        parentText="Home"
-        image={IMAGES.BackBg1.src}
-      /> */}
-
-      {/* Header */}
       <header
         style={{
           width: "100%",
@@ -509,7 +237,7 @@ export default function ShopList({
               }}
             >
               {breadcrumb[breadcrumb.length - 1] === "Home"
-                ? `${ param ? param : ""} Collections`
+                ? `${param ? param : ""} Collections`
                 : breadcrumb.length > 0
                 ? `${breadcrumb[breadcrumb.length - 1]} Collections`
                 : " "}
@@ -537,24 +265,22 @@ export default function ShopList({
               position: "relative",
               backgroundColor: "#000",
               zIndex: 100,
-
-              // ✅ Mobile scrolling
-              // overflowX: window.innerWidth > 764 ? "auto" : "hidden",
               whiteSpace: "nowrap",
-              scrollbarWidth: "none", // Firefox
-              msOverflowStyle: "none", // IE/Edge
             }}
             className="mobile-scroll"
           >
             {navItems.map((item: any, index: number) => (
               <div
                 key={index}
-                style={{ position: "relative", flex: "0 0 auto" }} // ✅ Prevent shrink
+                style={{
+                  position: "relative",
+                  flex: "0 0 auto",
+                  cursor: "pointer",
+                }}
                 onMouseEnter={() => setHovered(item.label)}
                 onMouseLeave={() => setHovered(null)}
               >
-                <Link
-                  href={`/collections?category=${item.label}`}
+                <div
                   style={{
                     color: "#fff",
                     textDecoration: "none",
@@ -568,13 +294,16 @@ export default function ShopList({
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleDropdownClick(item.label, "");
-                    router.push(`/collections?category=${item.label}`);
-                    window.location.reload();
+                    handleDropdownClick(item.label, item.label); // ✅ pass same label so breadcrumb shows
+                    setCategoryData(item);
+                    setSelectedCategoryId(item.id);
+                    router.push(
+                      `/collections?category=${encodeURIComponent(item.label)}`
+                    );
                   }}
                 >
                   {item.label}
-                </Link>
+                </div>
 
                 {item.subCategory?.length > 0 && hovered === item.label && (
                   <div
@@ -701,13 +430,13 @@ export default function ShopList({
                       crumb
                     ) : (
                       <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
-                       <Link href={"/"}> Home{" "}</Link>
+                        <Link href={"/"}> Home </Link>
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                      <Link href={"/collections"}>  Collections{" "}</Link>
-                        {
-                        categoryParam &&  (<>
+                        <Link href={"/collections"}> Collections </Link>
+                        {categoryParam && (
+                          <>
                             {" "}
                             <span style={{ margin: "0 6px", color: "#999" }}>
                               {">"}
@@ -718,8 +447,8 @@ export default function ShopList({
                               {" "}
                               {`${categoryParam}`}
                             </Link>
-                          </>)
-                        }
+                          </>
+                        )}
                       </p>
                     )}
                   </Link>
@@ -735,66 +464,22 @@ export default function ShopList({
         </div>
 
         <style jsx>{`
-          .mobile-scroll::-webkit-scrollbar {
-            display: none;
-          }
-
-          @media (max-width: 556px) {
+          @media (max-width: 576px) {
             .mobile-scroll {
+              overflow-x: auto;
+              overflow-y: hidden;
+              scrollbar-width: none; /* Firefox */
+              -ms-overflow-style: none; /* IE/Edge */
               justify-content: flex-start !important;
               gap: 20px !important;
+            }
+
+            .mobile-scroll::-webkit-scrollbar {
+              display: none; /* Chrome/Safari */
             }
           }
         `}</style>
       </header>
-
-      {/* ✅ Dynamic Breadcrumb */}
-      {/* <div
-              style={{
-                backgroundColor: "#f9f9f9",
-                padding: "10px 30px",
-                borderBottom: "1px solid #eee",
-                fontSize: "13px",
-              }}
-            >
-              <nav aria-label="breadcrumb">
-                <ol
-                  style={{
-                    display: "flex",
-                    listStyle: "none",
-                    margin: 0,
-                    padding: 0,
-                    gap: "8px",
-                    color: "#555",
-                  }}
-                >
-                  {breadcrumb.map((crumb, index) => (
-                    <li key={index} style={{ display: "flex", alignItems: "center" }}>
-                      <Link
-                        href="#"
-                        style={{
-                          color: index === breadcrumb.length - 1 ? "#000" : "#555",
-                          fontWeight: index === breadcrumb.length - 1 ? "600" : "400",
-                          textDecoration: "none",
-                        }}
-                        onClick={() => {
-                          // ✅ allow backward navigation
-                          setBreadcrumb((prev) => prev.slice(0, index + 1));
-                          if (crumb === "Home") router.push("/");
-                          else if (crumb === "Collections")
-                            router.push("/collections");
-                        }}
-                      >
-                        {crumb}
-                      </Link>
-                      {index < breadcrumb.length - 1 && (
-                        <span style={{ margin: "0 6px", color: "#999" }}>/</span>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-            </div> */}
 
       <section className="content-inner-3 pt-3">
         <div className="container">
@@ -824,21 +509,14 @@ export default function ShopList({
                         Filter
                       </h6>
                     </div>
-                    <ShopSidebar
-                      onPriceChange={onPriceChange}
-                      onColorChange={onColorChange}
-                      onSizeChange={onSizeChange}
-                      selectedColor={selectedColor}
-                      selectedSize={selectedSize}
-                      selectedPriceRange={selectedPriceRange}
-                    />
-                    {/* <button
+
+                    <button
                       type="button"
-                      onClick={handleResetFilters}
+                      // onClick={handleResetFilters}
                       className="btn btn-sm font-14 btn-secondary btn-sharp"
                     >
                       RESET
-                    </button> */}
+                    </button>
                   </aside>
                 </div>
               </div>
@@ -846,9 +524,11 @@ export default function ShopList({
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-             {param && <h4 className="mb-3" style={{ color: "black" }}>
-                New In
-              </h4>}
+              {param && (
+                <h4 className="mb-3" style={{ color: "black" }}>
+                  New In
+                </h4>
+              )}
               <div className="row">
                 <div className="col-xl-12">
                   <ShopCategorySlider
@@ -863,44 +543,122 @@ export default function ShopList({
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
                   <div className="d-flex align-items-center">
-                    <SelectBoxFour />
-                    <SelectBoxFive />
-                    <SelectBoxSix />
-                    <SelectBoxSeven />
-                    {/* <SelectBoxEight /> */}
+                    <SelectBoxFour onApply={onPriceChange} />
+                    <SelectBoxFive onApply={onColorChange} />
+                    <SelectBoxSix onApply={onSizeChange} />
                   </div>
                 )}
 
-                {/* Filter button */}
                 <div
-                  className="d-flex align-items-center justify-content-end mb-3 w-100"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setShowFilters((prev) => !prev)}
+                  className="d-flex align-items-center justify-content-end mb-3 w-100 filter-container"
+                  style={{ gap: "10px" }}
                 >
-                  <h6
-                    className="title mb-0 fw-normal d-flex align-items-center"
-                    style={{ color: "black", fontSize: "0.95rem" }}
+                  <div
+                    className="d-flex align-items-center"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setShowFilters((prev) => !prev)}
                   >
-                    <i
-                      className="flaticon-filter me-2"
-                      style={{ color: "black" }}
-                    />
-                    <span className="d-none d-sm-inline">Filter</span>
-                  </h6>
+                    <h6
+                      className="title mb-0 fw-normal d-flex align-items-center"
+                      style={{ color: "black", fontSize: "0.95rem" }}
+                    >
+                      <i
+                        className="flaticon-filter me-2"
+                        style={{ color: "black" }}
+                      />
+                      <span className="d-none d-sm-inline">Filter</span>
+                    </h6>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="btn btn-sm font-14 btn-secondary btn-sharp"
+                  >
+                    RESET
+                  </button>
+
+                  <style jsx>{`
+                    @media (max-width: 576px) {
+                      .filter-container {
+                        flex-direction: column !important;
+                        align-items: flex-end !important;
+                        gap: 6px !important;
+                      }
+                    }
+                  `}</style>
                 </div>
               </div>
 
               <Tab.Container defaultActiveKey={"Grid"}>
                 <div className="filter-wrapper border-top p-t20">
                   <div className="filter-left-area">
-                    <ul className="filter-tag">
-                      <li>
-                        <Link href={"#"} className="tag-btn">
-                          Dresses{" "}
-                          <i className="icon feather icon-x tag-close" />
-                        </Link>
-                      </li>
+                    <ul
+                      className="filter-tag"
+                      style={{
+                        display: "flex",
+                        padding: "10px",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                      }}
+                    >
+                      {/* ✅ Dynamic color tags */}
+                      {selectedColors.map((color) => (
+                        <li key={color}>
+                          <button
+                            className="tag-btn"
+                            onClick={() =>
+                              setSelectedColors(
+                                selectedColors.filter((c) => c !== color)
+                              )
+                            }
+                          >
+                            {color}{" "}
+                            <i className="icon feather icon-x tag-close" />
+                          </button>
+                        </li>
+                      ))}
+
+                      {/* ✅ Dynamic size tags (show title instead of number) */}
+                      {selectedSizes.map((sizeValue) => {
+                        const sizeObj = sizeData.find(
+                          (item) => Number(item.category) === sizeValue
+                        );
+                        const sizeTitle = sizeObj ? sizeObj.title : sizeValue;
+
+                        return (
+                          <li key={sizeValue}>
+                            <button
+                              className="tag-btn"
+                              onClick={() =>
+                                setSelectedSizes(
+                                  selectedSizes.filter((s) => s !== sizeValue)
+                                )
+                              }
+                            >
+                              {sizeTitle}{" "}
+                              <i className="icon feather icon-x tag-close" />
+                            </button>
+                          </li>
+                        );
+                      })}
+
+                      {/* ✅ Dynamic price range tag */}
+                      {selectedPriceRange && (
+                        <li>
+                          <button
+                            className="tag-btn"
+                            onClick={() => setSelectedPriceRange(null)}
+                          >
+                            ₦{selectedPriceRange[0].toLocaleString()}
+                            <i className="icon feather icon-x tag-close" />
+                          </button>
+                        </li>
+                      )}
                     </ul>
+
+                    {/*  */}
+
                     <span>Showing 1–5 Of {products.length} Results</span>
                   </div>
                   <div className="filter-right-area">
@@ -911,59 +669,84 @@ export default function ShopList({
                     >
                       Filter
                     </Link>
-                    <div className="form-group">
-                      <SelectBoxOne />
-                    </div>
-                    <div className="form-group Category">
-                      <SelectBoxTwo />
-                    </div>
                   </div>
                 </div>
 
                 <div className="row">
                   <Tab.Content className="col-12 tab-content shop-">
-                    {/* <Tab.Pane eventKey={"List"}>
-                      <div className="row">
-                        {products.slice(0, 6).map((item, index) => (
-                          <div
-                            className="col-md-12 col-sm-12 col-xxxl-6"
-                            key={item._id}
-                          >
-                            {" "}
-                            <ShopGridCard
-                              image={
-                                item.productImages[0]?.url || "/fallback.jpg"
-                              }
-                              title={item.name}
-                              price={item.price}
-                              showdetailModal={() => setDetailModal(true)}
-                              _id={""}
-                              category={""}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </Tab.Pane> */}
-
                     <Tab.Pane eventKey={"Grid"}>
                       <div className="row gx-xl-4 g-3">
-                        {products.map((item, index) => (
-                          <div
-                            className="col-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 m-b30"
-                            key={index}
-                          >
-                            <ShopGridCard
-                              image={
-                                item.productImages[0]?.url || "/fallback.jpg"
-                              }
-                              title={item.name}
-                              price={`₦${item.price}`} // ✅ now always 2000
-                              showdetailModal={() => setDetailModal(true)}
-                              _id={item._id}
-                              category={item.category || ""}
-                            />
-                          </div>
-                        ))}
+                        {(() => {
+                          const filtered = products.filter((item) => {
+                            // Category filter
+                            if (
+                              selectedCategoryId &&
+                              item.category !== selectedCategoryId
+                            )
+                              return false;
+
+                            // Color filter
+                            if (
+                              selectedColors.length &&
+                              !selectedColors.includes(item.color)
+                            )
+                              return false;
+
+                            // Size filter
+                            if (
+                              selectedSizes.length &&
+                              !selectedSizes.includes(Number(item.size))
+                            )
+                              return false;
+
+                            // Price filter
+                            if (selectedPriceRange) {
+                              const price = Number(item.price);
+                              if (
+                                price < selectedPriceRange[0] ||
+                                price > selectedPriceRange[1]
+                              )
+                                return false;
+                            }
+
+                            return true;
+                          });
+
+                          // ✅ If no match, show friendly message
+                          if (filtered.length === 0) {
+                            return (
+                              <div
+                                className="text-center py-5"
+                                style={{
+                                  width: "100%",
+                                  color: "#555",
+                                  fontSize: "1rem",
+                                }}
+                              >
+                                <p>No products match your selected filters.</p>
+                              </div>
+                            );
+                          }
+
+                          // ✅ Otherwise show the products
+                          return filtered.map((item, index) => (
+                            <div
+                              className="col-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 m-b30"
+                              key={index}
+                            >
+                              <ShopGridCard
+                                image={
+                                  item.productImages[0]?.url || "/fallback.jpg"
+                                }
+                                title={item.name}
+                                price={`₦${item.price}`}
+                                showdetailModal={() => setDetailModal(true)}
+                                _id={item._id}
+                                category={item.category || ""}
+                              />
+                            </div>
+                          ));
+                        })()}
                       </div>
                     </Tab.Pane>
                   </Tab.Content>
