@@ -92,16 +92,6 @@ export default function ShopStandard() {
 
       <section className="content-inner-3 pt-3 z-index-unset">
         <div className="container-fluid">
-         
-        <div className="container">
-          <p className="text-black" style={{fontWeight:800, fontSize: "19px"}}>New In</p>
-          <div className="row ">
-          <div className="col-xl-12">
-            <ShopCategorySlider categorySelect={category ?? []} />
-          </div>
-        </div>
-        </div>
-      
           <div className="row">
             {/* FILTER HEADER */}
             <div
