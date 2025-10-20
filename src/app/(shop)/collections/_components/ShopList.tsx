@@ -99,10 +99,10 @@ export default function ShopList({
   const handleResetFilters = () => {
     setSelectedColors([]);
     setSelectedSizes([]);
-    setBreadcrumb(["Home"]);
+    // setBreadcrumb(["Home"]);
     setSelectedPriceRange(null);
     setSelectedCategoryId(null);
-    router.push("/collections");
+    // router.push("/collections");
   };
 
   useEffect(() => {
