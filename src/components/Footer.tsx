@@ -73,7 +73,7 @@ const Footer = (props : footertype) => {
                                 <h5 className="footer-title" style={{ color: "white" }}>Customer Care</h5>
                                 <ul>
                                     {WidgetData.map((item, i)=>(
-                                        <li key={i}><Link style={{color: "#fff"}} href="/help-and-support">{item.name}</Link></li>
+                                        <li key={i}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>
@@ -93,7 +93,7 @@ const Footer = (props : footertype) => {
                                 <h5 className="footer-title" style={{ color: "white" }}>Company</h5>
                                 <ul>
                                     {Company.map((item, i)=>(
-                                        <li key={i}><Link style={{color: "#fff"}} href="#">{item.name}</Link></li>
+                                        <li key={i}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>
@@ -104,7 +104,7 @@ const Footer = (props : footertype) => {
                                 {/* <Link href="/HelpSupport">Help & Support</Link> */}
                                 <ul>
                                     {FooterMenu.map((item,ind)=>(
-                                        <li key={ind}><Link style={{color: "#fff"}} href={"/collections"}>{item.name}</Link></li>
+                                        <li key={ind}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
                                     ))}                                    
                                 </ul>
                             </div>

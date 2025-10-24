@@ -434,7 +434,7 @@ export default function ShopList({
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                        <Link href={"/collections"}> Collections </Link>
+                        <Link href={"/collections"}> Collectionsss </Link>
                         {categoryParam && (
                           <>
                             {" "}
