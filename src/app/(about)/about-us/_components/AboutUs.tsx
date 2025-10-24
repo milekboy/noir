@@ -12,7 +12,7 @@ const AboutUs = () =>{
                         <div className="row align-items-center">
                             <div className="col-lg-7 col-md-7">
                                 <div className="text-start mb-xl-0 mb-4">
-                                    <h1>Your Fashion Journey Starts Here Discover Style at Pixio</h1>
+                                    <h1>Your Fashion Journey Starts Here Discover Style at Noir</h1>
                                     <nav aria-label="breadcrumb" className="breadcrumb-row">
                                         <ul className="breadcrumb">
                                             <li className="breadcrumb-item"><Link href={"/"}> Home</Link></li>
@@ -49,7 +49,7 @@ const AboutUs = () =>{
                 </video>
                 <div className="about-info">
                     <h3 className="dz-title">
-                        <Link href="/about-me">why Pixio ?</Link>
+                        <Link href="/about-me">why Noir ?</Link>
                     </h3>
                     <p className="text mb-0">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use</p>
                 </div>
