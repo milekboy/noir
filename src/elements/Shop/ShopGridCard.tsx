@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CartContext } from "@/components/CartContext";
 import Image, { StaticImageData } from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
+import { toast } from "react-toastify";
+import { WishlistContext } from "@/components/WishlistContext";
 
 interface cardType {
   image: string | StaticImageData;
@@ -19,8 +21,17 @@ export default function ShopGridCard(props: cardType) {
   const [basketIcon, setBasketIcon] = useState(false);
   const { setCartCount, fetchCartCount } = useContext(CartContext);
   const [categoryName, setCategoryName] = useState<string | null>(null);
+    const {wishListCount, setWishListCount} = useContext(WishlistContext);
+  
 
   const addToCart = async () => {
+    setCartCount((prev: number) => prev + 1);
+    toast("Product added to cart", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 5000,
+        });
     const payload: Record<string, any> = {
       productId: props._id,
       categoryId: props.category,
@@ -57,6 +68,13 @@ export default function ShopGridCard(props: cardType) {
   };
 
   const addToWishlist = async () => {
+      setWishListCount((prev: any) => prev+ 1)
+    toast("Product added to wishlist", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 2000,
+        });
     const payload: Record<string, any> = {
       productId: props._id,
     };

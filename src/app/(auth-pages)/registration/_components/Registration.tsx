@@ -28,6 +28,7 @@ export default function Registration() {
   const [date, setDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
+   
     e.preventDefault();
 
     const res = await register({

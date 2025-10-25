@@ -21,7 +21,7 @@ const FeaturedCategorySlider = () => {
   const [hovered, setHovered] = useState(false);
   const [swiperInstance, setSwiperInstance] = useState<any>(null);
 
-  console.log("Hovered:", hovered, "Swiper:", swiperInstance);
+  // console.log("Hovered:", hovered, "Swiper:", swiperInstance);
   useEffect(() => {
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -31,7 +31,7 @@ const FeaturedCategorySlider = () => {
     try {
       const res = await networkInstance.get("category/get-all-categories");
       setCategory(res.data);
-      console.log("here", res);
+      // console.log("here", res);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -124,10 +124,10 @@ const FeaturedCategorySlider = () => {
   }
 
   const handleMouseEnter = () => {
-    console.log("Mouse entered - stopping autoplay", swiperInstance);
+    // console.log("Mouse entered - stopping autoplay", swiperInstance);
     setHovered(true);
     if (swiperInstance && swiperInstance.autoplay) {
-      console.log("Stopping autoplay...");
+      // console.log("Stopping autoplay...");
       swiperInstance.autoplay.stop();
     }
   };

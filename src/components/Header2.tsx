@@ -13,6 +13,7 @@ import NetworkInstance from "@/app/api/NetworkInstance";
 import { usePathname } from "next/navigation";
 import { get } from "http";
 import useCartContext, { CartContext, CartProvider } from "./CartContext";
+import useWishListContext, { WishlistContext, WishlistProvider } from "./WishlistContext";
 
 interface State {
   headerFix: boolean;
@@ -124,9 +125,9 @@ export default function Header2() {
   const [transparent, setTransparent] = useState(true);
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const router = usePathname();
-  // const context = useContext(CartContext);
-  // const {CartContext} = context
-  const { CartContext } = useCartContext();
+  const { setCartCount, fetchCartCount, cartCount } = useContext(CartContext);
+  const { wishListCount, setWishListCount,fetchWishListCount } = useContext(WishlistContext);
+
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
@@ -244,6 +245,10 @@ export default function Header2() {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, [targetDate]);
+
+  // console.log("cartcount", cartCount);
+
+
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
@@ -475,7 +480,7 @@ export default function Header2() {
                       >
                         <i className="iconly-Light-Heart2" />
                         <span className="badge badge-circle">
-                          {wishlist.length}
+                          {wishListCount}
                         </span>
                       </Link>
                     </li>
@@ -489,7 +494,7 @@ export default function Header2() {
                       >
                         <i className="iconly-Broken-Buy" />
                         <span className="badge badge-circle">
-                          {cartItems.length}
+                          {cartCount}
                         </span>
                         {/* <span className="badge badge-circle">{CartContext}</span> */}
                       </Link>

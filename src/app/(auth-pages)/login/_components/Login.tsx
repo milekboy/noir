@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { login } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,32 @@ export default function Login() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
+    if (email.trim() === "" || password.trim() === "") {
+      toast.warning("Please enter your email and password", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+      return;
+    } 
+    // else if (!email.includes("@gmail.com") || !email.includes("@yahoo.com") || !email.includes("@outlook.com") || !email.includes(".com")) {
+    //    toast.warning("Please enter a valid email address", {
+    //     theme: "dark",
+    //     hideProgressBar: true,
+    //     position: "bottom-right",
+    //     autoClose: 2000,
+    //   });
+    //   return;
+    // }
+    else if (!email.includes(".com")) {
+       toast.warning("Please enter a valid email address", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+    }
     await login(email, password);
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/account-dashboard");
@@ -26,26 +52,30 @@ export default function Login() {
     <div className="page-content bg-light">
       <section className="px-3">
         <div className="row">
-          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5"
-           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            minHeight: '30vh',
-            position: 'relative',
-            zIndex: 1
-          }}
+          <div
+            className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              minHeight: "30vh",
+              position: "relative",
+              zIndex: 1,
+            }}
           >
-            <div className="dz-bnr-inr-entry" >
+            <div className="dz-bnr-inr-entry">
               <h1>Login</h1>
               <nav
                 aria-label="breadcrumb text-align-start"
                 className="breadcrumb-row"
               >
-                <ul className="breadcrumb" style={{color: "white!important"}}>
-                  <li className="breadcrumb-item text-white" >
-                    <Link href="/" className="text-white"> Home</Link>
+                <ul className="breadcrumb" style={{ color: "white!important" }}>
+                  <li className="breadcrumb-item text-white">
+                    <Link href="/" className="text-white">
+                      {" "}
+                      Home
+                    </Link>
                   </li>
                   <li className="breadcrumb-item text-white">Login</li>
                 </ul>
@@ -115,7 +145,6 @@ export default function Login() {
                     type="submit"
                     className="btn btn-secondary btnhover text-uppercase me-2 sign-btn"
                   >
-                   
                     {loading ? (
                       <span
                         className="spinner-border spinner-border-sm"
