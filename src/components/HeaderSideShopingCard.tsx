@@ -1,10 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Tab, Nav } from "react-bootstrap";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import { ShopProductItem, ShopProductItemtype } from "../constant/Alldata";
 import Image from "next/image";
+import { CartContext } from "./CartContext";
+import { toast } from "react-toastify";
 
 interface propType {
   tabactive: string;
@@ -25,6 +27,7 @@ interface WishlistType {
 export default function HeaderSideShoppingCard(props: propType) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
+  const {cartCount,setCartCount } = useContext(CartContext)
   interface ProductImage {
     url: string;
     public_id: string;
@@ -73,8 +76,15 @@ export default function HeaderSideShoppingCard(props: propType) {
     const cartId = localStorage.getItem("cartId");
     const item = cartItems[index];
     setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+    setCartCount((prev: number)=> prev - 1);
 
     try {
+      toast("Product removed from cart", {
+            theme: "dark",
+            hideProgressBar: true,
+            position: "bottom-right",
+            autoClose: 5000,
+          });
       await networkInstance.delete(`/cart/remove/${cartId}`, {
         data: {
           productId: item.product,
@@ -255,13 +265,13 @@ export default function HeaderSideShoppingCard(props: propType) {
                           </h6>
                         </div>
                       </div>
-                      <Link
-                        href="#"
+                      <span
+                     
                         className="dz-close"
                         onClick={() => handleRemove(index)}
                       >
                         <i className="ti-close" />
-                      </Link>
+                      </span>
                     </div>
                   </li>
                 ))}

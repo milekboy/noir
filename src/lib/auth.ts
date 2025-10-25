@@ -36,10 +36,13 @@ export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
+    alert("helo1")
     const response = await networkInstance.post("/user/register", payload);
-    if (response.data && response.data.message) {
-      console.log("Backend message:", response.data.message);
+    if (response.data ) {
+      alert("helo2")
+      console.log("Backend message:", response.data);
     }
+    alert("helo3")
     // console.log(response.data);
     toast(response.data.message, {
       theme: "dark",
@@ -47,10 +50,11 @@ export async function register(
       position: "bottom-right",
       autoClose: 5000,
     });
+     
     return response.data;
   } catch (error: any) {
     if (error.response?.data?.message?.includes("exists")) {
-      toast(error.response.data.message, {
+      toast.error(error.response.data.message, {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",

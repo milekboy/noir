@@ -13,6 +13,7 @@ import NetworkInstance from "@/app/api/NetworkInstance";
 import { usePathname } from "next/navigation";
 import { get } from "http";
 import useCartContext, { CartContext, CartProvider } from "./CartContext";
+import useWishListContext, { WishlistContext, WishlistProvider } from "./WishlistContext";
 
 interface State {
   headerFix: boolean;
@@ -124,9 +125,9 @@ export default function Header2() {
   const [transparent, setTransparent] = useState(true);
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const router = usePathname();
-  // const context = useContext(CartContext);
-  // const {CartContext} = context
-  const { CartContext } = useCartContext();
+  const { setCartCount, fetchCartCount, cartCount } = useContext(CartContext);
+  const { wishListCount, setWishListCount,fetchWishListCount } = useContext(WishlistContext);
+
   const scrollHandler = () => {
     if (window.scrollY > 80) {
       dispatch({ type: "FIX_HEADER", payload: true });
@@ -244,16 +245,20 @@ export default function Header2() {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, [targetDate]);
+
+  // console.log("cartcount", cartCount);
+
+
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
         <div className="bg-black d-flex align-items-center  px-5 py-1 justify-content-between ">
-          <div className="d-flex justify-content-between align-items-center gap-2 mx-auto">
+          <div className="d-flex justify-content-between align-items-center gap-2 mx-auto text-white">
             LunchSale! Up to 50% Off on Selected Items.
-            <div className="d-fle justify-content-between align-items-center gap-2 ">
+            <div className="d-fle justify-content-between align-items-center gap-2 text-secondary">
               <span
                 className="px-1 bg-white rounded-sm "
-                style={{ fontSize: "14px!important" }}
+                // style={{ fontSize: "14px!important" }}
               >
                 {timeLeft.days}
               </span>
@@ -475,7 +480,7 @@ export default function Header2() {
                       >
                         <i className="iconly-Light-Heart2" />
                         <span className="badge badge-circle">
-                          {wishlist.length}
+                          {wishListCount}
                         </span>
                       </Link>
                     </li>
@@ -489,7 +494,7 @@ export default function Header2() {
                       >
                         <i className="iconly-Broken-Buy" />
                         <span className="badge badge-circle">
-                          {cartItems.length}
+                          {cartCount}
                         </span>
                         {/* <span className="badge badge-circle">{CartContext}</span> */}
                       </Link>

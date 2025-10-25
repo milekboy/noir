@@ -2,9 +2,11 @@
 import Link from "next/link";
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import NetworkInstance from "@/app/api/NetworkInstance";
+import { CartContext } from "@/components/CartContext";
+import { toast } from "react-toastify";
 
 interface Images {
   url: string;
@@ -22,6 +24,8 @@ interface WishlistType {
 export default function ShopWishList() {
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
 
+  const { setCartCount, fetchCartCount } = useContext(CartContext);
+
   const getWishlist = async () => {
     try {
       const sessionId = localStorage.getItem("sessionId");
@@ -38,24 +42,68 @@ export default function ShopWishList() {
   };
 
   async function handleDelete(productId: string, index: number) {
-     setWishlist((prev) => prev.filter((_, i) => i !== index));
-    try{
-         const sessionId = localStorage.getItem("sessionId");
-        await NetworkInstance().delete(`/wishlist/${productId}`, {
+    setWishlist((prev) => prev.filter((_, i) => i !== index));
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+      await NetworkInstance().delete(`/wishlist/${productId}`, {
         headers: {
           "x-session-id": sessionId,
         },
       });
-    } catch (err: any){
-        console.log("error: ", err)
+    } catch (err: any) {
+      console.log("error: ", err);
     }
-  
-   
   }
-console.log(wishlist)
+  console.log(wishlist);
   useEffect(() => {
     getWishlist();
   }, []);
+
+  const addToCart = async (item: any) => {
+    setCartCount((prev: number) => prev + 1);
+    toast("Item moved to Cart successfully.", {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
+    setCartCount((prev: number) => prev + 1);
+    const payload: Record<string, any> = {
+      productId: item._id,
+      categoryId: item.category,
+      quantity: 1,
+    };
+
+    const existingCartId = localStorage.getItem("cartId");
+    if (existingCartId) {
+      payload.cartId = existingCartId;
+    } else {
+      setCartCount((prev: number) => prev + 1);
+    }
+
+    try {
+      const response = await NetworkInstance().post("/cart/add", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response?.status === 200 || response?.status === 201) {
+        fetchCartCount();
+        const newCartId = response.data?.cartId;
+
+        if (newCartId) {
+          localStorage.setItem("cartId", newCartId);
+        }
+
+        console.log("product added to cart");
+      }
+    } catch (err: any) {
+      console.error("Not added to cart:", err?.response?.data || err, payload);
+    }
+  };
+
+  console.log("wishlist:", wishlist);
 
   return (
     <div className="page-content bg-light">
@@ -93,7 +141,7 @@ console.log(wishlist)
                             height={1000}
                             alt={elem.name}
                             className="object-fit"
-                            style={{objectFit: "cover"}}
+                            style={{ objectFit: "cover" }}
                           />
                         </td>
                         <td className="product-item-name">{elem.name}</td>
@@ -102,15 +150,21 @@ console.log(wishlist)
                         </td>
                         <td className="product-item-stock">In Stock</td>
                         <td className="product-item-totle">
-                          <Link
-                            href="/shop-cart"
+                          <span
                             className="btn btn-secondary btnhover text-nowrap"
+                            onClick={() => {
+                              addToCart(elem);
+                              handleDelete(elem._id, ind);
+                            }}
                           >
                             Add To Cart
-                          </Link>
+                          </span>
                         </td>
                         <td className="product-item-close">
-                          <Link href="#" onClick={() => handleDelete(elem._id,ind)}>
+                          <Link
+                            href="#"
+                            onClick={() => handleDelete(elem._id, ind)}
+                          >
                             <i className="ti-close" />
                           </Link>
                         </td>

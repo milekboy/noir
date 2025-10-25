@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 // import SubscribeModal from "@/constant/SubscribeModal";
 import ScrollToTopButton from "@/constant/ScrollToTopButton";
+import { WishlistProvider } from "@/components/WishlistContext";
 
 export default function RootLayout({
   children,
@@ -65,7 +66,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <WishlistProvider>
+            {children}
+            </WishlistProvider>
+        </CartProvider>
         <ScrollToTopButton />
       </body>
     </html>

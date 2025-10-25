@@ -7,6 +7,8 @@ import ModalSlider from "../../components/ModalSlider";
 import ProductInputButton from "../Shop/ProductInputButton";
 import Image from "next/image";
 import { CartContext } from "@/components/CartContext";
+import { toast } from "react-toastify";
+import {WishlistContext} from "./../../components/WishlistContext";
 
 interface MenuItem {
   image: string;
@@ -118,6 +120,7 @@ const ProductSection = () => {
   const networkInstance = NetworkInstance();
   const { setCartCount, fetchCartCount } = useContext(CartContext);
   const [categoryName, setCategoryName] = useState<string | null>("");
+  const {wishListCount, setWishListCount} = useContext(WishlistContext);
 
   useEffect(() => {
     async function displayProduct() {
@@ -136,6 +139,13 @@ const ProductSection = () => {
   }, []);
 
   const addToCart = async (props: any) => {
+    setCartCount((prev: number) => prev + 1);
+    toast("Product added to cart", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 5000,
+        });
     const payload: Record<string, any> = {
       productId: props._id,
       categoryId: props.category,
@@ -172,6 +182,13 @@ const ProductSection = () => {
   };
 
   const addToWishlist = async (item: any) => {
+    setWishListCount((prev: any) => prev+ 1)
+    toast("Product added to wishlist", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 2000,
+        });
     const payload: Record<string, any> = {
       productId: item._id,
     };

@@ -1997,7 +1997,7 @@ export const categories = [
             {
               name: "Cardigans",
               link: "/shop-list",
-              badge: "NEW",
+              badge: "NEW IN",
             },
             { name: "Hoodies & Sweatshirts", link: "/shop-list" },
             { name: "Jackets & Coats", link: "/shop-list" },
@@ -2069,7 +2069,7 @@ export const categories = [
           items: [
             { name: "New in Clothing", link: "/shop-list" },
             { name: "Chinos", link: "/shop-list" },
-            { name: "Cardigans", link: "/shop-list", badge: "NEW" },
+            { name: "Cardigans", link: "/shop-list", badge: "NEW IN IN" },
             { name: "Hoodies and Sweatshirts", link: "/shop-list" },
             { name: "Jackets and Coats", link: "/shop-list" },
             { name: "Jeans", link: "/shop-list" },
@@ -2198,7 +2198,7 @@ export const categories = [
           items: [
             { name: "Bodycon Dresses", link: "/shop-list", badge: "HOT" },
             { name: "Mini Skirts", link: "/shop-list" },
-            { name: "Sequin Tops", link: "/shop-list", badge: "NEW" },
+            { name: "Sequin Tops", link: "/shop-list", badge: "NEW IN" },
             { name: "Leather Pants", link: "/shop-list" },
             { name: "Corset Tops", link: "/shop-list" },
             { name: "Co-ord Sets", link: "/shop-list" },
@@ -2271,7 +2271,7 @@ export const categories = [
         {
           title: "Footwear",
           items: [
-            { name: "Loafers", link: "/shop-list", badge: "NEW" },
+            { name: "Loafers", link: "/shop-list", badge: "NEW IN" },
             { name: "Chelsea Boots", link: "/shop-list" },
             { name: "Block Heels", link: "/shop-list" },
             { name: "White Sneakers", link: "/shop-list" },
@@ -2387,7 +2387,7 @@ export const categories = [
           items: [
             { name: "Track Jackets", link: "/shop-list" },
             { name: "Zip-Up Hoodies", link: "/shop-list" },
-            { name: "Lightweight Wind", link: "/shop-list", badge: "NEW" },
+            { name: "Lightweight Wind", link: "/shop-list", badge: "NEW IN" },
             { name: "Oversized Sweatshirts", link: "/shop-list" },
           ],
         },
@@ -2452,7 +2452,7 @@ export const categories = [
           title: "Footwear",
           items: [
             { name: "Sandals", link: "/shop-list" },
-            { name: "Slides", link: "/shop-list", badge: "NEW" },
+            { name: "Slides", link: "/shop-list", badge: "NEW IN" },
             { name: "Espadrilles", link: "/shop-list" },
             { name: "Flip Flops", link: "/shop-list" },
             { name: "Light Sneakers", link: "/shop-list" },
@@ -2499,7 +2499,7 @@ export const categories = [
             {
               name: "Packable Outerwear",
               link: "/shop-list",
-              badge: "NEW",
+              badge: "NEW IN",
             },
           ],
         },
@@ -2541,7 +2541,7 @@ export const categories = [
           items: [
             { name: "Light Cardigans", link: "/shop-list" },
             { name: "Overshirts", link: "/shop-list" },
-            { name: "Puffer Jackets", link: "/shop-list", badge: "NEW" },
+            { name: "Puffer Jackets", link: "/shop-list", badge: "NEW IN" },
             { name: "Denim Jackets", link: "/shop-list" },
             { name: "Versatile Blazers", link: "/shop-list" },
           ],
@@ -2590,7 +2590,7 @@ export const categories = [
         {
           title: "Accessories",
           items: [
-            { name: "Blanket Scarves", link: "/shop-list", badge: "NEW" },
+            { name: "Blanket Scarves", link: "/shop-list", badge: "NEW IN" },
             { name: "Beanies & Berets", link: "/shop-list" },
             { name: "Statement Belts", link: "/shop-list" },
             { name: "Gloves", link: "/shop-list" },
