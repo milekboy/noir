@@ -36,13 +36,13 @@ export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
-    alert("helo1")
+    alert("helo1");
     const response = await networkInstance.post("/user/register", payload);
-    if (response.data ) {
-      alert("helo2")
+    if (response.data) {
+      alert("helo2");
       console.log("Backend message:", response.data);
     }
-    alert("helo3")
+    alert("helo3");
     // console.log(response.data);
     toast(response.data.message, {
       theme: "dark",
@@ -50,7 +50,7 @@ export async function register(
       position: "bottom-right",
       autoClose: 5000,
     });
-     
+
     return response.data;
   } catch (error: any) {
     if (error.response?.data?.message?.includes("exists")) {
@@ -67,7 +67,6 @@ export async function register(
     throw new Error("Registration failed. Please try again.");
   }
 }
-
 
 export async function login(
   email: string,
@@ -101,31 +100,35 @@ export async function login(
     // }
 
     console.error("Login error:", error);
-    throw new Error( error?.response?.data?.message);
-  }}
-
-  export async function verifyOtp(
-    email: string,
-    otp: string
-  ): Promise<AuthResponse> {
-    try {
-      const response = await networkInstance.post("/user/verify-otp", {
-        email,
-        otp,
-      });
-      if (response.data && response.data.message) {
-        console.log("Backend message:", response.data.message);
-      }
-      console.log(response.data);
-      toast(response.data.message, {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
-      return response.data;
-    } catch (error: any) {
-      console.error("OTP verification error:", error);
-      throw new Error(error?.response?.data?.message || "OTP verification failed. Please try again.");
-    }
+    throw new Error(error?.response?.data?.message);
   }
+}
+
+export async function verifyOtp(
+  email: string,
+  otp: string
+): Promise<AuthResponse> {
+  try {
+    const response = await networkInstance.post("/user/verify-otp", {
+      email,
+      otp,
+    });
+    if (response.data && response.data.message) {
+      console.log("Backend message:", response.data.message);
+    }
+    console.log(response.data);
+    toast(response.data.message, {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("OTP verification error:", error);
+    throw new Error(
+      error?.response?.data?.message ||
+        "OTP verification failed. Please try again."
+    );
+  }
+}

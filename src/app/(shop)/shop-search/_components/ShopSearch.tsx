@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
+
 import { Modal, Tab } from "react-bootstrap";
 import Image from "next/image"; // ✅ added
 import CommanBanner from "@/components/CommanBanner";
 import IMAGES from "@/constant/theme";
 import PaginationBlog from "@/elements/Shop/PaginationBlog";
+
 import SelectBoxOne from "@/elements/Shop/SelectBoxOne";
 import SelectBoxTwo from "@/elements/Shop/SelectBoxTwo";
 import SelectBoxFour from "@/elements/Shop/SelectBoxFour";
@@ -25,7 +27,7 @@ import NetworkInstance from "@/app/api/NetworkInstance";
 
 // import { label } from "three/src/nodes/TSL.js"; // ❌ remove
 
-export default function ShopList({
+export default function ShopSearch({
   selectedCategory,
 }: {
   selectedCategory: string | null;
@@ -45,31 +47,34 @@ export default function ShopList({
     description: string;
     color: string;
     size: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
   }
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
   const networkInstance = NetworkInstance();
-  //api call
 
   useEffect(() => {
-    getProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchSearchResults();
+  }, [query]);
 
-  const getProducts = async () => {
+  const fetchSearchResults = async () => {
     try {
-      const res = await networkInstance.get("product/get-all-products");
+      const res = await networkInstance.get(
+        `https://noir-api-pgco.onrender.com/api/product/search?q=${query}&page=1&limit=8`
+      );
 
-      setProducts(res.data);
-      console.log("p", res.data);
+      const items = Array.isArray(res.data.results) ? res.data.results : [];
+
+      setProducts(items);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Search error:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
   };
-
   const [detailModal, setDetailModal] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -170,11 +175,10 @@ export default function ShopList({
     image: string[];
     badge: string;
   }
-  const [selectedCollection, setSelectedCollection] = useState("Collections");
+
   const [param, setParam] = useState<string | null>("");
   const [categoryData, setCategoryData] = useState<CategoryProps>();
 
-  const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   useEffect(() => {
@@ -226,24 +230,36 @@ export default function ShopList({
               marginTop: "10px",
             }}
           >
-            <h4
-              style={{
-                color: "black",
-                fontWeight: "bold",
-                letterSpacing: "1px",
-                textTransform: "uppercase",
-                textAlign: "center",
-                margin: 0,
-              }}
-            >
-              {breadcrumb[breadcrumb.length - 1] === "Home"
-                ? `${param ? param : ""} Collections`
-                : breadcrumb.length > 0
-                ? `${breadcrumb[breadcrumb.length - 1]} Collections`
-                : " "}
-            </h4>
+            {products.length === 0 ? (
+              <div
+                style={{
+                  color: "black",
+                  fontWeight: "bold",
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  margin: 0,
+                }}
+              >
+                No items match your search "
+                <span style={{ color: "black" }}>{query}</span>"
+              </div>
+            ) : (
+              <h4
+                style={{
+                  color: "#4d4c4a",
+                  fontWeight: "bold",
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  margin: 0,
+                }}
+              >
+                Search results for{" "}
+                <span style={{ color: "black" }}>{query}</span>
+              </h4>
+            )}
           </div>
-
           <div className="d-none d-lg-block" style={{ width: "80px" }}></div>
         </div>
 
@@ -396,71 +412,6 @@ export default function ShopList({
               </div>
             ))}
           </nav>
-
-          {breadcrumb.length > 0 && (
-            <nav
-              aria-label="breadcrumb"
-              style={{
-                padding: "10px 20px",
-                fontSize: "14px",
-                color: "#444",
-              }}
-            >
-              {breadcrumb.map((crumb: string, idx: number) => (
-                <span key={idx} style={{ marginRight: "6px" }}>
-                  <Link
-                    href={`${
-                      breadcrumb[idx] === "Collections"
-                        ? "/collections"
-                        : breadcrumb[idx] === "Home"
-                        ? "/"
-                        : `/collections?category=${encodeURIComponent(crumb)}`
-                    }`}
-                    onClick={() => {
-                      window.location.reload();
-                    }}
-                    style={{
-                      color: "#000",
-                      fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
-                      cursor:
-                        idx === breadcrumb.length - 1 ? "default" : "pointer",
-                    }}
-                  >
-                    {breadcrumb.length > 3 ? (
-                      crumb
-                    ) : (
-                      <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
-                        <Link href={"/"}> Home </Link>
-                        <span style={{ margin: "0 6px", color: "#999" }}>
-                          {">"}
-                        </span>{" "}
-                        <Link href={"/collections"}> Collectionsss </Link>
-                        {categoryParam && (
-                          <>
-                            {" "}
-                            <span style={{ margin: "0 6px", color: "#999" }}>
-                              {">"}
-                            </span>{" "}
-                            <Link
-                              href={`/collections?category=${categoryParam}`}
-                            >
-                              {" "}
-                              {`${categoryParam}`}
-                            </Link>
-                          </>
-                        )}
-                      </p>
-                    )}
-                  </Link>
-                  {idx < breadcrumb.length - 1 && (
-                    <span style={{ margin: "0 6px", color: "#999" }}>
-                      {">"}
-                    </span>
-                  )}
-                </span>
-              ))}
-            </nav>
-          )}
         </div>
 
         <style jsx>{`
@@ -537,12 +488,12 @@ export default function ShopList({
                 </div>
               </div>
               <div
-                className="d-flex justify-content-space-between align-items-center  "
+                className="d-flex justify-content-space-between align-items-center m-b30"
                 style={{ marginTop: "30px", marginLeft: "-30px" }}
               >
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
-                  <div className="d-flex ">
+                  <div className="d-flex align-items-center">
                     <SelectBoxFour onApply={onPriceChange} />
                     <SelectBoxFive onApply={onColorChange} />
                     <SelectBoxSix onApply={onSizeChange} />
@@ -550,7 +501,7 @@ export default function ShopList({
                 )}
 
                 <div
-                  className="d-flex align-items-center justify-content-end mb-3  w-100 filter-container"
+                  className="d-flex align-items-center justify-content-end mb-3 w-100 filter-container"
                   style={{ gap: "10px" }}
                 >
                   <div
