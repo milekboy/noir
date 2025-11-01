@@ -28,7 +28,6 @@ export default function Registration() {
   const [date, setDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-   
     e.preventDefault();
 
     const res = await register({
@@ -93,7 +92,7 @@ export default function Registration() {
       setError("Passwords do not match");
       setConfirm(false);
       console.log(confirm);
-      
+
       return;
     }
 
@@ -120,16 +119,17 @@ export default function Registration() {
     <div className="page-content bg-light">
       <section className="px-3">
         <div className="row flex">
-          <div className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5 mb-" 
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            minHeight: '30vh',
-            position: 'relative',
-            zIndex: 1
-          }}
+          <div
+            className="col-xxl-6 col-xl-6 col-lg-6 start-side-conten p-5 mb-"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${IMAGES.loginpic4.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              minHeight: "30vh",
+              position: "relative",
+              zIndex: 1,
+            }}
           >
             <div className="dz-bnr-inr-entry">
               <h1>Registration</h1>
@@ -139,7 +139,10 @@ export default function Registration() {
               >
                 <ul className="breadcrumb text-white">
                   <li className="breadcrumb-item text-white">
-                    <Link href="/" className="text-white"> Home</Link>
+                    <Link href="/" className="text-white">
+                      {" "}
+                      Home
+                    </Link>
                   </li>
                   <li className="breadcrumb-item text-white">Registration</li>
                 </ul>
@@ -151,9 +154,7 @@ export default function Registration() {
           </div>
           <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-conten justify-content-center mb-3">
             {showOtpStep ? (
-              <OTP otp={otp} 
-              onVerify={verifyOtp}
-               email={email} />
+              <OTP otp={otp} onVerify={verifyOtp} email={email} />
             ) : (
               <div className="login-area">
                 <h2 className="text-secondary text-center">Registration Now</h2>
@@ -296,9 +297,7 @@ export default function Registration() {
                             placeholder="DD/MM/YYYY"
                             type="date"
                           />
-
                         </div>
-
 
                         <div className="m-b25">
                           <label className="label-title">Gender</label>
