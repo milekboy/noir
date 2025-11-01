@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { Check, ChevronRight } from "lucide-react";
+import { toast } from "react-toastify";
 interface StepProps {
   title: string;
   isCompleted?: boolean;
@@ -48,6 +49,7 @@ interface StepperProps {
   lastName: string;
   gender: string;
   number: string;
+  date: string;
 }
 export const steps = [
   { id: 1, title: "1" },
@@ -65,8 +67,10 @@ export function Stepper({
   lastName,
   gender,
   number,
+  date
 }: StepperProps){
   const [loading, setLoading] = React.useState(false);
+  const [older, setOlder] = React.useState(false);
   function handleStepChange() {
     if (passwordConfirmation) {
       verifyPassword && verifyPassword();
@@ -80,11 +84,30 @@ export function Stepper({
   }
   const handleload = () => {
     setLoading(true);
+    console.log(number)
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 3000);
   }
-  
+  console.log(verifyName)
+
+  React.useEffect(() => {
+    if (date) {
+      const birthYear = Number(date.slice(0, 4));
+      const currentYear = new Date().getFullYear();
+      if (currentYear - birthYear >= 18) {
+        setOlder(true);
+      } else {
+        setOlder(false);
+         toast.error("You must be at least 18 years old to register", {
+                theme: "dark",
+                hideProgressBar: true,
+                position: "bottom-right",
+                autoClose: 1000,
+              });
+      }
+    }
+  }, [date]);
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="d-flex justify-content-center m-b10 align-items-center md:items-center gap-4 mb-8">
@@ -130,7 +153,7 @@ export function Stepper({
               !firstName.trim() ||
               !lastName.trim() ||
               !gender.trim() ||
-              !number.trim()
+              !number.trim() || !older
             }
             onClick={() => {
               verifyName && verifyName(); handleload();}}
