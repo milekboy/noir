@@ -1,4 +1,5 @@
 import NetworkInstance from "@/app/api/NetworkInstance";
+import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 
 const networkInstance = NetworkInstance();
@@ -13,9 +14,6 @@ interface AuthResponse {
     confirmPassword: string;
     phoneNumber: string;
     gender: string;
-    isClient: boolean;
-    isVerified: boolean;
-    otp: string;
   };
 }
 
@@ -27,22 +25,27 @@ interface RegisterPayload {
   confirmPassword: string;
   phoneNumber: string;
   gender: string;
-  isClient: boolean;
-  isVerified: boolean;
-  otp: string;
 }
 
 export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
-    const response = await networkInstance.post("/user/register", payload);
+
+
+    const response = await networkInstance.post("auth/register", payload);
+    alert(response);
     if (response.data) {
+
+
       console.log("Backend message:", response.data);
+    } else {
+      throw new Error("Registration failed. Please try again.");
     }
 
-    // console.log(response.data);
-    toast(response.data.message, {
+
+    toast(response?.data.message, {
+
       theme: "dark",
       hideProgressBar: true,
       position: "bottom-right",
@@ -59,8 +62,15 @@ export async function register(
         autoClose: 5000,
       });
       throw new Error(error.response.data.message);
+    }else if(error.message.includes("429")){
+      toast.error('Registration Failed, Too many request. Try again later', {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
     }
-
+     
     console.error("Registration error:", error);
     throw new Error("Registration failed. Please try again.");
   }
