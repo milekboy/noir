@@ -4,6 +4,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NetworkInstance from "@/app/api/NetworkInstance";
 
+// ✅ Persistent frontend session id
+function getSessionId() {
+  let sid = localStorage.getItem("x-session-id");
+  if (!sid) {
+    sid = crypto.randomUUID();
+    localStorage.setItem("x-session-id", sid);
+  }
+  return sid;
+}
+
 type Product = {
   _id: string;
   name: string;
@@ -21,8 +31,23 @@ export default function SearchInput() {
   const router = useRouter();
   const networkInstance = NetworkInstance();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!query.trim()) return;
+
+    try {
+      const res = await networkInstance.post(
+        `search/log`,
+        { q: query, resultsCount: results.length },
+        {
+          withCredentials: true,
+          headers: { "x-session-id": getSessionId() },
+        }
+      );
+      console.log("✅ Search log response:", res?.data);
+    } catch (err) {
+      console.log("❌ Search log error:", err);
+    }
+
     router.push(`/shop-search?query=${encodeURIComponent(query)}`);
     setShowSuggestions(false);
     setShowRecent(false);
@@ -39,7 +64,11 @@ export default function SearchInput() {
 
       try {
         const res = await networkInstance.get(
-          `product/search?q=${query}&page=1&limit=8`
+          `product/search?q=${query}&page=1&limit=8`,
+          {
+            withCredentials: true,
+            headers: { "x-session-id": getSessionId() }, // ✅ Important
+          }
         );
         setResults(res?.data?.results || []);
         setShowSuggestions(true);
@@ -55,9 +84,14 @@ export default function SearchInput() {
   // 🕙 Fetch recent when input focused
   const fetchRecent = async () => {
     try {
-      const res = await networkInstance.get(`search/recent?limit=5`);
+      const res = await networkInstance.get(`search/recent?limit=5`, {
+        withCredentials: true,
+        headers: { "x-session-id": getSessionId() }, // ✅ Send same session ID
+      });
+
       setRecent(res?.data?.items || []);
       setShowRecent(true);
+      console.log("Recent:", res?.data);
     } catch (err) {
       console.log(err);
     }
@@ -69,7 +103,17 @@ export default function SearchInput() {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setShowRecent(false);
+            setShowSuggestions(true);
+          }}
+          onBlur={() => {
+            setTimeout(() => {
+              setShowRecent(false);
+              setShowSuggestions(false);
+            }, 150);
+          }}
           onFocus={fetchRecent}
           className="rounded-end p-2 rounded-3 rounded-end-0 w-100 fs-6 border border-black px-3"
           placeholder="Search product, collections or code"
@@ -91,9 +135,9 @@ export default function SearchInput() {
           <i className="iconly-Light-Search" />
         </span>
 
-        {showSuggestions && results.length > 0 && (
+        {showSuggestions && results.length > 0 && !showRecent && (
           <div
-            className="rounded bg-white shadow position-absolute w-100  p-3"
+            className="rounded bg-white shadow position-absolute w-100 p-3"
             style={{ zIndex: 100 }}
           >
             {results.map((item) => (
@@ -114,6 +158,31 @@ export default function SearchInput() {
                 />
                 <span style={{ fontSize: "13px" }}>{item.name}</span>
               </Link>
+            ))}
+          </div>
+        )}
+        {showRecent && recent.length > 0 && !results.length && (
+          <div
+            className="rounded bg-white shadow position-absolute w-100 p-3"
+            style={{ zIndex: 100 }}
+          >
+            <div className="fw-bold mb-2" style={{ fontSize: "13px" }}>
+              Recent searches
+            </div>
+
+            {recent.map((item, idx) => (
+              <div
+                key={idx}
+                className="py-2 border-bottom text-start"
+                style={{ cursor: "pointer", fontSize: "13px" }}
+                onClick={() => {
+                  setQuery(item.query);
+                  setShowRecent(false);
+                  setShowSuggestions(true);
+                }}
+              >
+                {item.query}
+              </div>
             ))}
           </div>
         )}
