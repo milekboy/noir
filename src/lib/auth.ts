@@ -36,13 +36,11 @@ export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
-    alert("helo1");
     const response = await networkInstance.post("/user/register", payload);
     if (response.data) {
-      alert("helo2");
       console.log("Backend message:", response.data);
     }
-    alert("helo3");
+
     // console.log(response.data);
     toast(response.data.message, {
       theme: "dark",
