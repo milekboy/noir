@@ -31,21 +31,15 @@ export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
-
-
     const response = await networkInstance.post("auth/register", payload);
-    alert(response);
+
     if (response.data) {
-
-
       console.log("Backend message:", response.data);
     } else {
       throw new Error("Registration failed. Please try again.");
     }
 
-
-    toast(response?.data.message, {
-
+    toast(response?.data.devMessage, {
       theme: "dark",
       hideProgressBar: true,
       position: "bottom-right",
@@ -62,15 +56,15 @@ export async function register(
         autoClose: 5000,
       });
       throw new Error(error.response.data.message);
-    }else if(error.message.includes("429")){
-      toast.error('Registration Failed, Too many request. Try again later', {
+    } else if (error.message.includes("429")) {
+      toast.error("Registration Failed, Too many request. Try again later", {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",
         autoClose: 5000,
       });
     }
-     
+
     console.error("Registration error:", error);
     throw new Error("Registration failed. Please try again.");
   }
