@@ -115,6 +115,7 @@ export default function SearchInput() {
             }, 150);
           }}
           onFocus={fetchRecent}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           className="rounded-end p-2 rounded-3 rounded-end-0 w-100 fs-6 border border-black px-3"
           placeholder="Search product, collections or code"
           style={{ fontSize: "14px!important", height: "50px" }}
