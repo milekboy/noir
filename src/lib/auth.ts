@@ -42,7 +42,7 @@ export async function register(
     }
 
     // console.log(response.data);
-    toast(response.data.message, {
+    toast(response.data.devMessage, {
       theme: "dark",
       hideProgressBar: true,
       position: "bottom-right",
