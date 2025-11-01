@@ -25,18 +25,8 @@ export default function Login() {
         autoClose: 2000,
       });
       return;
-    } 
-    // else if (!email.includes("@gmail.com") || !email.includes("@yahoo.com") || !email.includes("@outlook.com") || !email.includes(".com")) {
-    //    toast.warning("Please enter a valid email address", {
-    //     theme: "dark",
-    //     hideProgressBar: true,
-    //     position: "bottom-right",
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
-    else if (!email.includes(".com")) {
-       toast.warning("Please enter a valid email address", {
+    } else if (!email.includes(".com")) {
+      toast.warning("Please enter a valid email address", {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",

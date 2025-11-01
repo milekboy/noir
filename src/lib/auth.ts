@@ -73,7 +73,7 @@ export async function login(
   password: string
 ): Promise<AuthResponse> {
   try {
-    const response = await networkInstance.post("/user/login", {
+    const response = await networkInstance.post("/auth/login", {
       email,
       password,
     });
