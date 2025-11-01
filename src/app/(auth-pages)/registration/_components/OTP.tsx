@@ -1,60 +1,68 @@
 "use client";
+import NetworkInstance from "@/app/api/NetworkInstance";
 import { verifyOtp } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+const networkInstance = NetworkInstance();
 interface OTPProps {
-  otp: string;
-  onVerify: () => void;
   email: string;
 }
 
-export default function OTP({ otp, onVerify, email }: OTPProps) {
-  const [number, setNumber] = useState("");
+export default function OTP({ email }: OTPProps) {
+  const [otp, setOtp] = useState("");
   const router = useRouter();
   const handleVerifyOtp = async (e: React.FormEvent) => {
-    
     e.preventDefault();
-    if (number === otp) {
-      await verifyOtp(email, number);
-      toast("Success \n Email verified", {
+   try{
+     const res = await networkInstance.post("auth/verify-otp", {
+      email,
+      otp,
+    });
+    if (res.data.success) {
+      toast.success(res.data.message, {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",
         autoClose: 5000,
       });
-      onVerify();
-      router.push('/login');
-      console.log("Email verified successfully");
-    } else {
-      toast("Invalid OTP",{
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
+      console.log(email, otp);
+      router.push("/account-dashboard");
     }
+   }catch(error: any){
+      toast.error(error.response.data.message, {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+      console.log(email, otp);
+      console.error("Error verifying OTP:", error);
+   }
   };
 
   return (
     <form onSubmit={handleVerifyOtp}>
       <h2 className="text-secondary text-center">Registration Now</h2>
       <p>
-        We sent an email to {email}. Check your inbox and enter the 4-digit code to verify your email
+        We sent an email to {email}. Check your inbox and enter the 4-digit code
+        to verify your email
       </p>
       <div className="m-b25">
         <label className="label-title">OTP code</label>
         <input
           name="number"
           className="form-control"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
           placeholder="4-digit code"
           type="text"
         />
       </div>
-      <button type="submit" className="btn btn-primary">Verify OTP</button>
+      <button type="submit" className="btn btn-primary">
+        Verify OTP
+      </button>
     </form>
   );
 }

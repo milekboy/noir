@@ -29,6 +29,11 @@ export default function Registration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (number.length <= 11) {
+      const cleaned = "+234" + number.slice(1);
+      setNumber(cleaned);
+      console.log("cleaned number: ", cleaned);
+    }
 
     const res = await register({
       firstName,
@@ -38,15 +43,8 @@ export default function Registration() {
       confirmPassword,
       phoneNumber: number,
       gender,
-      isClient: true,
-      isVerified,
-      otp,
     });
-    if (res.userData.otp) {
-      setShowOtpStep(true);
-      setOtp(res.userData.otp);
-      // console.log(otp);
-    }
+    setShowOtpStep(true);
     console.log("User registered successfully: ", {
       firstName,
       lastName,
@@ -56,6 +54,7 @@ export default function Registration() {
       number,
       gender,
     });
+
     return res;
   };
 
@@ -107,13 +106,21 @@ export default function Registration() {
     if (firstName.trim() === "" || lastName.trim() === "") {
       setError("Names cannot be empty");
       return false;
+    }else if (Number(new Date().getFullYear() - Number(date.slice(0, 4)) ) <= 18) {
+       toast.error("You must be at least 18 years old to register", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+      return false;
     } else {
       setError("");
       return true; // Proceed to the next step if names are valid
     }
   };
 
-  const verifyOtp = () => setIsVerified(true);
+//  console.log(Number(date.slice(0, 4)) - Number(new Date().getFullYear()));
 
   return (
     <div className="page-content bg-light">
@@ -154,7 +161,9 @@ export default function Registration() {
           </div>
           <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-conten justify-content-center mb-3">
             {showOtpStep ? (
-              <OTP otp={otp} onVerify={verifyOtp} email={email} />
+
+              <OTP email={email} />
+
             ) : (
               <div className="login-area">
                 <h2 className="text-secondary text-center">Registration Now</h2>
@@ -174,6 +183,7 @@ export default function Registration() {
                     lastName={lastName}
                     gender={gender}
                     number={number}
+                    date={date}
                   >
                     <>
                       {/* =============== STEP ONE =========== */}
@@ -327,8 +337,8 @@ export default function Registration() {
                               setNumber(e.target.value);
                             }}
                             placeholder="e.g. 08012345678"
-                            pattern="[0-9]{11}"
-                            type="tel"
+                            // pattern="[0-9]{11}"
+                            // type="tel"
                           />
                         </div>
                       </div>
