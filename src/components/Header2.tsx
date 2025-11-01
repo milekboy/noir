@@ -13,7 +13,11 @@ import NetworkInstance from "@/app/api/NetworkInstance";
 import { usePathname } from "next/navigation";
 import { get } from "http";
 import useCartContext, { CartContext, CartProvider } from "./CartContext";
-import useWishListContext, { WishlistContext, WishlistProvider } from "./WishlistContext";
+import useWishListContext, {
+  WishlistContext,
+  WishlistProvider,
+} from "./WishlistContext";
+import SearchInput from "./SearchInput";
 
 interface State {
   headerFix: boolean;
@@ -126,7 +130,8 @@ export default function Header2() {
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const router = usePathname();
   const { setCartCount, fetchCartCount, cartCount } = useContext(CartContext);
-  const { wishListCount, setWishListCount,fetchWishListCount } = useContext(WishlistContext);
+  const { wishListCount, setWishListCount, fetchWishListCount } =
+    useContext(WishlistContext);
 
   const scrollHandler = () => {
     if (window.scrollY > 80) {
@@ -248,7 +253,6 @@ export default function Header2() {
 
   // console.log("cartcount", cartCount);
 
-
   return (
     <Fragment>
       <header className="site-header mo-left header style-2">
@@ -275,7 +279,9 @@ export default function Header2() {
               >
                 Hr
               </span>
-              <span className="px-1 bg-white rounded-sm">{timeLeft.minutes}</span>
+              <span className="px-1 bg-white rounded-sm">
+                {timeLeft.minutes}
+              </span>
               <span
                 className="px-1 text-white fs-6"
                 style={{ fontSize: "14px!important" }}
@@ -286,7 +292,7 @@ export default function Header2() {
                 className="px-1 bg-white rounded-sm"
                 style={{ fontSize: "16px!important" }}
               >
-               {timeLeft.seconds}
+                {timeLeft.seconds}
               </span>
               <span
                 className="px-1 text-white fs-6"
@@ -388,23 +394,9 @@ export default function Header2() {
                 </div>
                 <div></div>
                 <div></div>
-                {router === "/collections" || router === "/shop-list" ? (
-                  <div className="w-100  text-center d-lg-flex justify-content-center d-none ms-5">
-                    <input
-                      type="text"
-                      className="rounded-end p-2 rounded-3 rounded-end-0 w-50 fs-6 border border-black px-3"
-                      placeholder="Search product, collections or code"
-                      style={{ fontSize: "14px!important" }}
-                    />
-                    <span
-                      className=" rounded-start rounded-start-0 rounded-3 bg-black text-white px-4"
-                      style={{ padding: "10px", cursor: "pointer" }}
-                    >
-                      {" "}
-                      <i className="iconly-Light-Search" />
-                    </span>
-                  </div>
-                ) : null}
+                {/* {router === "/collections" || router === "/" ? ( */}
+                <SearchInput />
+                {/* ) : null} */}
                 {/* ---------------------------------------- */}
                 <ul className="nav navbar-nav  w-100 d-md-none d-sm-none">
                   <Header2Menus />
@@ -456,20 +448,17 @@ export default function Header2() {
                         Login / Register
                       </Link>
                     </li>
-                    {router === "/collections" ||
-                    router === "/shop-list" ? null : (
-                      <li className="nav-item search-link">
-                        <Link
-                          href={"#"}
-                          className="nav-link"
-                          onClick={() =>
-                            dispatch({ type: "TOGGLE_SEARCH_BAR" })
-                          }
-                        >
-                          <i className="iconly-Light-Search" />
-                        </Link>
-                      </li>
-                    )}
+
+                    <li className="nav-item search-link d-lg-none">
+                      <Link
+                        href="#"
+                        className="nav-link"
+                        onClick={() => dispatch({ type: "TOGGLE_SEARCH_BAR" })}
+                      >
+                        <i className="iconly-Light-Search" />
+                      </Link>
+                    </li>
+
                     <li className="nav-item wishlist-link">
                       <Link
                         className="nav-link"
@@ -493,9 +482,7 @@ export default function Header2() {
                         }
                       >
                         <i className="iconly-Broken-Buy" />
-                        <span className="badge badge-circle">
-                          {cartCount}
-                        </span>
+                        <span className="badge badge-circle">{cartCount}</span>
                         {/* <span className="badge badge-circle">{CartContext}</span> */}
                       </Link>
                     </li>

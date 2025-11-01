@@ -161,7 +161,9 @@ export default function Registration() {
           </div>
           <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-conten justify-content-center mb-3">
             {showOtpStep ? (
+
               <OTP email={email} />
+
             ) : (
               <div className="login-area">
                 <h2 className="text-secondary text-center">Registration Now</h2>

@@ -18,7 +18,7 @@ const TeamCreators = () => {
             <div className="col-xl-6 col-lg-8 col-md-12 col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
                 <div className="section-head ">
                     <h2 className="title">Meet our team of creators, designers, and world-class problem solvers</h2>
-                    <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words.</p>
+                    <p>Meet our team of visionary creators, innovative designers, and world-class problem solvers — the minds behind every inspired detail at Noir.</p>
                     <Link className="btn btn-secondary me-3" href="/shop-registration">Join Our Team</Link>
                 </div>
             </div>            

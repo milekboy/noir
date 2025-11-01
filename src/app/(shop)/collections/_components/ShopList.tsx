@@ -99,10 +99,10 @@ export default function ShopList({
   const handleResetFilters = () => {
     setSelectedColors([]);
     setSelectedSizes([]);
-    setBreadcrumb(["Home"]);
+    // setBreadcrumb(["Home"]);
     setSelectedPriceRange(null);
     setSelectedCategoryId(null);
-    router.push("/collections");
+    // router.push("/collections");
   };
 
   useEffect(() => {
@@ -244,7 +244,7 @@ export default function ShopList({
             </h4>
           </div>
 
-          <div style={{ width: "80px" }}></div>
+          <div className="d-none d-lg-block" style={{ width: "80px" }}></div>
         </div>
 
         {/* Category navigation */}
@@ -434,7 +434,7 @@ export default function ShopList({
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                        <Link href={"/collections"}> Collections </Link>
+                        <Link href={"/collections"}> Collectionsss </Link>
                         {categoryParam && (
                           <>
                             {" "}
@@ -537,12 +537,12 @@ export default function ShopList({
                 </div>
               </div>
               <div
-                className="d-flex justify-content-space-between align-items-center m-b30"
-                style={{ marginTop: "30px" }}
+                className="d-flex justify-content-space-between align-items-center  "
+                style={{ marginTop: "30px", marginLeft: "-30px" }}
               >
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex ">
                     <SelectBoxFour onApply={onPriceChange} />
                     <SelectBoxFive onApply={onColorChange} />
                     <SelectBoxSix onApply={onSizeChange} />
@@ -550,7 +550,7 @@ export default function ShopList({
                 )}
 
                 <div
-                  className="d-flex align-items-center justify-content-end mb-3 w-100 filter-container"
+                  className="d-flex align-items-center justify-content-end mb-3  w-100 filter-container"
                   style={{ gap: "10px" }}
                 >
                   <div

@@ -1,5 +1,6 @@
 import { Nav } from "react-bootstrap";
 import IMAGES, { SVGICON } from "./theme";
+import { link } from "fs";
 
 //home 1
 export const MainSwiperData = [
@@ -250,26 +251,26 @@ export const TradingSliderBlogdata = [
 
 export const WidgetData = [
   { name: "Customer Care", link: "/help-and-support" },
-  { name: "Shipping" },
-  { name: "Orders & Payments" },
-  { name: "Returns" },
-  { name: "FAQ" },
+  { name: "Shipping", link: "/faqs-2" },
+  { name: "Orders & Payments", link: "/faqs-2" },
+  { name: "Returns", link: "/faqs-2" },
+  { name: "FAQ", link: "/help-and-support" },
 ];
 
 
 export const Company = [
-  { name: "About Us" },
-  { name: "Careers" },
-  { name: "Contact Us" },
-  { name: "Editorial" },
+  { name: "About Us", link: "/about-me" },
+  { name: "Careers", link: "/career-1" },
+  { name: "Contact Us", link: "/contact-us-1" },
+  { name: "Editorial", link: "/editorial-1" },
 ];
 
 export const FooterMenu = [
-  { name: "New Arrivals" },
-  { name: "Men" },
-  { name: "Women" },
-  { name: "T-shirts" },
-  { name: "Pants" },
+  { name: "New in Clothing", link: "/collections?category=New%20in%20Clothing" },
+  { name: "Men", link: "/collections?category=Men"  },
+  { name: "Women", link: "/collections?category=Women"  },
+  { name: "Shirts", link: "/collections?category=Shirts"  },
+  { name: "Jeans", link: "/collections?category=Jeans"  },
 ];
 
 export const OurStores = [

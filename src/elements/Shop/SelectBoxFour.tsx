@@ -43,7 +43,7 @@ export default function SelectBoxOne({
   };
   return (
     <Dropdown
-      className="select-dropdown"
+      className="select-dropdown "
       show={showMenu}
       onToggle={() => setShowMenu((prev) => !prev)}
       style={{ backgroundColor: "white" }}

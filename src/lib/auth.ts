@@ -31,9 +31,11 @@ export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
+
     const response = await networkInstance.post("auth/register", payload);
     alert(response);
     if (response.data) {
+
       console.log("Backend message:", response.data);
     } else {
       throw new Error("Registration failed. Please try again.");
