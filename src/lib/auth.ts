@@ -32,16 +32,20 @@ export async function register(
 ): Promise<AuthResponse> {
   try {
 
+
     const response = await networkInstance.post("auth/register", payload);
     alert(response);
     if (response.data) {
+
 
       console.log("Backend message:", response.data);
     } else {
       throw new Error("Registration failed. Please try again.");
     }
 
+
     toast(response?.data.message, {
+
       theme: "dark",
       hideProgressBar: true,
       position: "bottom-right",
@@ -77,7 +81,7 @@ export async function login(
   password: string
 ): Promise<AuthResponse> {
   try {
-    const response = await networkInstance.post("/user/login", {
+    const response = await networkInstance.post("/auth/login", {
       email,
       password,
     });
