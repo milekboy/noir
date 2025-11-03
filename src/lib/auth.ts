@@ -75,14 +75,15 @@ export async function login(
   password: string
 ): Promise<AuthResponse> {
   try {
-    const response = await networkInstance.post("/auth/login", {
+    const response = await networkInstance.post("auth/login", {
       email,
       password,
     });
     if (response.data && response.data.message) {
       console.log("Backend message:", response.data.message);
     }
-    console.log(response.data);
+    console.log(response.data.user);
+    localStorage.setItem("userData", JSON.stringify(response.data.user));
     toast(response.data.message, {
       theme: "dark",
       hideProgressBar: true,
@@ -118,6 +119,7 @@ export async function verifyOtp(
     if (response.data && response.data.message) {
       console.log("Backend message:", response.data.message);
     }
+    
     console.log(response.data);
     toast(response.data.message, {
       theme: "dark",

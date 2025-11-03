@@ -7,6 +7,7 @@ import { ShopProductItem, ShopProductItemtype } from "../constant/Alldata";
 import Image from "next/image";
 import { CartContext } from "./CartContext";
 import { toast } from "react-toastify";
+import { WishlistContext } from "./WishlistContext";
 
 interface propType {
   tabactive: string;
@@ -28,6 +29,7 @@ export default function HeaderSideShoppingCard(props: propType) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
   const {cartCount,setCartCount } = useContext(CartContext)
+  const {wishListCount, setWishListCount} = useContext(WishlistContext);
   interface ProductImage {
     url: string;
     public_id: string;
@@ -73,6 +75,7 @@ export default function HeaderSideShoppingCard(props: propType) {
     useState<ShopProductItemtype[]>(ShopProductItem);
 
   const handleRemove = async (index: number) => {
+    
     const cartId = localStorage.getItem("cartId");
     const item = cartItems[index];
     setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
@@ -166,6 +169,7 @@ export default function HeaderSideShoppingCard(props: propType) {
   };
 
   async function handleDelete(productId: string, index: number) {
+    setWishListCount((prev: any) => prev- 1)
     setWishlist((prev) => prev.filter((_, i) => i !== index));
     try {
       const sessionId = localStorage.getItem("sessionId");
@@ -174,6 +178,12 @@ export default function HeaderSideShoppingCard(props: propType) {
           "x-session-id": sessionId,
         },
       });
+       toast("Product removed from Wishlist", {
+            theme: "dark",
+            hideProgressBar: true,
+            position: "bottom-right",
+            autoClose: 5000,
+          });
     } catch (err: any) {
       console.log("error: ", err);
     }

@@ -27,8 +27,11 @@ export default function OTP({ email }: OTPProps) {
         position: "bottom-right",
         autoClose: 5000,
       });
-      console.log(email, otp);
-      router.push("/account-dashboard");
+       localStorage.setItem("userData", JSON.stringify(res.data.user));
+       window.location.reload()
+      // console.log(email, otp);
+      // console.log(res.data)
+      router.push("/");
     }
    }catch(error: any){
       toast.error(error.response.data.message, {
