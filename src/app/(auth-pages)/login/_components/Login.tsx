@@ -22,7 +22,7 @@ export default function Login() {
       toast.warning("Please enter your email and password", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-right",
+        position: "top-center",
         autoClose: 2000,
       });
       return;
@@ -30,15 +30,16 @@ export default function Login() {
       toast.warning("Please enter a valid email address", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-right",
+        position: "top-center",
         autoClose: 2000,
       });
     }
     await login(email, password);
-    window.location.reload()
+   
    
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/");  
+    window.location.reload()
     setLoading(true);
   };
   return (
