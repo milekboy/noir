@@ -35,10 +35,11 @@ export default function Login() {
       });
     }
     await login(email, password);
-    window.location.reload()
+   
    
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/");  
+    window.location.reload()
     setLoading(true);
   };
   return (
