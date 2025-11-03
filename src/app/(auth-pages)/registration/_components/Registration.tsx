@@ -29,10 +29,21 @@ export default function Registration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (number.length <= 11) {
+    if (number.startsWith("+234")){
+      return true
+    }
+   else if (number.length === 11) {
       const cleaned = "+234" + number.slice(1);
       setNumber(cleaned);
       console.log("cleaned number: ", cleaned);
+    } else if (number.length < 11  || number.length > 11) {
+      toast.error("Phone number must be 11 digits", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "top-right",
+        autoClose: 5000,
+      });
+      return false;
     }
 
     const res = await register({
@@ -64,7 +75,7 @@ export default function Registration() {
       toast("Email and Password cannot be empty", {
         theme: "dark",
         hideProgressBar: true,
-        position: "bottom-right",
+        position: "top-right",
         autoClose: 5000,
       });
       console.log("Email and Password cannot be empty");
@@ -110,7 +121,7 @@ export default function Registration() {
        toast.error("You must be at least 18 years old to register", {
         theme: "dark",
         hideProgressBar: true,
-        position: "bottom-right",
+        position: "top-right",
         autoClose: 5000,
       });
       return false;
