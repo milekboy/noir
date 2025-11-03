@@ -39,7 +39,7 @@ export default function Login() {
    
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/");  
-    window.location.reload()
+    // window.location.reload()
     setLoading(true);
   };
   return (
