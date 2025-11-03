@@ -462,7 +462,7 @@ export default function Header2() {
                   <ul className="header-right ">
                     <li className="nav-item login-link">
                       {!userData && <Link className="nav-link" href="/login">
-                        Login / Registerr
+                        Login / Register
                       </Link>}
                     </li>
 
@@ -522,7 +522,7 @@ export default function Header2() {
                         </li>
                        <li className="d-flex gap- justify-content-center align-items-center">
                            <i className="iconly-Broken-Logout" />
-                        <Link href="/">Logout</Link>
+                        <Link href="/" onClick={()=>  {localStorage.removeItem("userData"); window.location.reload()}}>Logout</Link>
                         </li>
                       </ul>
                       )}
