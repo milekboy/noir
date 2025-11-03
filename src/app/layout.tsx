@@ -19,6 +19,7 @@ import { usePathname } from "next/navigation";
 // import SubscribeModal from "@/constant/SubscribeModal";
 import ScrollToTopButton from "@/constant/ScrollToTopButton";
 import { WishlistProvider } from "@/components/WishlistContext";
+import {UserProvider } from "@/components/UserContext";
 
 export default function RootLayout({
   children,
@@ -66,11 +67,13 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <UserProvider>
         <CartProvider>
           <WishlistProvider>
             {children}
             </WishlistProvider>
         </CartProvider>
+        </UserProvider>
         <ScrollToTopButton />
       </body>
     </html>

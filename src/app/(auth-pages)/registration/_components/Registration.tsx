@@ -54,7 +54,7 @@ export default function Registration() {
       number,
       gender,
     });
-
+//  localStorage.setItem("userData", JSON.stringify(res.userData);
     return res;
   };
 

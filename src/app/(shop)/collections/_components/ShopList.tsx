@@ -294,12 +294,13 @@ export default function ShopList({
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleDropdownClick(item.label, item.label); // ✅ pass same label so breadcrumb shows
+                    handleDropdownClick(item.label, ""); // ✅ pass same label so breadcrumb shows
                     setCategoryData(item);
                     setSelectedCategoryId(item.id);
                     router.push(
                       `/collections?category=${encodeURIComponent(item.label)}`
                     );
+                    window.location.reload();
                   }}
                 >
                   {item.label}
@@ -426,6 +427,7 @@ export default function ShopList({
                         idx === breadcrumb.length - 1 ? "default" : "pointer",
                     }}
                   >
+                    
                     {breadcrumb.length > 3 ? (
                       crumb
                     ) : (
@@ -434,7 +436,7 @@ export default function ShopList({
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                        <Link href={"/collections"}> Collectionsss </Link>
+                        <Link href={"/collections"}> Collections</Link>
                         {categoryParam && (
                           <>
                             {" "}
@@ -444,7 +446,7 @@ export default function ShopList({
                             <Link
                               href={`/collections?category=${categoryParam}`}
                             >
-                              {" "}
+                          
                               {`${categoryParam}`}
                             </Link>
                           </>

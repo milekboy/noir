@@ -17,6 +17,7 @@ export default function Login() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+   
     if (email.trim() === "" || password.trim() === "") {
       toast.warning("Please enter your email and password", {
         theme: "dark",
@@ -34,8 +35,10 @@ export default function Login() {
       });
     }
     await login(email, password);
+    window.location.reload()
+   
     // console.log("User Logged In successfully: ", { email, password });
-    router.push("/account-dashboard");
+    router.push("/");  
     setLoading(true);
   };
   return (
