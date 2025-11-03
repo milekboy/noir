@@ -40,7 +40,7 @@ export default function Registration() {
       toast.error("Phone number must be 11 digits", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 5000,
       });
       return false;
@@ -75,7 +75,7 @@ export default function Registration() {
       toast("Email and Password cannot be empty", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 5000,
       });
       console.log("Email and Password cannot be empty");
@@ -121,7 +121,7 @@ export default function Registration() {
        toast.error("You must be at least 18 years old to register", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 5000,
       });
       return false;

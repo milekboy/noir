@@ -42,7 +42,7 @@ export async function register(
     toast(response?.data.devMessage, {
       theme: "dark",
       hideProgressBar: true,
-      position: "top-center",
+      position: "bottom-right",
       autoClose: 5000,
     });
 
@@ -52,7 +52,7 @@ export async function register(
       toast.error(error.response.data.message, {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 5000,
       });
       throw new Error(error.response.data.message);
@@ -60,7 +60,7 @@ export async function register(
       toast.error("Registration Failed, Too many request. Try again later", {
         theme: "dark",
         hideProgressBar: true,
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 5000,
       });
     }
@@ -87,7 +87,7 @@ export async function login(
     toast(response.data.message, {
       theme: "dark",
       hideProgressBar: true,
-      position: "top-center",
+      position: "bottom-right",
       autoClose: 5000,
     });
     return response.data;
@@ -124,7 +124,7 @@ export async function verifyOtp(
     toast(response.data.message, {
       theme: "dark",
       hideProgressBar: true,
-      position: "top-center",
+      position: "bottom-right",
       autoClose: 5000,
     });
     return response.data;
