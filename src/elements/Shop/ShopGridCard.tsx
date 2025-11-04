@@ -41,9 +41,10 @@ export default function ShopGridCard(props: cardType) {
     const existingCartId = localStorage.getItem("cartId");
     if (existingCartId) {
       payload.cartId = existingCartId;
-    } else {
-      setCartCount((prev: number) => prev + 1);
     }
+    //  else {
+    //   setCartCount((prev: number) => prev + 1);
+    // }
 
     try {
       const response = await NetworkInstance().post("/cart/add", payload, {

@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CartContext } from "@/components/CartContext";
 
@@ -7,6 +7,8 @@ import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
 import IMAGES, { SVGICON } from "../../constant/theme";
 import Image from "next/image";
+import { toast } from "react-toastify";
+import { WishlistContext } from "@/components/WishlistContext";
 interface ProductImage {
   url: string;
   public_id: string;
@@ -28,15 +30,19 @@ interface Product {
 }
 export interface BestOfferBlogProps {
   product: Product;
+  quantity: number;
 }
-export default function BestOfferBlog({ product }: BestOfferBlogProps) {
+export default function BestOfferBlog({ product,quantity }: BestOfferBlogProps) {
   const { setCartCount, fetchCartCount } = useContext(CartContext);
   const router = useRouter();
+  const { wishListCount, setWishListCount } = useContext(WishlistContext);
+  const [isDisabled, setIsDisabled] =useState(false);
+
   const addToCart = async () => {
     const payload: Record<string, any> = {
       productId: product._id,
       categoryId: product.category,
-      quantity: 1,
+      quantity: quantity++,
     };
 
     const existingCartId = localStorage.getItem("cartId");
@@ -52,10 +58,16 @@ export default function BestOfferBlog({ product }: BestOfferBlogProps) {
           "Content-Type": "application/json",
         },
       });
+       toast("Product added to cart", {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 2000,
+    });
 
       if (response?.status === 200 || response?.status === 201) {
         fetchCartCount();
-        router.push("/shop-cart");
+        
         const newCartId = response.data?.cartId;
 
         if (newCartId) {
@@ -68,6 +80,80 @@ export default function BestOfferBlog({ product }: BestOfferBlogProps) {
       console.error("Not added to cart:", err?.response?.data || err, payload);
     }
   };
+
+  const addToWishlist = async () => {
+    setWishListCount((prev: any) => prev + 1);
+    toast("Product added to wishlist", {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 2000,
+    });
+    const payload: Record<string, any> = {
+      productId: product._id,
+    };
+
+    const existingSessionId = localStorage.getItem("sessionId");
+    if (existingSessionId) {
+      payload.sessionId = existingSessionId;
+    }
+    try {
+      const response = await NetworkInstance().post("/wishlist", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-session-id": existingSessionId,
+        },
+      });
+      if (response?.status === 200 || response?.status === 201) {
+        const sessionId = response.data?.sessionId;
+
+        console.log(response.data.sessionId);
+
+        if (sessionId) {
+          localStorage.setItem("sessionId", sessionId);
+        } else {
+          console.log("No session ID found");
+        }
+      }
+    } catch (err: any) {
+      console.error(
+        "Not added to wishlist:",
+        err?.response?.data || err,
+        payload
+      );
+    }
+  };
+
+  const wishlistCheck = async (id: string) => {
+  //  setIsDisabled(true);
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+      const res = await NetworkInstance().get("/wishlist", {
+        headers: {
+          "x-session-id": sessionId,
+        },
+      });
+      console.log("Wishlist data:", res.data.wishlist);
+      console.log(id)
+      if (res.data.wishlist.some((item: any) => item._id === id)) {
+        setIsDisabled(true);
+      
+     
+      } else {
+        setIsDisabled(false);
+      }
+      // setWishlist(res.data.wishlist);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+
+  }
+
+  
+
+  useEffect(() => {
+    wishlistCheck(product._id);
+  }, [isDisabled, product._id]);
   return (
     <div className="cart-detail">
       <Link href={"#"} className="btn btn-outline-secondary w-100 m-b20">
@@ -107,10 +193,7 @@ export default function BestOfferBlog({ product }: BestOfferBlogProps) {
           </tr>
         </tbody>
       </table>
-      <Link
-        href="/shop-wishlist"
-        className="btn btn-outline-secondary btn-icon m-b20"
-      >
+      <span className="btn btn-outline-secondary btn-icon m-b20" style={{ pointerEvents: isDisabled ? "none" : "auto",opacity: isDisabled ? 0.5 :1  }} onClick={() =>{ setIsDisabled(true);  addToWishlist(); }}>
         <svg
           width="19"
           height="17"
@@ -120,7 +203,7 @@ export default function BestOfferBlog({ product }: BestOfferBlogProps) {
           dangerouslySetInnerHTML={{ __html: SVGICON.BlankHeart }}
         ></svg>
         Add To Wishlist
-      </Link>
+      </span>
       <button
         onClick={() => {
           addToCart();

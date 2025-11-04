@@ -12,6 +12,7 @@ import ProductSection from "@/elements/Home/ProductSection";
 import SummerSaleBlog from "@/elements/Home/SummerSaleBlog";
 import LatestoCollection from "@/elements/Home3/LatestCollection";
 import Image from "next/image";
+import  { useRouter } from "next/navigation";
 
 const MainSection = () => {
   const [openVideo, setOpenVideo] = useState(false);
@@ -69,6 +70,10 @@ const MainSection = () => {
       window.removeEventListener("resize", checkScreenSize);
     };
   }, []);
+ const router = useRouter();
+useEffect(() => {
+  router.refresh();
+}, []);
 
   return (
     <Fragment>

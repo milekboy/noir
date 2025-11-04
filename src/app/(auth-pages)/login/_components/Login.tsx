@@ -6,7 +6,7 @@ import PasswordInputBox from "@/components/PasswordInputBox";
 import Image from "next/image";
 import { useState } from "react";
 import { login } from "@/lib/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function Login() {
@@ -14,10 +14,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-   
+
     if (email.trim() === "" || password.trim() === "") {
       toast.warning("Please enter your email and password", {
         theme: "dark",
@@ -35,11 +36,10 @@ export default function Login() {
       });
     }
     await login(email, password);
-   
-   
+
     // console.log("User Logged In successfully: ", { email, password });
-    router.push("/");  
-    window.location.reload()
+    router.push("/");
+    setTimeout(() => window.location.reload(), 1000);
     setLoading(true);
   };
   return (

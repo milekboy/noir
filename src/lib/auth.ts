@@ -92,15 +92,22 @@ export async function login(
     });
     return response.data;
   } catch (error: any) {
-    // if (error.response.data.message.includes("not found")) {
-    //   toast(error.response.data.message, {
-    //     theme: "dark",
-    //     hideProgressBar: true,
-    //     position: "bottom-right",
-    //     autoClose: 5000,
-    //   });
-    //   throw new Error(error.response.data.message);
-    // }
+    if (error.response.data.message.includes("not found")) {
+      toast(error.response.data.message, {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+
+      throw new Error(error.response.data.message);
+    }
+     toast(error.response.data.message, {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
 
     console.error("Login error:", error);
     throw new Error(error?.response?.data?.message);

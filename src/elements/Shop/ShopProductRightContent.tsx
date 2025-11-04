@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import Link from "next/link";
 import StarRating from "./StarRating";
 import ProductInputButton from "./ProductInputButton";
@@ -27,12 +27,17 @@ interface Product {
 
 export interface ShopProductRightContentProps {
   product: Product;
+  inputValue: number;
+  setInputValue: Dispatch<SetStateAction<number>>;
 }
 
 export default function ShopProductRightContent({
   product,
+  inputValue,
+  setInputValue
 }: ShopProductRightContentProps) {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  
 
   return (
     <div className="dz-product-detail style-2 p-t20 ps-0">
@@ -41,13 +46,13 @@ export default function ShopProductRightContent({
           <div className="dz-content-start">
             <span className="badge bg-secondary mb-2">SALE 20% Off</span>
             <h4 className="title mb-1">{product.name}</h4>
-            <div className="review-num">
+            {/* <div className="review-num">
               <ul className="dz-rating me-2">
                 <StarRating />
               </ul>
               <span className="text-secondary me-2">4.7 Rating</span>
               <Link href={"#"}>(5 customer reviews)</Link>
-            </div>
+            </div> */}
           </div>
         </div>
         <p className="para-text">{product.description}</p>
@@ -79,7 +84,7 @@ export default function ShopProductRightContent({
         <div className="product-num mt-3">
           <div className="btn-quantity light d-xl-block d-sm-none d-none">
             <label className="form-label">Quantity</label>
-            <ProductInputButton />
+            <ProductInputButton inputValue={inputValue} setInputValue={setInputValue} />
           </div>
 
           {/* Size Section with Size Guide */}
