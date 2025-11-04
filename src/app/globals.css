@@ -130,6 +130,33 @@
   border: 1px solid white;
   cursor: pointer;
 }
+.nav-scroller {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.nav-track {
+  display: flex;
+  gap: 30px;
+  padding: 10px 0;
+  animation: scrollNav 20s linear infinite;
+  white-space: nowrap;
+}
+
+.nav-track:hover {
+  animation-play-state: paused; /* stop scrolling on hover */
+}
+
+@keyframes scrollNav {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 
 /* Apply margin-left only on desktop (≥1024px) */
 @media (min-width: 1024px) {
