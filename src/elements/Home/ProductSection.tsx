@@ -157,13 +157,7 @@ const ProductSection = () => {
   }, []);
 
   const addToCart = async (props: any) => {
-    setCartCount((prev: number) => prev + 1);
-    toast("Product added to cart", {
-      theme: "dark",
-      hideProgressBar: true,
-      position: "bottom-right",
-      autoClose: 5000,
-    });
+       setCartCount((prev: number) => prev + 1);
     const payload: Record<string, any> = {
       productId: props._id,
       categoryId: props.category,
@@ -173,9 +167,10 @@ const ProductSection = () => {
     const existingCartId = localStorage.getItem("cartId");
     if (existingCartId) {
       payload.cartId = existingCartId;
-    } else {
-      setCartCount((prev: number) => prev + 1);
     }
+    // } else {
+    //   setCartCount((prev: number) => prev + 1);
+    // }
 
     try {
       const response = await NetworkInstance().post("/cart/add", payload, {
@@ -183,7 +178,13 @@ const ProductSection = () => {
           "Content-Type": "application/json",
         },
       });
-
+   
+    toast("Product added to cart", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 5000,
+        });
       if (response?.status === 200 || response?.status === 201) {
         fetchCartCount();
         const newCartId = response.data?.cartId;

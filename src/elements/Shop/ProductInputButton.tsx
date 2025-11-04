@@ -1,12 +1,12 @@
 import { useState } from "react"
 
-export default function ProductInputButton(){    
-    const [inputValue, setInputValue] = useState<number>(1);
+export default function ProductInputButton({inputValue, setInputValue}: any){    
+    // const [] = useState<number>(1);
     function handleIncrease() {
-        setInputValue(prev => prev + 1);
+        setInputValue((prev :any) => prev + 1);
     }
     function handleDecrease() {
-        setInputValue(prev => (prev > 1 ? prev - 1 : prev));
+        setInputValue((prev: any) => (prev > 1 ? prev - 1 : prev));
     }
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const newValue = parseInt(e.target.value, 10);

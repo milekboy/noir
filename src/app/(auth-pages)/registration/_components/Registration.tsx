@@ -3,12 +3,13 @@ import Link from "next/link";
 import IMAGES from "@/constant/theme";
 import PasswordInputBox from "@/components/PasswordInputBox";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Stepper } from "../_components/Stepper";
 import { steps } from "../_components/Stepper";
 import { register } from "@/lib/auth";
 import { toast } from "react-toastify";
 import OTP from "./OTP";
+// no import for setTimeout — use the browser's setTimeout/clearTimeout instead
 
 export default function Registration() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -82,6 +83,8 @@ export default function Registration() {
       return setConfirm(false);
     }
 
+  
+
     // Check password strength requirements
     if (
       password.length < 7 ||
@@ -132,7 +135,19 @@ export default function Registration() {
   };
 
 //  console.log(Number(date.slice(0, 4)) - Number(new Date().getFullYear()));
-
+useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (number.length < 11 || number.length > 11) {
+        toast.error("Phone number must be 11 digits", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 5000,
+        });
+      }
+    }, 1500);
+    return () => window.clearTimeout(timer);
+   }, [number]);
   return (
     <div className="page-content bg-light">
       <section className="px-3">

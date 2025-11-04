@@ -70,6 +70,8 @@ export default function ShopList({
     }
   };
 
+  
+
   const [detailModal, setDetailModal] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -176,7 +178,26 @@ export default function ShopList({
   const [categoryData, setCategoryData] = useState<CategoryProps>();
 
   const searchParams = useSearchParams();
-  const subParam = searchParams.get("sub");
+  // const categoryParam = searchParams.get("category");
+   const subParam = searchParams.get("sub");
+const getCatgegoryProducts = async (category: string) => {
+
+    try {
+      const res = await networkInstance.get(`/product/filter/category-name?name=${category}&page=1&limit=10`);
+      setProducts(res.data.products);
+      console.log("category products", res.data);
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+    }
+  }
+
+useEffect(()=> {
+    if(categoryParam === ""){
+      getProducts();
+    } else if(categoryParam){
+      getCatgegoryProducts(categoryParam || "")
+    }
+},[categoryParam])
   useEffect(() => {
     setCategoryParam(searchParams.get("category") || "");
   }, [searchParams]);
@@ -545,16 +566,19 @@ export default function ShopList({
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              {categoryParam && (
+              
+              { categoryParam && (
                 <h4 className="mb-3" style={{ color: "black" }}>
                   New In
                 </h4>
               )}
               <div className="row">
                 <div className="col-xl-12">
+                  
                   <ShopCategorySlider
                     categorySelect={categoryData?.subCategory ?? []}
                   />
+                  
                 </div>
               </div>
               <div

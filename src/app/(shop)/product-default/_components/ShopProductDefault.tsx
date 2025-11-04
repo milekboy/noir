@@ -38,6 +38,7 @@ export default function ShopProductDefault({
   category,
 }: ShopProductDefaultProps) {
   const [detailModal, setDetailModal] = useState<boolean>(false);
+   const [inputValue, setInputValue] = useState<number>(1);
   // console.log(category)
   return (
     <>
@@ -77,10 +78,10 @@ export default function ShopProductDefault({
               <div className="col-xl-8 col-md-8">
                 <div className="row">
                   <div className="col-xl-7">
-                    <ShopProductRightContent product={product} />
+                    <ShopProductRightContent inputValue={inputValue} setInputValue={setInputValue} product={product} />
                   </div>
                   <div className="col-xl-5">
-                    <BestOfferBlog product={product} />
+                    <BestOfferBlog product={product} quantity={inputValue} />
                   </div>
                 </div>
               </div>
