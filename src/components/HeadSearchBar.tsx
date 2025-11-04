@@ -4,7 +4,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SearchCategorySlider from "./SearchCategorySlider";
 import NetworkInstance from "@/app/api/NetworkInstance";
-
+function getSessionId() {
+  let sid = localStorage.getItem("x-session-id");
+  if (!sid) {
+    sid = crypto.randomUUID();
+    localStorage.setItem("x-session-id", sid);
+  }
+  return sid;
+}
 type Product = {
   _id: string;
   name: string;
@@ -21,20 +28,43 @@ export default function HeadSearchBar() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const router = useRouter();
   const networkInstance = NetworkInstance();
-  const handleSearch = () => {
+
+  const handleSearch = async () => {
     if (!query.trim()) return;
+
+    try {
+      const res = await networkInstance.post(
+        `search/log`,
+        { q: query, resultsCount: results.length },
+        {
+          withCredentials: true,
+          headers: { "x-session-id": getSessionId() },
+        }
+      );
+      console.log("✅ Search log response:", res?.data);
+    } catch (err) {
+      console.log("❌ Search log error:", err);
+    }
+
     router.push(`/shop-search?query=${encodeURIComponent(query)}`);
+    setShowSuggestions(false);
+    setShowRecent(false);
   };
   useEffect(() => {
     const fetchData = async () => {
-      if (!query || query.length < 1) {
+      if (!query) {
         setResults([]);
+        setShowSuggestions(false);
         return;
       }
 
       try {
         const res = await networkInstance.get(
-          `product/search?q=${query}&page=1&limit=8`
+          `product/search?q=${query}&page=1&limit=8`,
+          {
+            withCredentials: true,
+            headers: { "x-session-id": getSessionId() }, // ✅ Important
+          }
         );
         setResults(res?.data?.results || []);
         setShowSuggestions(true);
@@ -43,16 +73,20 @@ export default function HeadSearchBar() {
       }
     };
 
-    const delay = setTimeout(fetchData, 300);
-    return () => clearTimeout(delay);
+    const t = setTimeout(fetchData, 300);
+    return () => clearTimeout(t);
   }, [query]);
 
   const fetchRecent = async () => {
     try {
-      const res = await networkInstance.get(`search/recent?limit=5`);
+      const res = await networkInstance.get(`search/recent?limit=5`, {
+        withCredentials: true,
+        headers: { "x-session-id": getSessionId() }, // ✅ Send same session ID
+      });
+
       setRecent(res?.data?.items || []);
       setShowRecent(true);
-      console.log(res);
+      console.log("Recent:", res?.data);
     } catch (err) {
       console.log(err);
     }

@@ -15,7 +15,7 @@ export const CartProvider = ({ children }) => {
         console.log("No cart ID found.");
         return;
       }
-      // console.log(cartId);
+
       const res = await networkInstance.get(`/cart/view/${cartId}`);
       const cartItems = res.data.items || [];
       setCartCount(cartItems.length);

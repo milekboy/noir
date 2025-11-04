@@ -28,8 +28,8 @@ interface WishlistType {
 export default function HeaderSideShoppingCard(props: propType) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistType[]>([]);
-  const {cartCount,setCartCount } = useContext(CartContext)
-  const {wishListCount, setWishListCount} = useContext(WishlistContext);
+  const { cartCount, setCartCount } = useContext(CartContext);
+  const { wishListCount, setWishListCount } = useContext(WishlistContext);
   interface ProductImage {
     url: string;
     public_id: string;
@@ -75,19 +75,18 @@ export default function HeaderSideShoppingCard(props: propType) {
     useState<ShopProductItemtype[]>(ShopProductItem);
 
   const handleRemove = async (index: number) => {
-    
     const cartId = localStorage.getItem("cartId");
     const item = cartItems[index];
     setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
-    setCartCount((prev: number)=> prev - 1);
+    setCartCount((prev: number) => prev - 1);
 
     try {
       toast("Product removed from cart", {
-            theme: "dark",
-            hideProgressBar: true,
-            position: "bottom-right",
-            autoClose: 5000,
-          });
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
       await networkInstance.delete(`/cart/remove/${cartId}`, {
         data: {
           productId: item.product,
@@ -171,7 +170,7 @@ export default function HeaderSideShoppingCard(props: propType) {
 
 
   async function handleDelete(productId: string, index: number) {
-    setWishListCount((prev: any) => prev- 1)
+    setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));
     try {
       const sessionId = localStorage.getItem("sessionId");
@@ -180,12 +179,12 @@ export default function HeaderSideShoppingCard(props: propType) {
           "x-session-id": sessionId,
         },
       });
-       toast("Product removed from Wishlist", {
-            theme: "dark",
-            hideProgressBar: true,
-            position: "bottom-right",
-            autoClose: 5000,
-          });
+      toast("Product removed from Wishlist", {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
     } catch (err: any) {
       console.log("error: ", err);
     }
@@ -209,7 +208,6 @@ export default function HeaderSideShoppingCard(props: propType) {
               <span className="badge badge-light">{wishlist.length}</span>
             </Nav.Link>
           </Nav.Item>
-        
         </Nav>
         <Tab.Content className="pt-4" id="dz-shopcart-sidebar">
           <Tab.Pane eventKey="ShoppingCart">
@@ -273,12 +271,15 @@ export default function HeaderSideShoppingCard(props: propType) {
                             </div>
                           </div>
                           <h6 className="dz-price mb-0">
-                            ₦{elem.productDetails.price * elem.quantity}.00
+                            ₦
+                            {Number(
+                              elem.productDetails.price * elem.quantity
+                            ).toLocaleString()}
+                            .00
                           </h6>
                         </div>
                       </div>
                       <span
-                     
                         className="dz-close"
                         onClick={() => handleRemove(index)}
                       >
@@ -290,7 +291,11 @@ export default function HeaderSideShoppingCard(props: propType) {
               </ul>
               <div className="cart-total">
                 <h5 className="mb-0">Subtotal:</h5>
-                <h5 className="mb-0"> ₦{totalPrice}.00</h5>
+                <h5 className="mb-0">
+                  {" "}
+                  ₦{Number(totalPrice).toLocaleString()}
+                  .00
+                </h5>
               </div>
               <div className="mt-auto">
                 <div className="shipping-time">
@@ -330,7 +335,12 @@ export default function HeaderSideShoppingCard(props: propType) {
                   <li key={index}>
                     <div className="cart-widget">
                       <div className="dz-media me-3">
-                        <Image src={elem.productImages[0].url} width={1000} height={1000} alt="media" />
+                        <Image
+                          src={elem.productImages[0].url}
+                          width={1000}
+                          height={1000}
+                          alt="media"
+                        />
                       </div>
                       <div className="cart-content">
                         <h6 className="title">
@@ -343,7 +353,7 @@ export default function HeaderSideShoppingCard(props: propType) {
                       <Link
                         href="#"
                         className="dz-close"
-                        onClick={() => handleDelete(elem._id,index)}
+                        onClick={() => handleDelete(elem._id, index)}
                       >
                         <i className="ti-close" />
                       </Link>
@@ -361,8 +371,6 @@ export default function HeaderSideShoppingCard(props: propType) {
               </div>
             </div>
           </Tab.Pane>
-
-          
         </Tab.Content>
       </Tab.Container>
     </div>
