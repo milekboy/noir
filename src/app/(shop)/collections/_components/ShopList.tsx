@@ -273,11 +273,11 @@ useEffect(()=> {
         {/* Category navigation */}
 
         <div>
-          <div className="nav-scroller">
+          <div className="nav-scroller" style={{ overflow: "hidden" }}>
             <nav
               style={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "flex-start",
                 alignItems: "center",
                 gap: "5px",
                 padding: "10px 0px",
@@ -292,27 +292,23 @@ useEffect(()=> {
                 whiteSpace: "nowrap",
               }}
               className="mobile-scroll"
+              onMouseLeave={() => {
+                hideTimer.current = setTimeout(() => {
+                  setHovered(null);
+                }, 300);
+              }}
             >
-              {navItems.map((item: any, index: number) => (
-                <div
-                  key={index}
-                  style={{
-                    flex: "0 0 auto",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={() => {
-                    if (hideTimer.current) clearTimeout(hideTimer.current);
-                    setHovered(item.label);
-                  }}
-                  onMouseLeave={() => {
-                    hideTimer.current = setTimeout(() => {
-                      setHovered(null);
-                    }, 1000); // 2 seconds delay
-                  }}
-                >
-                  {/* Main nav label */}
+              {/* Scrolling text wrapper */}
+              <div
+                className="auto-scroll"
+                style={{ display: "flex", gap: "5px" }}
+              >
+                {[...navItems, ...navItems].map((item: any, index: number) => (
                   <div
+                    key={index}
                     style={{
+                      flex: "0 0 auto",
+                      cursor: "pointer",
                       color: "#fff",
                       textDecoration: "none",
                       padding: "6px 10px",
@@ -322,12 +318,15 @@ useEffect(()=> {
                       fontSize: "12px",
                       fontWeight: "bold",
                       whiteSpace: "nowrap",
-                      cursor: "pointer",
                     }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "#D4AF37")
-                    }
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
+                    onMouseEnter={(e) => {
+                      if (hideTimer.current) clearTimeout(hideTimer.current);
+                      setHovered(item.label);
+                      e.currentTarget.style.color = "#D4AF37";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#fff"; // Reset color
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       handleDropdownClick(item.label, "");
@@ -342,16 +341,22 @@ useEffect(()=> {
                   >
                     {item.label}
                   </div>
+                ))}
+              </div>
 
-                  {/* Mega menu */}
-                  {item.subCategory?.length > 0 && hovered === item.label && (
+              {/* Mega menu - OUTSIDE the scrolling wrapper */}
+              {navItems.map(
+                (item: any, index: number) =>
+                  item.subCategory?.length > 0 &&
+                  hovered === item.label && (
                     <div
+                      key={`mega-${index}`}
                       style={{
-                        position: "absolute",
-
-                        top: "100%",
-                        left: "50%",
-                        transform: "translateX(-50%)",
+                        position: "fixed",
+                        top: "auto",
+                        left: "0",
+                        right: "0",
+                        marginTop: "180px",
                         width: "100vw",
                         backgroundColor: "#fff",
                         border: "1px solid #eee",
@@ -363,8 +368,15 @@ useEffect(()=> {
                         zIndex: 1000,
                         boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                       }}
-                      onMouseEnter={() => setHovered(item.label)}
-                      onMouseLeave={() => setHovered(null)}
+                      onMouseEnter={() => {
+                        if (hideTimer.current) clearTimeout(hideTimer.current);
+                        setHovered(item.label);
+                      }}
+                      onMouseLeave={() => {
+                        hideTimer.current = setTimeout(() => {
+                          setHovered(null);
+                        }, 300);
+                      }}
                     >
                       {/* Left: Subcategories */}
                       <div
@@ -447,15 +459,15 @@ useEffect(()=> {
                         ))}
                       </div>
                     </div>
-                  )}
-                </div>
-              ))}
+                  )
+              )}
             </nav>
           </div>
           {breadcrumb.length > 0 && (
             <nav
               aria-label="breadcrumb"
               style={{
+                zIndex: 100,
                 padding: "10px 20px",
                 fontSize: "14px",
                 color: "#444",
@@ -518,6 +530,22 @@ useEffect(()=> {
         </div>
 
         <style jsx>{`
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+
+          .auto-scroll {
+            animation: scroll 20s linear infinite;
+          }
+
+          .auto-scroll:hover {
+            animation-play-state: paused;
+          }
           @media (max-width: 576px) {
             .mobile-scroll {
               overflow-x: auto;
