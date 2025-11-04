@@ -279,7 +279,7 @@ useEffect(()=> {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                gap: "10px",
+                gap: "5px",
                 padding: "10px 0px",
                 borderTop: "1px solid #eee",
                 fontSize: "12px",
