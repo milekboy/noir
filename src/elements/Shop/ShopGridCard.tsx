@@ -10,7 +10,7 @@ import { WishlistContext } from "@/components/WishlistContext";
 interface cardType {
   image: string | StaticImageData;
   title: string;
-  price?: string;
+  price?: any;
   _id: string;
   category: string;
   showdetailModal?: (() => void | undefined) | undefined;
@@ -21,17 +21,16 @@ export default function ShopGridCard(props: cardType) {
   const [basketIcon, setBasketIcon] = useState(false);
   const { setCartCount, fetchCartCount } = useContext(CartContext);
   const [categoryName, setCategoryName] = useState<string | null>(null);
-    const {wishListCount, setWishListCount} = useContext(WishlistContext);
-  
+  const { wishListCount, setWishListCount } = useContext(WishlistContext);
 
   const addToCart = async () => {
     setCartCount((prev: number) => prev + 1);
     toast("Product added to cart", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 5000,
-        });
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
     const payload: Record<string, any> = {
       productId: props._id,
       categoryId: props.category,
@@ -68,13 +67,13 @@ export default function ShopGridCard(props: cardType) {
   };
 
   const addToWishlist = async () => {
-      setWishListCount((prev: any) => prev+ 1)
+    setWishListCount((prev: any) => prev + 1);
     toast("Product added to wishlist", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 2000,
-        });
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 2000,
+    });
     const payload: Record<string, any> = {
       productId: props._id,
     };
@@ -110,24 +109,23 @@ export default function ShopGridCard(props: cardType) {
     }
   };
   useEffect(() => {
-  //  console.log(props)
+    //  console.log(props)
     const fetchCategoryName = async () => {
       if (!props.category) {
-        setCategoryName(props.title); 
-      }
-    else if(props.category){
+        setCategoryName(props.title);
+      } else if (props.category) {
         try {
-        const response = await NetworkInstance().get(
-          `category/get-category/${props.category}`
-        );
-        if (response?.status === 200) {
-          setCategoryName(response.data.label);
-          console.log(response.data);
+          const response = await NetworkInstance().get(
+            `category/get-category/${props.category}`
+          );
+          if (response?.status === 200) {
+            setCategoryName(response.data.label);
+            console.log(response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching category name:", error);
         }
-      } catch (error) {
-        console.error("Error fetching category name:", error);
       }
-    }
     };
 
     fetchCategoryName();
@@ -177,7 +175,7 @@ export default function ShopGridCard(props: cardType) {
         <h5 className="title">
           <Link href="/shop-list">{props.title}</Link>
         </h5>
-        <h5 className="price">{props.price}</h5>
+        <h5 className="price">₦{Number(props.price).toLocaleString()}</h5>
       </div>
       <div className="product-tag">
         <span className="badge ">Get 20% Off</span>

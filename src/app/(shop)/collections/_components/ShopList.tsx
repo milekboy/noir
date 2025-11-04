@@ -171,15 +171,15 @@ export default function ShopList({
     badge: string;
   }
   const [selectedCollection, setSelectedCollection] = useState("Collections");
-  const [param, setParam] = useState<string | null>("");
+
+  const [categoryParam, setCategoryParam] = useState("");
   const [categoryData, setCategoryData] = useState<CategoryProps>();
 
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category");
-
+  const subParam = searchParams.get("sub");
   useEffect(() => {
-    setParam(categoryParam);
-  }, [categoryParam]);
+    setCategoryParam(searchParams.get("category") || "");
+  }, [searchParams]);
 
   // Select default category data based on the category query parameter
   useEffect(() => {
@@ -236,11 +236,11 @@ export default function ShopList({
                 margin: 0,
               }}
             >
-              {breadcrumb[breadcrumb.length - 1] === "Home"
-                ? `${param ? param : ""} Collections`
-                : breadcrumb.length > 0
-                ? `${breadcrumb[breadcrumb.length - 1]} Collections`
-                : " "}
+              {subParam
+                ? `${subParam} Collections`
+                : categoryParam
+                ? `${categoryParam} Collections`
+                : "Collections"}
             </h4>
           </div>
 
@@ -273,13 +273,13 @@ export default function ShopList({
               <div
                 key={index}
                 style={{
-                  position: "relative",
                   flex: "0 0 auto",
                   cursor: "pointer",
                 }}
                 onMouseEnter={() => setHovered(item.label)}
                 onMouseLeave={() => setHovered(null)}
               >
+                {/* Main nav label */}
                 <div
                   style={{
                     color: "#fff",
@@ -291,39 +291,49 @@ export default function ShopList({
                     fontSize: "12px",
                     fontWeight: "bold",
                     whiteSpace: "nowrap",
+                    cursor: "pointer",
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "#D4AF37")
+                  }
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleDropdownClick(item.label, ""); // ✅ pass same label so breadcrumb shows
+                    handleDropdownClick(item.label, "");
                     setCategoryData(item);
                     setSelectedCategoryId(item.id);
                     router.push(
                       `/collections?category=${encodeURIComponent(item.label)}`
                     );
-                    window.location.reload();
                   }}
                 >
                   {item.label}
                 </div>
 
+                {/* Mega menu */}
                 {item.subCategory?.length > 0 && hovered === item.label && (
                   <div
                     style={{
                       position: "absolute",
+
                       top: "100%",
-                      left: 0,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: "100vw",
                       backgroundColor: "#fff",
                       border: "1px solid #eee",
                       borderRadius: "6px",
-                      width: "700px",
-                      padding: "20px 25px",
+                      padding: "20px 250px",
                       display: "grid",
                       gridTemplateColumns: "2fr 1fr",
                       gap: "20px",
                       zIndex: 1000,
                       boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
                     }}
+                    onMouseEnter={() => setHovered(item.label)}
+                    onMouseLeave={() => setHovered(null)}
                   >
+                    {/* Left: Subcategories */}
                     <div
                       style={{
                         display: "flex",
@@ -336,7 +346,7 @@ export default function ShopList({
                       {item.subCategory.map((drop: any, i: number) => (
                         <Link
                           key={i}
-                          href={drop.link || "#"}
+                          href="#"
                           style={{
                             flex: "0 0 45%",
                             color: "#333",
@@ -344,14 +354,24 @@ export default function ShopList({
                             fontSize: "13px",
                             fontWeight: 400,
                             padding: "2px 0",
-                            transition: "all 0.2s ease",
                             whiteSpace: "nowrap",
+                            transition: "all 0.2s ease",
                           }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color = "#D4AF37")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "#333")
+                          }
                           onClick={(e) => {
                             e.preventDefault();
                             handleDropdownClick(item.label, drop.label);
                             setCategoryData(item);
-                            router.push("#");
+                            router.push(
+                              `/collections?category=${encodeURIComponent(
+                                item.label
+                              )}&sub=${encodeURIComponent(drop.label)}`
+                            );
                           }}
                         >
                           {drop.label}
@@ -371,6 +391,7 @@ export default function ShopList({
                       ))}
                     </div>
 
+                    {/* Right: Images */}
                     <div
                       style={{
                         display: "flex",
@@ -383,8 +404,8 @@ export default function ShopList({
                           key={idx}
                           src={img}
                           alt={`${item.name}-${idx}`}
-                          width={300}
-                          height={400}
+                          width={280}
+                          height={380}
                           style={{
                             borderRadius: "8px",
                             objectFit: "cover",
@@ -427,7 +448,6 @@ export default function ShopList({
                         idx === breadcrumb.length - 1 ? "default" : "pointer",
                     }}
                   >
-                    
                     {breadcrumb.length > 3 ? (
                       crumb
                     ) : (
@@ -446,7 +466,6 @@ export default function ShopList({
                             <Link
                               href={`/collections?category=${categoryParam}`}
                             >
-                          
                               {`${categoryParam}`}
                             </Link>
                           </>
@@ -526,7 +545,7 @@ export default function ShopList({
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              {param && (
+              {categoryParam && (
                 <h4 className="mb-3" style={{ color: "black" }}>
                   New In
                 </h4>
@@ -741,7 +760,7 @@ export default function ShopList({
                                   item.productImages[0]?.url || "/fallback.jpg"
                                 }
                                 title={item.name}
-                                price={`₦${item.price}`}
+                                price={item.price}
                                 showdetailModal={() => setDetailModal(true)}
                                 _id={item._id}
                                 category={item.category || ""}
