@@ -54,6 +54,8 @@ export default function ShopList({
   const networkInstance = NetworkInstance();
   //api call
 
+  const hideTimer = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -271,175 +273,185 @@ useEffect(()=> {
         {/* Category navigation */}
 
         <div>
-          <nav
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "30px",
-              padding: "10px 0",
-              borderTop: "1px solid #eee",
-              fontSize: "12px",
-              fontWeight: 500,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              position: "relative",
-              backgroundColor: "#000",
-              zIndex: 100,
-              whiteSpace: "nowrap",
-            }}
-            className="mobile-scroll"
-          >
-            {navItems.map((item: any, index: number) => (
-              <div
-                key={index}
-                style={{
-                  flex: "0 0 auto",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={() => setHovered(item.label)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                {/* Main nav label */}
+          <div className="nav-scroller">
+            <nav
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                padding: "10px 0px",
+                borderTop: "1px solid #eee",
+                fontSize: "12px",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                position: "relative",
+                backgroundColor: "#000",
+                zIndex: 100,
+                whiteSpace: "nowrap",
+              }}
+              className="mobile-scroll"
+            >
+              {navItems.map((item: any, index: number) => (
                 <div
+                  key={index}
                   style={{
-                    color: "#fff",
-                    textDecoration: "none",
-                    padding: "6px 10px",
-                    borderRadius: "2px",
-                    transition: "all 0.3s ease",
-                    display: "inline-block",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
+                    flex: "0 0 auto",
                     cursor: "pointer",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#D4AF37")
-                  }
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDropdownClick(item.label, "");
-                    setCategoryData(item);
-                    setSelectedCategoryId(item.id);
-                    router.push(
-                      `/collections?category=${encodeURIComponent(item.label)}`
-                    );
+                  onMouseEnter={() => {
+                    if (hideTimer.current) clearTimeout(hideTimer.current);
+                    setHovered(item.label);
+                  }}
+                  onMouseLeave={() => {
+                    hideTimer.current = setTimeout(() => {
+                      setHovered(null);
+                    }, 1000); // 2 seconds delay
                   }}
                 >
-                  {item.label}
-                </div>
-
-                {/* Mega menu */}
-                {item.subCategory?.length > 0 && hovered === item.label && (
+                  {/* Main nav label */}
                   <div
                     style={{
-                      position: "absolute",
-
-                      top: "100%",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: "100vw",
-                      backgroundColor: "#fff",
-                      border: "1px solid #eee",
-                      borderRadius: "6px",
-                      padding: "20px 250px",
-                      display: "grid",
-                      gridTemplateColumns: "2fr 1fr",
-                      gap: "20px",
-                      zIndex: 1000,
-                      boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                      color: "#fff",
+                      textDecoration: "none",
+                      padding: "6px 10px",
+                      borderRadius: "2px",
+                      transition: "all 0.3s ease",
+                      display: "inline-block",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      cursor: "pointer",
                     }}
-                    onMouseEnter={() => setHovered(item.label)}
-                    onMouseLeave={() => setHovered(null)}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "#D4AF37")
+                    }
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDropdownClick(item.label, "");
+                      setCategoryData(item);
+                      setSelectedCategoryId(item.id);
+                      router.push(
+                        `/collections?category=${encodeURIComponent(
+                          item.label
+                        )}`
+                      );
+                    }}
                   >
-                    {/* Left: Subcategories */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        columnGap: "20px",
-                        rowGap: "6px",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      {item.subCategory.map((drop: any, i: number) => (
-                        <Link
-                          key={i}
-                          href="#"
-                          style={{
-                            flex: "0 0 45%",
-                            color: "#333",
-                            textDecoration: "none",
-                            fontSize: "13px",
-                            fontWeight: 400,
-                            padding: "2px 0",
-                            whiteSpace: "nowrap",
-                            transition: "all 0.2s ease",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "#D4AF37")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "#333")
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDropdownClick(item.label, drop.label);
-                            setCategoryData(item);
-                            router.push(
-                              `/collections?category=${encodeURIComponent(
-                                item.label
-                              )}&sub=${encodeURIComponent(drop.label)}`
-                            );
-                          }}
-                        >
-                          {drop.label}
-                          {drop.badge && (
-                            <span
-                              style={{
-                                marginLeft: "6px",
-                                fontSize: "10px",
-                                color: "red",
-                                fontWeight: 600,
-                              }}
-                            >
-                              {drop.badge}
-                            </span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Right: Images */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
-                      }}
-                    >
-                      {item.images?.map((img: string, idx: number) => (
-                        <Image
-                          key={idx}
-                          src={img}
-                          alt={`${item.name}-${idx}`}
-                          width={280}
-                          height={380}
-                          style={{
-                            borderRadius: "8px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ))}
-                    </div>
+                    {item.label}
                   </div>
-                )}
-              </div>
-            ))}
-          </nav>
 
+                  {/* Mega menu */}
+                  {item.subCategory?.length > 0 && hovered === item.label && (
+                    <div
+                      style={{
+                        position: "absolute",
+
+                        top: "100%",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: "100vw",
+                        backgroundColor: "#fff",
+                        border: "1px solid #eee",
+                        borderRadius: "6px",
+                        padding: "20px 250px",
+                        display: "grid",
+                        gridTemplateColumns: "2fr 1fr",
+                        gap: "20px",
+                        zIndex: 1000,
+                        boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                      }}
+                      onMouseEnter={() => setHovered(item.label)}
+                      onMouseLeave={() => setHovered(null)}
+                    >
+                      {/* Left: Subcategories */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          columnGap: "20px",
+                          rowGap: "6px",
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        {item.subCategory.map((drop: any, i: number) => (
+                          <Link
+                            key={i}
+                            href="#"
+                            style={{
+                              flex: "0 0 45%",
+                              color: "#333",
+                              textDecoration: "none",
+                              fontSize: "13px",
+                              fontWeight: 400,
+                              padding: "2px 0",
+                              whiteSpace: "nowrap",
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.color = "#D4AF37")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.color = "#333")
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDropdownClick(item.label, drop.label);
+                              setCategoryData(item);
+                              router.push(
+                                `/collections?category=${encodeURIComponent(
+                                  item.label
+                                )}&sub=${encodeURIComponent(drop.label)}`
+                              );
+                            }}
+                          >
+                            {drop.label}
+                            {drop.badge && (
+                              <span
+                                style={{
+                                  marginLeft: "6px",
+                                  fontSize: "10px",
+                                  color: "red",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {drop.badge}
+                              </span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Right: Images */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                        }}
+                      >
+                        {item.images?.map((img: string, idx: number) => (
+                          <Image
+                            key={idx}
+                            src={img}
+                            alt={`${item.name}-${idx}`}
+                            width={280}
+                            height={380}
+                            style={{
+                              borderRadius: "8px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
           {breadcrumb.length > 0 && (
             <nav
               aria-label="breadcrumb"
