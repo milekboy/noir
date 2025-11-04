@@ -173,7 +173,8 @@ export default function ShopCart() {
                           {data.productDetails.name}
                         </td>
                         <td className="product-item-price">
-                          ₦{data.productDetails.price}.00
+                          ₦{Number(data.productDetails.price).toLocaleString()}
+                          .00
                         </td>
                         <td className="product-item-quantity">
                           <div className="quantity btn-quantity style-1 me-3">
@@ -202,7 +203,11 @@ export default function ShopCart() {
                           </div>
                         </td>
                         <td className="product-item-totle">
-                          ₦{data.productDetails.price * data.quantity}.00
+                          ₦
+                          {Number(
+                            data.productDetails.price * data.quantity
+                          ).toLocaleString()}
+                          .00
                         </td>
                         <td className="product-item-close">
                           <button
@@ -270,8 +275,8 @@ export default function ShopCart() {
                   <div className="icon-content">
                     <h6 className="dz-title">Enjoy The Product</h6>
                     <p>
-                      Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry.
+                      Explore a wide range of high-quality products carefully
+                      selected to elevate your everyday experience.
                     </p>
                   </div>
                 </div>
@@ -281,7 +286,9 @@ export default function ShopCart() {
                       <td>
                         <h6 className="mb-0">Total</h6>
                       </td>
-                      <td className="price">₦{totalPrice}.00</td>
+                      <td className="price">
+                        ₦{Number(totalPrice).toLocaleString()}.00
+                      </td>
                     </tr>
                   </tbody>
                 </table>

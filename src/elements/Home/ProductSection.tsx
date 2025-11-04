@@ -78,6 +78,8 @@ const ProductSection = () => {
   };
 
   const filterCategory = (name: string, ind: number) => {
+    setActiveMenu(ind); // <-- update active button
+
     if (name === "ALL") {
       setFilteredProducts(product);
     } else {
@@ -126,6 +128,7 @@ const ProductSection = () => {
   const [product, setProduct] = useState<PopularProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [activeMenu, setActiveMenu] = useState(0);
 
   const networkInstance = NetworkInstance();
   const { setCartCount, fetchCartCount } = useContext(CartContext);
@@ -461,7 +464,7 @@ const ProductSection = () => {
             <ul className="filters">
               {headfilterData.map((item, ind) => (
                 <li
-                  className={`btn ${state.activeMenu === ind ? "active" : ""}`}
+                  className={`btn ${activeMenu === ind ? "active" : ""}`}
                   key={ind}
                   onClick={() => {
                     filterCategory(item.title, ind);
@@ -572,7 +575,9 @@ const ProductSection = () => {
 
                   <div className="dz-content">
                     <h5 className="title">{item.name}</h5>
-                    <h5 className="price">&#8358;{item.price}</h5>
+                    <h5 className="price">
+                      ₦{Number(item.price).toLocaleString()}
+                    </h5>
                   </div>
                   <div className="product-tag">
                     <span className="badge">Get 20% Off</span>
