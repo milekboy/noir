@@ -8,7 +8,7 @@ import ProductInputButton from "../Shop/ProductInputButton";
 import Image from "next/image";
 import { CartContext } from "@/components/CartContext";
 import { toast } from "react-toastify";
-import {WishlistContext} from "./../../components/WishlistContext";
+import { WishlistContext } from "./../../components/WishlistContext";
 
 interface MenuItem {
   image: string;
@@ -78,19 +78,26 @@ const ProductSection = () => {
   };
 
   const filterCategory = (name: string, ind: number) => {
+    if (name === "ALL") {
+      setFilteredProducts(product);
+    } else {
+      const updateData = product.filter((el) => el.categoryName === name);
+      setFilteredProducts(updateData);
+    }
+
     document.querySelectorAll(".card-container").forEach((ell) => {
-      ell.setAttribute("style", "transform:scale(0);");
+      ell.setAttribute("style", "transform:scale(0)");
     });
-    dispatch({ type: "SET_ACTIVE_MENU", index: ind });
-    const updateData = masonryData.filter((el) => el.category.includes(name));
-    dispatch({ type: "SET_DATA", data: updateData });
+
     setTimeout(() => {
-      document.querySelectorAll(".card-container").forEach((ell) => {
-        ell.setAttribute(
-          "style",
-          "transform:scale(1);transition:all .5s linear"
+      document
+        .querySelectorAll(".card-container")
+        .forEach((ell) =>
+          ell.setAttribute(
+            "style",
+            "transform:scale(1);transition:all .5s linear"
+          )
         );
-      });
     }, 200);
   };
 
@@ -107,6 +114,7 @@ const ProductSection = () => {
   }
 
   interface PopularProduct {
+    categoryName: string;
     productImages: productImages[];
     description: string;
     name: string;
@@ -117,10 +125,17 @@ const ProductSection = () => {
 
   const [product, setProduct] = useState<PopularProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+
   const networkInstance = NetworkInstance();
   const { setCartCount, fetchCartCount } = useContext(CartContext);
   const [categoryName, setCategoryName] = useState<string | null>("");
-  const {wishListCount, setWishListCount} = useContext(WishlistContext);
+  const { wishListCount, setWishListCount } = useContext(WishlistContext);
+  useEffect(() => {
+    if (product.length > 0) {
+      setFilteredProducts(product);
+    }
+  }, [product]);
 
   useEffect(() => {
     async function displayProduct() {
@@ -141,11 +156,11 @@ const ProductSection = () => {
   const addToCart = async (props: any) => {
     setCartCount((prev: number) => prev + 1);
     toast("Product added to cart", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 5000,
-        });
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
     const payload: Record<string, any> = {
       productId: props._id,
       categoryId: props.category,
@@ -182,13 +197,13 @@ const ProductSection = () => {
   };
 
   const addToWishlist = async (item: any) => {
-    setWishListCount((prev: any) => prev+ 1)
+    setWishListCount((prev: any) => prev + 1);
     toast("Product added to wishlist", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 2000,
-        });
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 2000,
+    });
     const payload: Record<string, any> = {
       productId: item._id,
     };
@@ -453,7 +468,7 @@ const ProductSection = () => {
                   }}
                 >
                   <input type="radio" />
-                  <Link href={"#"}>{item.title}</Link>
+                  <>{item.title}</>
                 </li>
               ))}
             </ul>
@@ -465,20 +480,12 @@ const ProductSection = () => {
           <LoadingSkeleton />
         ) : (
           <ul id="masonry" className="row g-xl-4 g-3">
-            {product.slice(0, 8).map((item, ind) => (
+            {filteredProducts.slice(0, 8).map((item, ind) => (
               <div
                 className="card-container col-6 col-xl-3 col-lg-3 col-md-4 col-sm-6 Tops wow fadeInUp"
                 data-wow-delay="0.6s"
                 key={item._id}
               >
-                {/* ✅ Wrap whole card in Link */}
-                {/* <Link
-                  href={`/collections/${categoryName}/${item._id}`}
-                  onMouseEnter={() => getCategoryName(item)}
-                  onMouseLeave={() => setCategoryName("")}
-                  onClick={() => getCategoryName(item)}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                > */}
                 <div className="shop-card" style={{ cursor: "pointer" }}>
                   <div
                     className="dz-media"
