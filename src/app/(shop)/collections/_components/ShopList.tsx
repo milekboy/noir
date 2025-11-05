@@ -473,11 +473,11 @@ useEffect(()=> {
                       crumb
                     ) : (
                       <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
-                        <Link href={"/"}> Home </Link>
+                        <Link href={"/"} onClick={()=> router.push("/")}> Home </Link>
                         <span style={{ margin: "0 6px", color: "#999" }}>
                           {">"}
                         </span>{" "}
-                        <Link href={"/collections"}> Collections</Link>
+                        <Link href={"/collections"} onClick={()=> router.push("/collections")}> Collections</Link>
                         {categoryParam && (
                           <>
                             {" "}

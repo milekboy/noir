@@ -9,6 +9,7 @@ import TrandingSlider from "@/elements/Home2/TrandingSlider";
 import { useState } from "react";
 import ModalSlider from "@/components/ModalSlider";
 import BasicModalData from "@/components/BasicModalData";
+import { useRouter } from "next/navigation";
 
 interface ProductImage {
   url: string;
@@ -39,6 +40,7 @@ export default function ShopProductDefault({
 }: ShopProductDefaultProps) {
   const [detailModal, setDetailModal] = useState<boolean>(false);
    const [inputValue, setInputValue] = useState<number>(1);
+   const router = useRouter()
   // console.log(category)
   return (
     <>
@@ -47,9 +49,9 @@ export default function ShopProductDefault({
           <nav aria-label="breadcrumb" className="breadcrumb-row">
             <ul className="breadcrumb mb-0 w-fit">
               <li className="breadcrumb-item">
-                <Link href="/"> Home</Link>
+                <Link href="/" onClick={()=> router.push("/")}> Home</Link>
               </li>
-              <li className="breadcrumb-item">Collections</li>
+              <li className="breadcrumb-item" style={{cursor: "pointer"}} onClick={()=> router.push("/collections")}>Collections</li>
               {category && (
              
                 <li className="breadcrumb-item bg-transparent">
