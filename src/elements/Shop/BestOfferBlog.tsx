@@ -202,7 +202,7 @@ export default function BestOfferBlog({ product,quantity }: BestOfferBlogProps) 
           xmlns="http://www.w3.org/2000/svg"
           dangerouslySetInnerHTML={{ __html: SVGICON.BlankHeart }}
         ></svg>
-        Add To Wishlist
+       {isDisabled ? "Added To Wishlist ":  "Add To Wishlist"}
       </span>
       <button
         onClick={() => {

@@ -30,23 +30,15 @@ export default function Registration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (number.startsWith("+234")){
-      return true
-    }
-   else if (number.length === 11) {
-      const cleaned = "+234" + number.slice(1);
-      setNumber(cleaned);
-      console.log("cleaned number: ", cleaned);
-    } else if (number.length < 11  || number.length > 11) {
-      toast.error("Phone number must be 11 digits", {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
-      return false;
-    }
-
+ console.log("User registered successfully: ", {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      number,
+      gender,
+    });
     const res = await register({
       firstName,
       lastName,
@@ -56,7 +48,9 @@ export default function Registration() {
       phoneNumber: number,
       gender,
     });
+    alert('hello')
     setShowOtpStep(true);
+    
     console.log("User registered successfully: ", {
       firstName,
       lastName,
@@ -66,6 +60,7 @@ export default function Registration() {
       number,
       gender,
     });
+    
 //  localStorage.setItem("userData", JSON.stringify(res.userData);
     return res;
   };
@@ -134,10 +129,33 @@ export default function Registration() {
     }
   };
 
+  const validateNum=()=>{
+     if (number.length < 14 || number.length > 14) {
+      
+        toast.error("Invalid Number, Please chack again", {
+          theme: "dark",
+          hideProgressBar: true,
+          position: "bottom-right",
+          autoClose: 5000,
+        });
+      }
+  }
 //  console.log(Number(date.slice(0, 4)) - Number(new Date().getFullYear()));
 useEffect(() => {
     const timer = window.setTimeout(() => {
-      if (number.length < 11 || number.length > 11) {
+      if ( number.length === 0) {
+        return;
+      }
+      else if (number.startsWith("+234")){
+        validateNum();
+      return true;
+    }
+   else if (number.length === 11) {
+      const cleaned = "+234" + number.slice(1);
+      setNumber(cleaned);
+      console.log("cleaned number: ", cleaned);
+    } if (number.length < 11 || number.length > 11) {
+      
         toast.error("Phone number must be 11 digits", {
           theme: "dark",
           hideProgressBar: true,

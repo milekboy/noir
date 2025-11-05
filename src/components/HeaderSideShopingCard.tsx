@@ -168,7 +168,7 @@ export default function HeaderSideShoppingCard(props: propType) {
   };
 
 
-
+const pathname = window.location.pathname;
   async function handleDelete(productId: string, index: number) {
     setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));
@@ -179,6 +179,9 @@ export default function HeaderSideShoppingCard(props: propType) {
           "x-session-id": sessionId,
         },
       });
+      // if (pathname === "/collections/Men/6886769445030228a365e1bc") {
+      //   window.location.reload();
+      // }
       toast("Product removed from Wishlist", {
         theme: "dark",
         hideProgressBar: true,

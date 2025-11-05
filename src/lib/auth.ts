@@ -30,9 +30,9 @@ interface RegisterPayload {
 export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
+ 
   try {
-    const response = await networkInstance.post("auth/register", payload);
-
+    const response = await networkInstance.post("/auth/register", payload);
     if (response.data) {
       console.log("Backend message:", response.data);
     } else {
@@ -48,6 +48,7 @@ export async function register(
 
     return response.data;
   } catch (error: any) {
+
     if (error.response?.data?.message?.includes("exists")) {
       toast.error(error.response.data.message, {
         theme: "dark",
@@ -68,6 +69,7 @@ export async function register(
     console.error("Registration error:", error);
     throw new Error("Registration failed. Please try again.");
   }
+
 }
 
 export async function login(
