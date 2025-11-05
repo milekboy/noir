@@ -43,7 +43,7 @@ export default function ShopList({
     category: string;
     productImages: ProductImage[];
     description: string;
-    color: string;
+    colors?: string[];
     size: string;
     createdAt: string;
     updatedAt: string;
@@ -753,7 +753,7 @@ export default function ShopList({
 
                             if (
                               selectedColors.length &&
-                              !item.colors.some((c: string) =>
+                              !item.colors?.some((c: string) =>
                                 selectedColors.includes(c)
                               )
                             ) {
