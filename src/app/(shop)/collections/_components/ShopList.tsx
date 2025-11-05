@@ -43,7 +43,7 @@ export default function ShopList({
     category: string;
     productImages: ProductImage[];
     description: string;
-    color: string;
+    colors?: string[];
     size: string;
     createdAt: string;
     updatedAt: string;
@@ -82,12 +82,12 @@ export default function ShopList({
   );
 
   const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<
-    [number, number] | null
-  >(null);
+  const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
 
-  const onPriceChange = (range: [number, number]) =>
-    setSelectedPriceRange(range);
+  const onPriceChange = (range: number[]) => {
+    setSelectedPrices([...new Set(range)]);
+  };
+
   const onColorChange = (colors: string[]) => setSelectedColors(colors);
 
   const onSizeChange = (sizes: number[]) => {
@@ -104,7 +104,7 @@ export default function ShopList({
     setSelectedColors([]);
     setSelectedSizes([]);
     // setBreadcrumb(["Home"]);
-    setSelectedPriceRange(null);
+    setSelectedPrices([]);
     setSelectedCategoryId(null);
     // router.push("/collections");
   };
@@ -729,17 +729,22 @@ useEffect(()=> {
                       })}
 
                       {/* ✅ Dynamic price range tag */}
-                      {selectedPriceRange && (
-                        <li>
-                          <button
-                            className="tag-btn"
-                            onClick={() => setSelectedPriceRange(null)}
-                          >
-                            ₦{selectedPriceRange[0].toLocaleString()}
-                            <i className="icon feather icon-x tag-close" />
-                          </button>
-                        </li>
-                      )}
+                      {selectedPrices?.length > 0 &&
+                        selectedPrices.map((price) => (
+                          <li key={price}>
+                            <button
+                              className="tag-btn"
+                              onClick={() =>
+                                setSelectedPrices(
+                                  selectedPrices.filter((s) => s !== price)
+                                )
+                              }
+                            >
+                              ₦{price.toLocaleString()}
+                              <i className="icon feather icon-x tag-close" />
+                            </button>
+                          </li>
+                        ))}
                     </ul>
 
                     {/*  */}
@@ -770,12 +775,14 @@ useEffect(()=> {
                             )
                               return false;
 
-                            // Color filter
                             if (
                               selectedColors.length &&
-                              !selectedColors.includes(item.color)
-                            )
+                              !item.colors?.some((c: string) =>
+                                selectedColors.includes(c)
+                              )
+                            ) {
                               return false;
+                            }
 
                             // Size filter
                             if (
@@ -785,13 +792,11 @@ useEffect(()=> {
                               return false;
 
                             // Price filter
-                            if (selectedPriceRange) {
-                              const price = Number(item.price);
-                              if (
-                                price < selectedPriceRange[0] ||
-                                price > selectedPriceRange[1]
-                              )
-                                return false;
+                            if (
+                              selectedPrices.length &&
+                              !selectedPrices.includes(Number(item.price))
+                            ) {
+                              return false;
                             }
 
                             return true;
