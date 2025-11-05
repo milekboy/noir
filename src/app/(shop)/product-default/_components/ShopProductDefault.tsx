@@ -53,15 +53,11 @@ export default function ShopProductDefault({
               </li>
               <li className="breadcrumb-item" style={{cursor: "pointer"}} onClick={()=> router.push("/collections")}>Collections</li>
               {category && (
-             
                 <li className="breadcrumb-item bg-transparent">
-                
                   <Link href={`/collections?category=${category.label}`}>
                     {category.label}
                   </Link>
                 </li>
-              
-                
               )}
               <li className="breadcrumb-item active" aria-current="page">
                 {product.name}
