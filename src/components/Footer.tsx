@@ -1,58 +1,63 @@
 // import {motion} from 'framer-motion'
 import IMAGES from "../constant/theme";
-import { Company, FooterMenu, WidgetData, 
-} 
-from "../constant/Alldata";
+import { Company, FooterMenu, WidgetData } from "../constant/Alldata";
 import SubscribeNewsletter from "./SubscribeNewsletter";
 import Image from "next/image";
 import Link from "next/link";
 import { color } from "three/src/nodes/TSL.js";
 
-
-interface footertype{
-    footerStyle? : string
+interface footertype {
+  footerStyle?: string;
 }
 
-const Footer = (props : footertype) => {
-    let year = new Date().getFullYear();
-    return (
-        <footer className={`site-footer ${props.footerStyle || "style-1" }`}>
-		{/* <!-- Footer Top --> */}
-            <div className="footer-top" style={{backgroundColor: "#000"}}>
-                <div className="container">
-                    <div className="row">
-                        <div className="col-xl-3 col-md-4 col-sm-6"  >
-                            <div className="widget widget_about me-2">
-                                <div className="footer-logo logo-white">
-                                    <Link href={"/"}>
-                                        {props.footerStyle === "footer-dark" ?                                        
-                                            <Image src={IMAGES.logo} alt="" />
-                                            :
-                                            <Image style={{width: "90px"}} src={IMAGES.LogoWhite} alt="" />
-                                        }
-
-                                    </Link> 
-                                </div>
-                                <ul className="widget-address">
-                                    {/* <li>
+const Footer = (props: footertype) => {
+  let year = new Date().getFullYear();
+  return (
+    <footer className={`site-footer ${props.footerStyle || "style-1"}`}>
+      {/* <!-- Footer Top --> */}
+      <div className="footer-top" style={{ backgroundColor: "#000" }}>
+        <div className="container">
+          <div className="row">
+            <div className="col-xl-3 col-md-4 col-sm-6">
+              <div className="widget widget_about me-2">
+                <div className="footer-logo logo-white">
+                  <Link href={"/"}>
+                    {props.footerStyle === "footer-dark" ? (
+                      <Image src={IMAGES.logo} alt="" />
+                    ) : (
+                      <Image
+                        style={{ width: "90px" }}
+                        src={IMAGES.LogoWhite}
+                        alt=""
+                      />
+                    )}
+                  </Link>
+                </div>
+                <ul className="widget-address">
+                  {/* <li>
                                         <p><span>Address</span> : 5b college road, Lagos State</p>
                                     </li> */}
-                                    <li>
-                                        <p><span>E-mail</span> : noir@gmail.com</p>
-                                    </li>
-                                    <li>
-                                        <p><span>Phone</span> : (+234) 80 234 453 3509</p>
-                                    </li>
-                                    
-                                </ul>
-                                <div className="subscribe_widget">
-                                    <h6 className="title fw-medium text-capitalize text-white">subscribe to our newsletter</h6>	
-                                    <SubscribeNewsletter />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-md-4 col-sm-6">
-                            {/* <div className="widget widget_post">
+                  <li>
+                    <p>
+                      <span>E-mail</span> : noir@gmail.com
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <span>Phone</span> : (+234) 80 234 453 3509
+                    </p>
+                  </li>
+                </ul>
+                <div className="subscribe_widget">
+                  <h6 className="title fw-medium text-capitalize text-white">
+                    subscribe to our newsletter
+                  </h6>
+                  <SubscribeNewsletter />
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-3 col-md-4 col-sm-6">
+              {/* <div className="widget widget_post">
                                 <h5 className="footer-title">Recent Posts</h5>
                                 <ul>
                                     {WidgetData.map((item, ind)=>(
@@ -69,16 +74,27 @@ const Footer = (props : footertype) => {
                                 </ul>
                             </div> */}
 
-                             <div className="widget widget_services" style={{marginLeft: "40px"}}>
-                                <h5 className="footer-title" style={{ color: "white" }}>Customer Care</h5>
-                                <ul>
-                                    {WidgetData.map((item, i)=>(
-                                        <li key={i}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
-                                    ))}                                    
-                                </ul>
-                            </div>
-                        </div>
-                        {/* <div className="col-xl-2 col-md-4 col-sm-4 col-6">
+              <div
+                className="widget widget_services"
+                style={{
+                  marginLeft: window.innerWidth >= 1024 ? "40px" : "0px",
+                }}
+              >
+                <h5 className="footer-title" style={{ color: "white" }}>
+                  Customer Care
+                </h5>
+                <ul>
+                  {WidgetData.map((item, i) => (
+                    <li key={i}>
+                      <Link style={{ color: "#fff" }} href={item.link}>
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            {/* <div className="col-xl-2 col-md-4 col-sm-4 col-6">
                             <div className="widget widget_services">
                                 <h5 className="footer-title">Our Stores</h5>
                                 <ul>
@@ -88,34 +104,46 @@ const Footer = (props : footertype) => {
                                 </ul>   
                             </div>
                         </div> */}
-                        <div className="col-xl-2 col-md-4 col-sm-4 col-6">
-                            <div className="widget widget_services">
-                                <h5 className="footer-title" style={{ color: "white" }}>Company</h5>
-                                <ul>
-                                    {Company.map((item, i)=>(
-                                        <li key={i}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
-                                    ))}                                    
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="col-xl-2 col-md-4 col-sm-4">
-                            <div className="widget widget_services">
-                                <h5 className="footer-title"  style={{ color: "white" }}>Categories</h5>
-                                {/* <Link href="/HelpSupport">Help & Support</Link> */}
-                                <ul>
-                                    {FooterMenu.map((item,ind)=>(
-                                        <li key={ind}><Link style={{color: "#fff"}} href={item.link}>{item.name}</Link></li>
-                                    ))}                                    
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="col-xl-2 col-md-4 col-sm-4 col-6">
+              <div className="widget widget_services">
+                <h5 className="footer-title" style={{ color: "white" }}>
+                  Company
+                </h5>
+                <ul>
+                  {Company.map((item, i) => (
+                    <li key={i}>
+                      <Link style={{ color: "#fff" }} href={item.link}>
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            {/*  Footer Top End  */}
-            
-            {/*  Footer Bottom  */}
-            {/* <div className="footer-bottom">
+            <div className="col-xl-2 col-md-4 col-sm-4">
+              <div className="widget widget_services">
+                <h5 className="footer-title" style={{ color: "white" }}>
+                  Categories
+                </h5>
+                {/* <Link href="/HelpSupport">Help & Support</Link> */}
+                <ul>
+                  {FooterMenu.map((item, ind) => (
+                    <li key={ind}>
+                      <Link style={{ color: "#fff" }} href={item.link}>
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/*  Footer Top End  */}
+
+      {/*  Footer Bottom  */}
+      {/* <div className="footer-bottom">
                 <div className="container">
                     <div className="row fb-inner">
                         <div className="col-lg-6 col-md-12 text-start"> 
@@ -130,9 +158,9 @@ const Footer = (props : footertype) => {
                     </div>
                 </div>
             </div> */}
-            {/*  Footer Bottom End  */}
-        </footer>
-    );
+      {/*  Footer Bottom End  */}
+    </footer>
+  );
 };
 
 export default Footer;
