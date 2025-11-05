@@ -74,12 +74,7 @@ const Footer = (props: footertype) => {
                                 </ul>
                             </div> */}
 
-              <div
-                className="widget widget_services"
-                style={{
-                  marginLeft: window.innerWidth >= 1024 ? "40px" : "0px",
-                }}
-              >
+              <div className="widget widget_services ms-lg-5">
                 <h5 className="footer-title" style={{ color: "white" }}>
                   Customer Care
                 </h5>
