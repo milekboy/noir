@@ -19,7 +19,7 @@ import useWishListContext, {
 } from "./WishlistContext";
 import SearchInput from "./SearchInput";
 import { UserContext } from "./UserContext";
-import { useRef } from 'react';
+import { useRef } from "react";
 
 interface State {
   headerFix: boolean;
@@ -150,16 +150,19 @@ export default function Header2() {
   const handleToggleClick = () => {
     dispatch({ type: "TOGGLE_CATEGORY_ACTIVE" });
   };
-   useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -461,9 +464,11 @@ export default function Header2() {
                 <div className="extra-cell">
                   <ul className="header-right ">
                     <li className="nav-item login-link">
-                      {!userData && <Link className="nav-link" href="/login">
-                        Login / Register
-                      </Link>}
+                      {!userData && (
+                        <Link className="nav-link" href="/login">
+                          Login / Register
+                        </Link>
+                      )}
                     </li>
 
                     <li className="nav-item search-link d-lg-none">
@@ -503,30 +508,44 @@ export default function Header2() {
                         {/* <span className="badge badge-circle">{CartContext}</span> */}
                       </Link>
                     </li>
-                  { userData && <li className="nav-item cart-link ms-3 mt-1" 
-                      onMouseEnter={() => setShowDropdown(true)}
-                      onMouseLeave={() => setShowDropdown(false)}
-                      ref={dropdownRef}
-                    >
-                      <i className="iconly-Broken-User" />
-                      
-                      {showDropdown && (
-                      <ul style={{borderRadius:"10px"}} className="profile-dropdown bg-white d-flex flex-column px-3 py-3  gap-4 shadow-lg position-absolute start-50">
-                        <li className="d-flex gap- justify-content-center align-items-center">
-                           <i className="iconly-Broken-User" />
-                        <Link href="/">Profile</Link>
-                        </li>
-                        <li className="d-flex gap- justify-content-center align-items-center">
-                           <i className="iconly-Broken-Bag" />
-                        <Link href="/">Orders</Link>
-                        </li>
-                       <li className="d-flex gap- justify-content-center align-items-center">
-                           <i className="iconly-Broken-Logout" />
-                        <Link href="/" onClick={()=>  {localStorage.removeItem("userData"); window.location.reload()}}>Logout</Link>
-                        </li>
-                      </ul>
-                      )}
-                    </li>}
+                    {userData && (
+                      <li
+                        className="nav-item cart-link ms-3 mt-1"
+                        onMouseEnter={() => setShowDropdown(true)}
+                        onMouseLeave={() => setShowDropdown(false)}
+                        ref={dropdownRef}
+                      >
+                        <i className="iconly-Broken-User" />
+
+                        {showDropdown && (
+                          <ul
+                            style={{ borderRadius: "10px" }}
+                            className="profile-dropdown bg-white d-flex flex-column px-3 py-3  gap-4 shadow-lg position-absolute start-50"
+                          >
+                            <li className="d-flex gap- justify-content-center align-items-center">
+                              <i className="iconly-Broken-User" />
+                              <Link href="/account-profile">Profile</Link>
+                            </li>
+                            <li className="d-flex gap- justify-content-center align-items-center">
+                              <i className="iconly-Broken-Bag" />
+                              <Link href="/account-orders">Orders</Link>
+                            </li>
+                            <li className="d-flex gap- justify-content-center align-items-center">
+                              <i className="iconly-Broken-Logout" />
+                              <Link
+                                href="/"
+                                onClick={() => {
+                                  localStorage.removeItem("userData");
+                                  window.location.reload();
+                                }}
+                              >
+                                Logout
+                              </Link>
+                            </li>
+                          </ul>
+                        )}
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
