@@ -250,9 +250,9 @@ export const TradingSliderBlogdata = [
 
 export const WidgetData = [
   { name: "Customer Care", link: "/faqs-2" },
-  { name: "Shipping", link: "/faqs-2" },
-  { name: "Orders & Payments", link: "/faqs-2" },
-  { name: "Returns", link: "/faqs-2" },
+  { name: "Shipping", link: "/faqs-2?tab=Shipping" },
+  { name: "Orders & Payments", link: "/faqs-2?tab=Payments" },
+  { name: "Returns", link: "/faqs-2?tab=Returns" },
   { name: "FAQ", link: "/faqs-2" },
 ];
 
