@@ -1,5 +1,7 @@
 "use client";
 import { Accordion, Tab, Nav } from "react-bootstrap";
+import { useSearchParams } from "next/navigation";
+
 import IMAGES from "@/constant/theme";
 import Link from "next/link";
 import Image from "next/image";
@@ -210,7 +212,9 @@ interface Item {
 const Faq2 = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchSuggestion, setSearchSuggestion] = useState<Item[] | null>(null);
-
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeKey, setActiveKey] = useState(tabParam || "General");
   useEffect(() => {
     setTimeout(() => {
       if (searchSuggestion && searchValue.trim() !== "") {
@@ -240,7 +244,10 @@ const Faq2 = () => {
     <div className="page-content bg-light">
       <section className="px-3">
         <div className="row">
-          <Tab.Container defaultActiveKey={"General"}>
+          <Tab.Container
+            activeKey={activeKey}
+            onSelect={(k) => setActiveKey(k ?? "General")}
+          >
             <div className="col-xl-6 col-lg-6 col-md-12 faq-side-content">
               <div className="dz-bnr-inr-entry">
                 <h1>Have any questions? </h1>
