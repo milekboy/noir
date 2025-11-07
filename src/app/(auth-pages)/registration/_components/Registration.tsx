@@ -49,9 +49,11 @@ export default function Registration() {
       phoneNumber: number,
       gender,
     });
-    alert("hello");
     setShowOtpStep(true);
-
+      if (number.length === 0 ) {
+        setError2("Phone Number cannot be empty");
+        return;
+      } 
     console.log("User registered successfully: ", {
       firstName,
       lastName,
@@ -131,13 +133,10 @@ export default function Registration() {
   };
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      if (number.length === 0) {
-        setError2("Phone Number cannot be empty");
-        return;
-      } else if (number.startsWith("+234")) {
+    if (number.startsWith("+234")) {
         validateNum();
         return true;
-      }else if(number.length < 11  || number.length > 11) {
+      }else if(number.length < 11  && number.length !== 0 || number.length > 11 ) {
         setError2("Phone Number must be 11 digits");
       } else if (number.length === 11) {
         const cleaned = "+234" + number.slice(1);
