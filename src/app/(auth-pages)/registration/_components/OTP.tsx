@@ -28,10 +28,8 @@ export default function OTP({ email }: OTPProps) {
         autoClose: 5000,
       });
        localStorage.setItem("userData", JSON.stringify(res.data.user));
-       window.location.reload()
-      // console.log(email, otp);
-      // console.log(res.data)
       router.push("/");
+    setTimeout(() => window.location.reload(), 1500);
     }
    }catch(error: any){
       toast.error(error.response.data.message, {

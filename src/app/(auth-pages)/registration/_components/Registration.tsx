@@ -27,10 +27,11 @@ export default function Registration() {
   const [otp, setOtp] = useState("");
   const [showOtpStep, setShowOtpStep] = useState(false);
   const [date, setDate] = useState("");
+  const [error2, setError2] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
- console.log("User registered successfully: ", {
+    console.log("User registered successfully: ", {
       firstName,
       lastName,
       email,
@@ -48,9 +49,11 @@ export default function Registration() {
       phoneNumber: number,
       gender,
     });
-    alert('hello')
     setShowOtpStep(true);
-    
+      if (number.length === 0 ) {
+        setError2("Phone Number cannot be empty");
+        return;
+      } 
     console.log("User registered successfully: ", {
       firstName,
       lastName,
@@ -60,25 +63,18 @@ export default function Registration() {
       number,
       gender,
     });
-    
-//  localStorage.setItem("userData", JSON.stringify(res.userData);
+
+    //  localStorage.setItem("userData", JSON.stringify(res.userData);
     return res;
   };
 
   const verifyPassword = () => {
     // Check if email or password is empty first
     if (email.trim() === "" || password.trim() === "") {
-      toast("Email and Password cannot be empty", {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
-      console.log("Email and Password cannot be empty");
+      setError("Email and Password cannot be empty");
+      // console.log("Email and Password cannot be empty");
       return setConfirm(false);
     }
-
-  
 
     // Check password strength requirements
     if (
@@ -113,59 +109,45 @@ export default function Registration() {
 
   const verifyName = () => {
     if (firstName.trim() === "" || lastName.trim() === "") {
-      setError("Names cannot be empty");
+      setError2("Names cannot be empty");
       return false;
-    }else if (Number(new Date().getFullYear() - Number(date.slice(0, 4)) ) <= 18) {
-       toast.error("You must be at least 18 years old to register", {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
+    } else if (
+      Number(new Date().getFullYear() - Number(date.slice(0, 4))) < 18
+    ) {
+      setError2("You must be at least 18 years old to register");
       return false;
     } else {
       setError("");
+      setError2("");
       return true; // Proceed to the next step if names are valid
     }
   };
 
-  const validateNum=()=>{
-     if (number.length < 14 || number.length > 14) {
-      
-        toast.error("Invalid Number, Please chack again", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 5000,
-        });
-      }
-  }
-//  console.log(Number(date.slice(0, 4)) - Number(new Date().getFullYear()));
-useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if ( number.length === 0) {
-        return;
-      }
-      else if (number.startsWith("+234")){
-        validateNum();
-      return true;
+  const validateNum = () => {
+    if (number.length < 14 || number.length > 14) {
+
+      setError2("Invalid Number, Please chack again");
+    } else {
+      setError2("");
     }
-   else if (number.length === 11) {
-      const cleaned = "+234" + number.slice(1);
-      setNumber(cleaned);
-      console.log("cleaned number: ", cleaned);
-    } if (number.length < 11 || number.length > 11) {
-      
-        toast.error("Phone number must be 11 digits", {
-          theme: "dark",
-          hideProgressBar: true,
-          position: "bottom-right",
-          autoClose: 5000,
-        });
+  };
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+    if (number.startsWith("+234")) {
+        validateNum();
+        return true;
+      }else if(number.length < 11  && number.length !== 0 || number.length > 11 ) {
+        setError2("Phone Number must be 11 digits");
+      } else if (number.length === 11) {
+        const cleaned = "+234" + number.slice(1);
+        setNumber(cleaned);
+        setError2("");
+        console.log("cleaned number: ", cleaned);
       }
+      
     }, 1500);
     return () => window.clearTimeout(timer);
-   }, [number]);
+  }, [number]);
   return (
     <div className="page-content bg-light">
       <section className="px-3">
@@ -205,9 +187,7 @@ useEffect(() => {
           </div>
           <div className="col-xxl-6 col-xl-6 col-lg-6 end-side-conten justify-content-center mb-3">
             {showOtpStep ? (
-
               <OTP email={email} />
-
             ) : (
               <div className="login-area">
                 <h2 className="text-secondary text-center">Registration Now</h2>
@@ -228,6 +208,7 @@ useEffect(() => {
                     gender={gender}
                     number={number}
                     date={date}
+                    error={setError2}
                   >
                     <>
                       {/* =============== STEP ONE =========== */}
@@ -249,7 +230,14 @@ useEffect(() => {
                             placeholder="Email Address"
                             type="email"
                           />
+                          <p
+                            className="text-danger "
+                            style={{ fontSize: "12px" }}
+                          >
+                            {error.includes("Email") && error}
+                          </p>
                         </div>
+
                         <div className="m-b25">
                           <label className="label-title">Password</label>
                           <div className="secure-input ">
@@ -315,7 +303,7 @@ useEffect(() => {
                               className="text-danger mt-1 "
                               style={{ fontSize: "12px" }}
                             >
-                              {error}
+                              {error2.includes("Names") && error2}
                             </p>
                           </div>
 
@@ -335,7 +323,7 @@ useEffect(() => {
                               className="text-danger mt-1"
                               style={{ fontSize: "12px" }}
                             >
-                              {error}
+                              {error2.includes("Names") && error2}
                             </p>
                           </div>
                         </div>
@@ -351,6 +339,12 @@ useEffect(() => {
                             placeholder="DD/MM/YYYY"
                             type="date"
                           />
+                          <p
+                            className="text-danger "
+                            style={{ fontSize: "12px" }}
+                          >
+                            {error2.includes("18") && error2}
+                          </p>
                         </div>
 
                         <div className="m-b25">
@@ -370,6 +364,12 @@ useEffect(() => {
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                           </select>
+                          <p
+                            className="text-danger "
+                            style={{ fontSize: "12px" }}
+                          >
+                            {error2.includes("Gender") && error2}
+                          </p>
                         </div>
                         <div className="m-b25">
                           <label className="label-title">Phone Number</label>
@@ -384,6 +384,12 @@ useEffect(() => {
                             // pattern="[0-9]{11}"
                             // type="tel"
                           />
+                          <p
+                            className="text-danger "
+                            style={{ fontSize: "12px" }}
+                          >
+                            {error2.includes("Number") && error2}
+                          </p>
                         </div>
                       </div>
                     </>

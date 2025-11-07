@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { Tab, Nav } from "react-bootstrap";
 import NetworkInstance from "@/app/api/NetworkInstance";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import { CartContext } from "./CartContext";
 import { toast } from "react-toastify";
 import { WishlistContext } from "./WishlistContext";
+import { usePathname } from "next/navigation";
 
 interface propType {
   tabactive: string;
@@ -167,11 +168,26 @@ export default function HeaderSideShoppingCard(props: propType) {
     }
   };
 
-
-const pathname = window.location.pathname;
+  const pathname = window.location.pathname;
+  const segments = useMemo(
+        () => pathname.split("/").filter(Boolean),
+        [pathname]
+      );
   async function handleDelete(productId: string, index: number) {
     setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));
+  
+    
+
+      const isCollectionPage =
+        segments.length === 3 && segments[0] === "collections";
+console.log(segments)
+      if (isCollectionPage) {
+        console.log("✅ User is on a collection page:", pathname);
+        setTimeout(()=> {window.location.reload();}, 1500)
+      }else{
+        return;
+      }
     try {
       const sessionId = localStorage.getItem("sessionId");
       await NetworkInstance().delete(`/wishlist/${productId}`, {
@@ -179,15 +195,16 @@ const pathname = window.location.pathname;
           "x-session-id": sessionId,
         },
       });
-      // if (pathname === "/collections/Men/6886769445030228a365e1bc") {
-      //   window.location.reload();
-      // }
+      
+     
+
       toast("Product removed from Wishlist", {
         theme: "dark",
         hideProgressBar: true,
         position: "bottom-right",
         autoClose: 5000,
       });
+      
     } catch (err: any) {
       console.log("error: ", err);
     }
@@ -195,6 +212,8 @@ const pathname = window.location.pathname;
   useEffect(() => {
     getWishlist();
   }, []);
+
+
   return (
     <div className="dz-tabs">
       <Tab.Container defaultActiveKey={props.tabactive}>

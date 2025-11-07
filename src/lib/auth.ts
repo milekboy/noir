@@ -67,6 +67,13 @@ export async function register(
     }
 
     console.error("Registration error:", error);
+    
+      toast.error(error.response.data.message, {
+        theme: "dark",
+        hideProgressBar: true,
+        position: "bottom-right",
+        autoClose: 5000,
+      });
     throw new Error("Registration failed. Please try again.");
   }
 
