@@ -174,7 +174,8 @@ export default function BestOfferBlog({ product,quantity }: BestOfferBlogProps) 
         <div className="icon-content">
           <h6 className="dz-title">Enjoy The Product</h6>
           <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
+            Explore a wide range of high-quality products carefully selected to
+            elevate your everyday experience.
           </p>
         </div>
       </div>
@@ -188,7 +189,7 @@ export default function BestOfferBlog({ product,quantity }: BestOfferBlogProps) 
             <td>
               <h6 className="mb-0">Total</h6>
             </td>
-            <td className="price"> ₦{product.price}</td>
+            <td className="price"> ₦{product.price.toLocaleString()}</td>
           </tr>
         </tbody>
       </table>

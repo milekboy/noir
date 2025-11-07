@@ -249,11 +249,11 @@ export const TradingSliderBlogdata = [
 //Footer data start
 
 export const WidgetData = [
-  { name: "Customer Care", link: "/help-and-support" },
-  { name: "Shipping", link: "/faqs-2" },
-  { name: "Orders & Payments", link: "/faqs-2" },
-  { name: "Returns", link: "/faqs-2" },
-  { name: "FAQ", link: "/help-and-support" },
+  { name: "Customer Care", link: "/faqs-2" },
+  { name: "Shipping", link: "/faqs-2?tab=Shipping" },
+  { name: "Orders & Payments", link: "/faqs-2?tab=Payments" },
+  { name: "Returns", link: "/faqs-2?tab=Returns" },
+  { name: "FAQ", link: "/faqs-2" },
 ];
 
 export const Company = [

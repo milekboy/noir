@@ -43,7 +43,7 @@ export default function ShopList({
     category: string;
     productImages: ProductImage[];
     description: string;
-    color: string;
+    colors?: string[];
     size: string;
     createdAt: string;
     updatedAt: string;
@@ -53,6 +53,8 @@ export default function ShopList({
   const [products, setProducts] = useState<Product[]>([]);
   const networkInstance = NetworkInstance();
   //api call
+
+  const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     getProducts();
@@ -80,12 +82,12 @@ export default function ShopList({
   );
 
   const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<
-    [number, number] | null
-  >(null);
+  const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
 
-  const onPriceChange = (range: [number, number]) =>
-    setSelectedPriceRange(range);
+  const onPriceChange = (range: number[]) => {
+    setSelectedPrices([...new Set(range)]);
+  };
+
   const onColorChange = (colors: string[]) => setSelectedColors(colors);
 
   const onSizeChange = (sizes: number[]) => {
@@ -102,7 +104,7 @@ export default function ShopList({
     setSelectedColors([]);
     setSelectedSizes([]);
     // setBreadcrumb(["Home"]);
-    setSelectedPriceRange(null);
+    setSelectedPrices([]);
     setSelectedCategoryId(null);
     // router.push("/collections");
   };
@@ -271,179 +273,201 @@ useEffect(()=> {
         {/* Category navigation */}
 
         <div>
-          <nav
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "30px",
-              padding: "10px 0",
-              borderTop: "1px solid #eee",
-              fontSize: "12px",
-              fontWeight: 500,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              position: "relative",
-              backgroundColor: "#000",
-              zIndex: 100,
-              whiteSpace: "nowrap",
-            }}
-            className="mobile-scroll"
-          >
-            {navItems.map((item: any, index: number) => (
+          <div className="nav-scroller" style={{ overflow: "hidden" }}>
+            <nav
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                gap: "5px",
+                padding: "10px 0px",
+                borderTop: "1px solid #eee",
+                fontSize: "12px",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                position: "relative",
+                backgroundColor: "#000",
+                zIndex: 100,
+                whiteSpace: "nowrap",
+              }}
+              className="mobile-scroll"
+              onMouseLeave={() => {
+                hideTimer.current = setTimeout(() => {
+                  setHovered(null);
+                }, 300);
+              }}
+            >
+              {/* Scrolling text wrapper */}
               <div
-                key={index}
-                style={{
-                  flex: "0 0 auto",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={() => setHovered(item.label)}
-                onMouseLeave={() => setHovered(null)}
+                className="auto-scroll"
+                style={{ display: "flex", gap: "5px" }}
               >
-                {/* Main nav label */}
-                <div
-                  style={{
-                    color: "#fff",
-                    textDecoration: "none",
-                    padding: "6px 10px",
-                    borderRadius: "2px",
-                    transition: "all 0.3s ease",
-                    display: "inline-block",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#D4AF37")
-                  }
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDropdownClick(item.label, "");
-                    setCategoryData(item);
-                    setSelectedCategoryId(item.id);
-                    router.push(
-                      `/collections?category=${encodeURIComponent(item.label)}`
-                    );
-                  }}
-                >
-                  {item.label}
-                </div>
-
-                {/* Mega menu */}
-                {item.subCategory?.length > 0 && hovered === item.label && (
+                {[...navItems, ...navItems].map((item: any, index: number) => (
                   <div
+                    key={index}
                     style={{
-                      position: "absolute",
-
-                      top: "100%",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: "100vw",
-                      backgroundColor: "#fff",
-                      border: "1px solid #eee",
-                      borderRadius: "6px",
-                      padding: "20px 250px",
-                      display: "grid",
-                      gridTemplateColumns: "2fr 1fr",
-                      gap: "20px",
-                      zIndex: 1000,
-                      boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                      flex: "0 0 auto",
+                      cursor: "pointer",
+                      color: "#fff",
+                      textDecoration: "none",
+                      padding: "6px 10px",
+                      borderRadius: "2px",
+                      transition: "all 0.3s ease",
+                      display: "inline-block",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
                     }}
-                    onMouseEnter={() => setHovered(item.label)}
-                    onMouseLeave={() => setHovered(null)}
+                    onMouseEnter={(e) => {
+                      if (hideTimer.current) clearTimeout(hideTimer.current);
+                      setHovered(item.label);
+                      e.currentTarget.style.color = "#D4AF37";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#fff"; // Reset color
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDropdownClick(item.label, "");
+                      setCategoryData(item);
+                      setSelectedCategoryId(item.id);
+                      router.push(
+                        `/collections?category=${encodeURIComponent(
+                          item.label
+                        )}`
+                      );
+                    }}
                   >
-                    {/* Left: Subcategories */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        columnGap: "20px",
-                        rowGap: "6px",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      {item.subCategory.map((drop: any, i: number) => (
-                        <Link
-                          key={i}
-                          href="#"
-                          style={{
-                            flex: "0 0 45%",
-                            color: "#333",
-                            textDecoration: "none",
-                            fontSize: "13px",
-                            fontWeight: 400,
-                            padding: "2px 0",
-                            whiteSpace: "nowrap",
-                            transition: "all 0.2s ease",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "#D4AF37")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "#333")
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDropdownClick(item.label, drop.label);
-                            setCategoryData(item);
-                            router.push(
-                              `/collections?category=${encodeURIComponent(
-                                item.label
-                              )}&sub=${encodeURIComponent(drop.label)}`
-                            );
-                          }}
-                        >
-                          {drop.label}
-                          {drop.badge && (
-                            <span
-                              style={{
-                                marginLeft: "6px",
-                                fontSize: "10px",
-                                color: "red",
-                                fontWeight: 600,
-                              }}
-                            >
-                              {drop.badge}
-                            </span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Right: Images */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
-                      }}
-                    >
-                      {item.images?.map((img: string, idx: number) => (
-                        <Image
-                          key={idx}
-                          src={img}
-                          alt={`${item.name}-${idx}`}
-                          width={280}
-                          height={380}
-                          style={{
-                            borderRadius: "8px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ))}
-                    </div>
+                    {item.label}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </nav>
 
+              {/* Mega menu - OUTSIDE the scrolling wrapper */}
+              {navItems.map(
+                (item: any, index: number) =>
+                  item.subCategory?.length > 0 &&
+                  hovered === item.label && (
+                    <div
+                      key={`mega-${index}`}
+                      style={{
+                        position: "fixed",
+                        top: "auto",
+                        left: "0",
+                        right: "0",
+                        marginTop: "180px",
+                        width: "100vw",
+                        backgroundColor: "#fff",
+                        border: "1px solid #eee",
+                        borderRadius: "6px",
+                        padding: "20px 250px",
+                        display: "grid",
+                        gridTemplateColumns: "2fr 1fr",
+                        gap: "20px",
+                        zIndex: 1000,
+                        boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                      }}
+                      onMouseEnter={() => {
+                        if (hideTimer.current) clearTimeout(hideTimer.current);
+                        setHovered(item.label);
+                      }}
+                      onMouseLeave={() => {
+                        hideTimer.current = setTimeout(() => {
+                          setHovered(null);
+                        }, 300);
+                      }}
+                    >
+                      {/* Left: Subcategories */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          columnGap: "20px",
+                          rowGap: "6px",
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        {item.subCategory.map((drop: any, i: number) => (
+                          <Link
+                            key={i}
+                            href="#"
+                            style={{
+                              flex: "0 0 45%",
+                              color: "#333",
+                              textDecoration: "none",
+                              fontSize: "13px",
+                              fontWeight: 400,
+                              padding: "2px 0",
+                              whiteSpace: "nowrap",
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.color = "#D4AF37")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.color = "#333")
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDropdownClick(item.label, drop.label);
+                              setCategoryData(item);
+                              router.push(
+                                `/collections?category=${encodeURIComponent(
+                                  item.label
+                                )}&sub=${encodeURIComponent(drop.label)}`
+                              );
+                            }}
+                          >
+                            {drop.label}
+                            {drop.badge && (
+                              <span
+                                style={{
+                                  marginLeft: "6px",
+                                  fontSize: "10px",
+                                  color: "red",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {drop.badge}
+                              </span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Right: Images */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                        }}
+                      >
+                        {item.images?.map((img: string, idx: number) => (
+                          <Image
+                            key={idx}
+                            src={img}
+                            alt={`${item.name}-${idx}`}
+                            width={280}
+                            height={380}
+                            style={{
+                              borderRadius: "8px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )
+              )}
+            </nav>
+          </div>
           {breadcrumb.length > 0 && (
             <nav
               aria-label="breadcrumb"
               style={{
+                zIndex: 100,
                 padding: "10px 20px",
                 fontSize: "14px",
                 color: "#444",
@@ -506,6 +530,22 @@ useEffect(()=> {
         </div>
 
         <style jsx>{`
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+
+          .auto-scroll {
+            animation: scroll 20s linear infinite;
+          }
+
+          .auto-scroll:hover {
+            animation-play-state: paused;
+          }
           @media (max-width: 576px) {
             .mobile-scroll {
               overflow-x: auto;
@@ -689,17 +729,22 @@ useEffect(()=> {
                       })}
 
                       {/* ✅ Dynamic price range tag */}
-                      {selectedPriceRange && (
-                        <li>
-                          <button
-                            className="tag-btn"
-                            onClick={() => setSelectedPriceRange(null)}
-                          >
-                            ₦{selectedPriceRange[0].toLocaleString()}
-                            <i className="icon feather icon-x tag-close" />
-                          </button>
-                        </li>
-                      )}
+                      {selectedPrices?.length > 0 &&
+                        selectedPrices.map((price) => (
+                          <li key={price}>
+                            <button
+                              className="tag-btn"
+                              onClick={() =>
+                                setSelectedPrices(
+                                  selectedPrices.filter((s) => s !== price)
+                                )
+                              }
+                            >
+                              ₦{price.toLocaleString()}
+                              <i className="icon feather icon-x tag-close" />
+                            </button>
+                          </li>
+                        ))}
                     </ul>
 
                     {/*  */}
@@ -730,12 +775,14 @@ useEffect(()=> {
                             )
                               return false;
 
-                            // Color filter
                             if (
                               selectedColors.length &&
-                              !selectedColors.includes(item.color)
-                            )
+                              !item.colors?.some((c: string) =>
+                                selectedColors.includes(c)
+                              )
+                            ) {
                               return false;
+                            }
 
                             // Size filter
                             if (
@@ -745,13 +792,11 @@ useEffect(()=> {
                               return false;
 
                             // Price filter
-                            if (selectedPriceRange) {
-                              const price = Number(item.price);
-                              if (
-                                price < selectedPriceRange[0] ||
-                                price > selectedPriceRange[1]
-                              )
-                                return false;
+                            if (
+                              selectedPrices.length &&
+                              !selectedPrices.includes(Number(item.price))
+                            ) {
+                              return false;
                             }
 
                             return true;
