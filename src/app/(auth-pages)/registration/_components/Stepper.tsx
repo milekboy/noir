@@ -50,6 +50,7 @@ interface StepperProps {
   gender: string;
   number: string;
   date: string;
+  error: (value:string) => void;
 }
 export const steps = [
   { id: 1, title: "1" },
@@ -67,7 +68,8 @@ export function Stepper({
   lastName,
   gender,
   number,
-  date
+  date,
+  error
 }: StepperProps){
   const [loading, setLoading] = React.useState(false);
   const [older, setOlder] = React.useState(false);
@@ -97,14 +99,11 @@ export function Stepper({
       const currentYear = new Date().getFullYear();
       if (currentYear - birthYear >= 18) {
         setOlder(true);
+        error("")
       } else {
         setOlder(false);
-         toast.error("You must be at least 18 years old to register", {
-                theme: "dark",
-                hideProgressBar: true,
-                position: "bottom-right",
-                autoClose: 1000,
-              });
+        error("You must be at least 18 years old to register")
+     
       }
     }
   }, [date]);

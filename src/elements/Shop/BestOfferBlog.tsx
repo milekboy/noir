@@ -149,7 +149,6 @@ export default function BestOfferBlog({ product,quantity }: BestOfferBlogProps) 
 
   }
 
-  
 
   useEffect(() => {
     wishlistCheck(product._id);
