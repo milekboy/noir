@@ -30,7 +30,7 @@ export default function AccountProfile() {
     <div className="page-content bg-light">
       <CommanBanner
         image={IMAGES.BackBg1.src}
-        mainText="Profile"
+        mainText="Your Profile"
         parentText="Home"
         currentText="Account Profile"
       />
