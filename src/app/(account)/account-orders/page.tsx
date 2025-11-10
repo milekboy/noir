@@ -77,7 +77,7 @@ export default function AccountOrder() {
                             <tr key={data._id}>
                               <td>
                                 <Link href="#" className="fw-medium">
-                                  {data.id}
+                                  {data._id}
                                 </Link>
                               </td>
                               <td>
