@@ -5,7 +5,15 @@ import { AccoountOrdersTable } from "@/constant/Alldata";
 import IMAGES from "@/constant/theme";
 import CommanSidebar from "@/elements/MyAccount/CommanSidebar";
 import CommanLayout from "@/components/CommanLayout";
-import { useEffect, useState } from "react";
+import {
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useEffect,
+  useState,
+} from "react";
 import NetworkInstance from "@/app/api/NetworkInstance";
 export default function AccountOrder() {
   const [orders, setOrders] = useState<any>([]);
@@ -30,7 +38,7 @@ export default function AccountOrder() {
       try {
         const networkInstance = NetworkInstance();
         const res = await networkInstance.get("/order/history", { params });
-        setOrders(res.data.items);
+        setOrders(res.data.items.orders);
         console.log(res.data);
       } catch (err: any) {
         console.log("Error fetching orders:", err?.response?.data || err);
@@ -67,32 +75,103 @@ export default function AccountOrder() {
                         </tr>
                       </thead>
                       <tbody>
-                        {AccoountOrdersTable.map((elem, index) => (
-                          <tr key={index}>
-                            <td>
-                              <Link href="#" className="fw-medium">
-                                {elem.id}
-                              </Link>
-                            </td>
-                            <td>{elem.date}</td>
-                            <td>{elem.amount}</td>
-                            <td>
-                              <span
-                                className={`badge  m-0 ${elem.status.badgeClass}`}
-                              >
-                                {elem.status.label}
-                              </span>
-                            </td>
-                            <td>
-                              <Link
-                                href={elem.viewLink}
-                                className="btn-link text-underline p-0"
-                              >
-                                View
-                              </Link>
-                            </td>
-                          </tr>
-                        ))}
+                        {orders.map(
+                          (data: {
+                            _id: Key | null | undefined;
+                            id:
+                              | string
+                              | number
+                              | bigint
+                              | boolean
+                              | ReactElement<
+                                  unknown,
+                                  string | JSXElementConstructor<any>
+                                >
+                              | Iterable<ReactNode>
+                              | ReactPortal
+                              | Promise<
+                                  | string
+                                  | number
+                                  | bigint
+                                  | boolean
+                                  | ReactPortal
+                                  | ReactElement<
+                                      unknown,
+                                      string | JSXElementConstructor<any>
+                                    >
+                                  | Iterable<ReactNode>
+                                  | null
+                                  | undefined
+                                >
+                              | null
+                              | undefined;
+                            createdAt: string | number | Date;
+                            totalAmount: any;
+                            status:
+                              | string
+                              | number
+                              | bigint
+                              | boolean
+                              | ReactElement<
+                                  unknown,
+                                  string | JSXElementConstructor<any>
+                                >
+                              | Iterable<ReactNode>
+                              | ReactPortal
+                              | Promise<
+                                  | string
+                                  | number
+                                  | bigint
+                                  | boolean
+                                  | ReactPortal
+                                  | ReactElement<
+                                      unknown,
+                                      string | JSXElementConstructor<any>
+                                    >
+                                  | Iterable<ReactNode>
+                                  | null
+                                  | undefined
+                                >
+                              | null
+                              | undefined;
+                          }) => (
+                            <tr key={data._id}>
+                              <td>
+                                <Link href="#" className="fw-medium">
+                                  {data.id}
+                                </Link>
+                              </td>
+                              <td>
+                                {new Date(data.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}
+                              </td>
+                              <td>
+                                {" "}
+                                ₦{Number(data.totalAmount).toLocaleString()}
+                              </td>
+                              .00
+                              <td>
+                                <span className={`badge  m-0 `}>
+                                  {data.status}
+                                </span>
+                              </td>
+                              <td>
+                                <Link
+                                  href="/account-order-details"
+                                  className="btn-link text-underline p-0"
+                                >
+                                  View
+                                </Link>
+                              </td>
+                            </tr>
+                          )
+                        )}
                       </tbody>
                     </table>
                   </div>
