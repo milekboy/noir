@@ -1,11 +1,45 @@
+"use client";
 import Link from "next/link";
 import CommanBanner from "@/components/CommanBanner";
 import { AccoountOrdersTable } from "@/constant/Alldata";
 import IMAGES from "@/constant/theme";
 import CommanSidebar from "@/elements/MyAccount/CommanSidebar";
 import CommanLayout from "@/components/CommanLayout";
-
+import { useEffect, useState } from "react";
+import NetworkInstance from "@/app/api/NetworkInstance";
 export default function AccountOrder() {
+  const [orders, setOrders] = useState<any>([]);
+  const [user, setUser] = useState<any>(null);
+  const params = {
+    page: 1,
+    limit: 10,
+    status: "pending",
+    from: "2025-01-01",
+    to: "2025-12-31",
+  };
+
+  useEffect(() => {
+    const stored = localStorage.getItem("userData");
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+    async function fetchOrders() {
+      if (!user) return; // wait until login
+      console.log("Fetching orders for user:", user);
+
+      try {
+        const networkInstance = NetworkInstance();
+        const res = await networkInstance.get("/order/history", { params });
+        setOrders(res.data.items);
+        console.log(res.data);
+      } catch (err: any) {
+        console.log("Error fetching orders:", err?.response?.data || err);
+      }
+    }
+
+    fetchOrders();
+  }, [user]); // runs whenever user changes
+
   return (
     <CommanLayout>
       <div className="page-content bg-light">
