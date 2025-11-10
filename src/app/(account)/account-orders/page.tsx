@@ -46,7 +46,7 @@ export default function AccountOrder() {
     }
 
     fetchOrders();
-  }, [user]); // runs whenever user changes
+  }, []); // runs whenever user changes
 
   return (
     <CommanLayout>
