@@ -9,11 +9,7 @@ import { useEffect, useState } from "react";
 import NetworkInstance from "@/app/api/NetworkInstance";
 export default function AccountOrder() {
   const [orders, setOrders] = useState<any>([]);
-  const [user, setUser] = useState(() => {
-    // initialize from localStorage if exists
-    const stored = localStorage.getItem("userData");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState<any>(null);
   const params = {
     page: 1,
     limit: 10,
@@ -21,24 +17,12 @@ export default function AccountOrder() {
     from: "2025-01-01",
     to: "2025-12-31",
   };
-  // useEffect(() => {
-  //   async function getOrders() {
-  //     try {
-  //       const networkInstance = NetworkInstance();
-  //       const res = await networkInstance.get("/order/history", {
-  //         params, // query parameters
-  //         withCredentials: true, // include cookies
-  //       });
-  //       setOrders(res.data.items);
-  //       console.log(res.data);
-  //     } catch (err: any) {
-  //       console.log("Error fetching orders:", err?.response?.data || err);
-  //     }
-  //   }
 
-  //   getOrders();
-  // }, []);
   useEffect(() => {
+    const stored = localStorage.getItem("userData");
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
     async function fetchOrders() {
       if (!user) return; // wait until login
       console.log("Fetching orders for user:", user);
