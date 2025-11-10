@@ -30,7 +30,6 @@ interface RegisterPayload {
 export async function register(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
- 
   try {
     const response = await networkInstance.post("/auth/register", payload);
     if (response.data) {
@@ -48,7 +47,6 @@ export async function register(
 
     return response.data;
   } catch (error: any) {
-
     if (error.response?.data?.message?.includes("exists")) {
       toast.error(error.response.data.message, {
         theme: "dark",
@@ -67,16 +65,15 @@ export async function register(
     }
 
     console.error("Registration error:", error);
-    
-      toast.error(error.response.data.message, {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
+
+    toast.error(error.response.data.message, {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
     throw new Error("Registration failed. Please try again.");
   }
-
 }
 
 export async function login(
@@ -84,10 +81,14 @@ export async function login(
   password: string
 ): Promise<AuthResponse> {
   try {
-    const response = await networkInstance.post("auth/login", {
-      email,
-      password,
-    });
+    const response = await networkInstance.post(
+      "auth/login",
+      {
+        email,
+        password,
+      },
+      { withCredentials: true }
+    );
     if (response.data && response.data.message) {
       console.log("Backend message:", response.data.message);
     }
@@ -111,12 +112,12 @@ export async function login(
 
       throw new Error(error.response.data.message);
     }
-     toast(error.response.data.message, {
-        theme: "dark",
-        hideProgressBar: true,
-        position: "bottom-right",
-        autoClose: 5000,
-      });
+    toast(error.response.data.message, {
+      theme: "dark",
+      hideProgressBar: true,
+      position: "bottom-right",
+      autoClose: 5000,
+    });
 
     console.error("Login error:", error);
     throw new Error(error?.response?.data?.message);
@@ -135,7 +136,7 @@ export async function verifyOtp(
     if (response.data && response.data.message) {
       console.log("Backend message:", response.data.message);
     }
-    
+
     console.log(response.data);
     toast(response.data.message, {
       theme: "dark",
