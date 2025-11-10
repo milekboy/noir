@@ -35,7 +35,7 @@ export default function AccountOrder() {
       try {
         const networkInstance = NetworkInstance();
         const res = await networkInstance.get("/order/history", { params });
-        setOrders(res.data.items.orders || []);
+        setOrders(res.data?.orders || []);
         console.log(res.data);
       } catch (err: any) {
         console.log("Error fetching orders:", err?.response?.data || err);
