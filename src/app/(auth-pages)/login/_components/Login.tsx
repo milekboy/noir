@@ -15,7 +15,6 @@ export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -39,7 +38,7 @@ export default function Login() {
 
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/");
-    setTimeout(() => window.location.reload(), 1500);
+    // setTimeout(() => window.location.reload(), 1500);
     setLoading(true);
   };
   return (
