@@ -34,7 +34,10 @@ export default function AccountOrder() {
       console.log("Fetching orders for user:", user);
       try {
         const networkInstance = NetworkInstance();
-        const res = await networkInstance.get("/order/history", { params });
+        const res = await networkInstance.get("/order/history", {
+          params,
+          withCredentials: true,
+        });
         setOrders(res.data?.orders || []);
         console.log(res.data);
       } catch (err: any) {
@@ -43,7 +46,7 @@ export default function AccountOrder() {
     }
 
     fetchOrders();
-  }, [user]); // ✅ Runs when user is set
+  }, [user]);
 
   return (
     <CommanLayout>

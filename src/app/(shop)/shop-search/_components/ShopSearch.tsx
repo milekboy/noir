@@ -690,7 +690,7 @@ export default function ShopSearch({
                                   item.productImages[0]?.url || "/fallback.jpg"
                                 }
                                 title={item.name}
-                                price={`₦${item.price}`}
+                                price={item.price}
                                 showdetailModal={() => setDetailModal(true)}
                                 _id={item._id}
                                 category={item.category || ""}
