@@ -213,8 +213,13 @@ const Faq2 = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchSuggestion, setSearchSuggestion] = useState<Item[] | null>(null);
   const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab");
-  const [activeKey, setActiveKey] = useState(tabParam || "General");
+  const [activeKey, setActiveKey] = useState("General");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab") || "General";
+    setActiveKey(tab);
+  }, [searchParams]);
+
   useEffect(() => {
     setTimeout(() => {
       if (searchSuggestion && searchValue.trim() !== "") {
