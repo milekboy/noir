@@ -38,7 +38,7 @@ export default function Login() {
 
     // console.log("User Logged In successfully: ", { email, password });
     router.push("/");
-    // setTimeout(() => window.location.reload(), 1500);
+    setTimeout(() => window.location.reload(), 1500);
     setLoading(true);
   };
   return (
