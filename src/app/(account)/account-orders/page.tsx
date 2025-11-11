@@ -97,11 +97,11 @@ export default function AccountOrder() {
                                 ₦{Number(data.totalAmount).toLocaleString()}
                               </td>
                               <td>
-                                <span className="badge m-0">{data.status}</span>
+                                <span className=" m-0">{data.status}</span>
                               </td>
                               <td>
                                 <Link
-                                  href={`/account-order-details?id=${data.id}`}
+                                  href={`/account-order-details/${data._id}`}
                                   className="btn-link text-underline p-0"
                                 >
                                   View

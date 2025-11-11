@@ -10,17 +10,10 @@ type MenuItem = {
 
 const accountMenu: MenuItem[] = [
   //   { title: "Dashboard", url: "/account-dashboard" },
+  { title: "Profile", url: "/account-profile" },
   { title: "Orders", url: "/account-orders" },
   //   { title: "Downloads", url: "/account-downloads" },
   //   { title: "Return request", url: "/account-return-request" },
-];
-
-const accountSettingsMenu: MenuItem[] = [
-  { title: "Profile", url: "/account-profile" },
-  //   { title: "Address", url: "/account-address" },
-  //   { title: "Shipping methods", url: "/account-shipping-methods" },
-  //   { title: "Payment Methods", url: "/account-payment-methods" },
-  //   { title: "Review", url: "/account-review" },
 ];
 
 export default function CommanSidebar() {
@@ -74,14 +67,6 @@ export default function CommanSidebar() {
             <ul>
               {accountMenu.map((elem, index) => (
                 <li key={index}>
-                  <Link href={elem.url}>{elem.title}</Link>
-                </li>
-              ))}
-            </ul>
-            <div className="nav-title bg-light">ACCOUNT SETTINGS</div>
-            <ul className="account-info-list">
-              {accountSettingsMenu.map((elem, ind) => (
-                <li key={ind}>
                   <Link href={elem.url}>{elem.title}</Link>
                 </li>
               ))}
