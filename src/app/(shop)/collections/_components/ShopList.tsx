@@ -494,7 +494,8 @@ useEffect(()=> {
                     }}
                   >
                     {breadcrumb.length > 3 ? (
-                      crumb
+                     crumb=== "Collections"  ? ( <Link href={`/${crumb.toLowerCase()}`}> {crumb}</Link> ) : crumb
+                      // null
                     ) : (
                       <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
                         <Link href={"/"} onClick={()=> router.push("/")}> Home </Link>
@@ -520,7 +521,7 @@ useEffect(()=> {
                   </Link>
                   {idx < breadcrumb.length - 1 && (
                     <span style={{ margin: "0 6px", color: "#999" }}>
-                      {">"}
+                      {idx === 2 && !subParam ? "": ">"}
                     </span>
                   )}
                 </span>
