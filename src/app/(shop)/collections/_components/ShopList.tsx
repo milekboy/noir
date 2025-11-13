@@ -186,6 +186,7 @@ const getCatgegoryProducts = async (category: string) => {
 
     try {
       const res = await networkInstance.get(`/product/filter/category-name?name=${category}&page=1&limit=10`);
+     
       setProducts(res.data.products);
       console.log("category products", res.data);
     } catch (error) {
@@ -197,7 +198,9 @@ useEffect(()=> {
     if(categoryParam === ""){
       getProducts();
     } else if(categoryParam){
-      getCatgegoryProducts(categoryParam || "")
+      getCatgegoryProducts(categoryParam || "Null")
+      console.log(categoryParam)
+      
     }
 },[categoryParam])
   useEffect(() => {
