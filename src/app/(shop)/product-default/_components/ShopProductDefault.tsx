@@ -39,8 +39,8 @@ export default function ShopProductDefault({
   category,
 }: ShopProductDefaultProps) {
   const [detailModal, setDetailModal] = useState<boolean>(false);
-   const [inputValue, setInputValue] = useState<number>(1);
-   const router = useRouter()
+  const [inputValue, setInputValue] = useState<number>(1);
+  const router = useRouter();
   // console.log(category)
   return (
     <>
@@ -49,9 +49,18 @@ export default function ShopProductDefault({
           <nav aria-label="breadcrumb" className="breadcrumb-row">
             <ul className="breadcrumb mb-0 w-fit">
               <li className="breadcrumb-item">
-                <Link href="/" onClick={()=> router.push("/")}> Home</Link>
+                <Link href="/" onClick={() => router.push("/")}>
+                  {" "}
+                  Home
+                </Link>
               </li>
-              <li className="breadcrumb-item" style={{cursor: "pointer"}} onClick={()=> router.push("/collections")}>Collections</li>
+              <li
+                className="breadcrumb-item"
+                style={{ cursor: "pointer" }}
+                onClick={() => router.push("/collections")}
+              >
+                Collections
+              </li>
               {category && (
                 <li className="breadcrumb-item bg-transparent">
                   <Link href={`/collections?category=${category.label}`}>
@@ -76,7 +85,11 @@ export default function ShopProductDefault({
               <div className="col-xl-8 col-md-8">
                 <div className="row">
                   <div className="col-xl-7">
-                    <ShopProductRightContent inputValue={inputValue} setInputValue={setInputValue} product={product} />
+                    <ShopProductRightContent
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                      product={product}
+                    />
                   </div>
                   <div className="col-xl-5">
                     <BestOfferBlog product={product} quantity={inputValue} />
@@ -100,14 +113,14 @@ export default function ShopProductDefault({
                 <h2 className="title mb-0 text-black">Related products</h2>
               </div>
               <Link
-                href="/shop-list"
+                href="/collections"
                 className="text-secondary font-14 d-flex align-items-center gap-1"
               >
                 See all products
                 <i className="icon feather icon-chevron-right font-18" />
               </Link>
             </div>
-            <div className="swiper-btn-center-lr">
+            {/* <div className="swiper-btn-center-lr">
               <TrandingSlider showdetailModal={() => setDetailModal(true)} />
               <div className="pagination-align">
                 <div className="tranding-button-prev btn-prev">
@@ -117,7 +130,7 @@ export default function ShopProductDefault({
                   <i className="flaticon flaticon-chevron" />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </div>
