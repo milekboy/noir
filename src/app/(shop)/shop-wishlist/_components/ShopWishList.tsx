@@ -145,8 +145,8 @@ export default function ShopWishList() {
                           />
                         </td>
                         <td className="product-item-name">{elem.name}</td>
-                        <td className="product-item-price">
-                          <span>${elem.price}.00</span>
+                        <td className="">
+                          <span>₦{Number(elem.price).toLocaleString()}</span>
                         </td>
                         <td className="product-item-stock">In Stock</td>
                         <td className="product-item-totle">
