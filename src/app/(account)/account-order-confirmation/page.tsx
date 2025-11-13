@@ -36,7 +36,7 @@ function AccountOrderConfirm() {
         window.location.reload();
       }, 1000);
     }
-  }, [searchParams, setCartCount]);
+  }, []);
 
   return (
     <CommanLayout>
