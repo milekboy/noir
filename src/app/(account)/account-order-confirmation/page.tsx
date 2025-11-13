@@ -32,6 +32,9 @@ function AccountOrderConfirm() {
       localStorage.removeItem("cartId");
       localStorage.removeItem("shippingId");
       setCartCount(0);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   }, [searchParams, setCartCount]);
 
