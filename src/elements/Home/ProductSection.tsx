@@ -202,6 +202,7 @@ const ProductSection = () => {
 
   const addToWishlist = async (item: any) => {
     setWishListCount((prev: any) => prev + 1);
+
     toast("Product added to wishlist", {
       theme: "dark",
       hideProgressBar: true,

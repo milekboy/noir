@@ -170,24 +170,22 @@ export default function HeaderSideShoppingCard(props: propType) {
 
   const pathname = window.location.pathname;
   const segments = useMemo(
-        () => pathname.split("/").filter(Boolean),
-        [pathname]
-      );
+    () => pathname.split("/").filter(Boolean),
+    [pathname]
+  );
   async function handleDelete(productId: string, index: number) {
     setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));
-  
-    
-
-      const isCollectionPage =
-        segments.length === 3 && segments[0] === "collections";
-console.log(segments)
-      if (isCollectionPage) {
-        console.log("✅ User is on a collection page:", pathname);
-        setTimeout(()=> {window.location.reload();}, 1500)
-      }else{
-        return;
-      }
+    const isCollectionPage =
+    segments.length === 3 && segments[0] === "collections";
+    console.log(segments);
+    if (isCollectionPage) {
+      console.log("✅ User is on a collection page:", pathname);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } 
+    alert("hello")
     try {
       const sessionId = localStorage.getItem("sessionId");
       await NetworkInstance().delete(`/wishlist/${productId}`, {
@@ -195,8 +193,6 @@ console.log(segments)
           "x-session-id": sessionId,
         },
       });
-      
-     
 
       toast("Product removed from Wishlist", {
         theme: "dark",
@@ -204,7 +200,6 @@ console.log(segments)
         position: "bottom-right",
         autoClose: 5000,
       });
-      
     } catch (err: any) {
       console.log("error: ", err);
     }
@@ -212,7 +207,6 @@ console.log(segments)
   useEffect(() => {
     getWishlist();
   }, []);
-
 
   return (
     <div className="dz-tabs">

@@ -17,6 +17,12 @@ interface ProductImage {
   filename: string;
 }
 
+interface Rating {
+  user: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 interface Product {
   _id: string;
   name: string;
@@ -28,6 +34,7 @@ interface Product {
   size: string;
   createdAt: string;
   updatedAt: string;
+  rating?: Rating[];
   __v: number;
 }
 export interface ShopProductDefaultProps {

@@ -195,16 +195,19 @@ const getCatgegoryProducts = async (category: string) => {
   }
 
 useEffect(()=> {
-    if(categoryParam === ""){
+    if(!categoryParam){
       getProducts();
+      alert(`all pro ${searchParams.getAll("category")}`)
     } else if(categoryParam){
       getCatgegoryProducts(categoryParam || "Null")
-      console.log(categoryParam)
+      alert("not all")
+      console.log(`not pro ${searchParams.getAll("category")}`)
       
     }
 },[categoryParam])
   useEffect(() => {
     setCategoryParam(searchParams.get("category") || "");
+   
   }, [searchParams]);
 
   // Select default category data based on the category query parameter

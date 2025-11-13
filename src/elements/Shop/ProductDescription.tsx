@@ -3,6 +3,12 @@ import IMAGES from "../../constant/theme";
 import ProductTabStyleOne from "./ProductTabStyleOne";
 import Comments from "../Post/Comments";
 
+interface Rating {
+  user: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 export default function ProductDescription() {
   return (
     <div className="dz-tabs">

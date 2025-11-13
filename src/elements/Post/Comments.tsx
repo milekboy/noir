@@ -41,7 +41,12 @@ const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) =
     </div>
   );
 };
-
+interface Rating {
+  user: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 export default function Comments() {
   const [comments, setComments] = useState<CommentType[]>([]);
 
@@ -67,8 +72,8 @@ export default function Comments() {
 
       <div id="comment">
         <ol className="comment-list space-y-6">
-          {comments.map((comment) => (
-            <li key={comment.id} className="comment">
+          {comments.map((comment:any, idx:number) => (
+            <li key={idx} className="comment">
               <CommentBlog {...comment} />
             </li>
           ))}
