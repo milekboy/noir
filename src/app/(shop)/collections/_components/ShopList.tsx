@@ -72,8 +72,6 @@ export default function ShopList({
     }
   };
 
-  
-
   const [detailModal, setDetailModal] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -181,9 +179,8 @@ export default function ShopList({
 
   const searchParams = useSearchParams();
   // const categoryParam = searchParams.get("category");
-   const subParam = searchParams.get("sub");
-const getCatgegoryProducts = async (category: string) => {
-
+  const subParam = searchParams.get("sub");
+  const getCatgegoryProducts = async (category: string) => {
     try {
       const res = await networkInstance.get(`/product/filter/category-name?name=${category}&page=1&limit=10`);
      
@@ -192,17 +189,17 @@ const getCatgegoryProducts = async (category: string) => {
     } catch (error) {
       console.error("Error fetching category products:", error);
     }
-  }
+  };
 
-useEffect(()=> {
-    if(categoryParam === ""){
+  useEffect(() => {
+    if (categoryParam === "") {
       getProducts();
     } else if(categoryParam){
       getCatgegoryProducts(categoryParam || "Null")
       console.log(categoryParam)
       
     }
-},[categoryParam])
+  }, [categoryParam]);
   useEffect(() => {
     setCategoryParam(searchParams.get("category") || "");
   }, [searchParams]);
@@ -581,24 +578,21 @@ useEffect(()=> {
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              
-              { categoryParam && (
+              {categoryParam && (
                 <h4 className="mb-3" style={{ color: "black" }}>
                   New In
                 </h4>
               )}
               <div className="row">
                 <div className="col-xl-12">
-                  
                   <ShopCategorySlider
                     categorySelect={categoryData?.subCategory ?? []}
                   />
-                  
                 </div>
               </div>
               <div
                 className="d-flex justify-content-space-between align-items-center  "
-                style={{ marginTop: "30px", marginLeft: "-30px" }}
+                style={{ marginTop: "-10px", marginLeft: "-30px" }}
               >
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
