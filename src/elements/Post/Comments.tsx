@@ -13,11 +13,22 @@ interface CommentType {
   replies?: CommentType[];
 }
 
-const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) => {
+const CommentBlog: React.FC<CommentType> = ({
+  image,
+  name,
+  content,
+  replies,
+}) => {
   return (
     <div className="comment-body">
       <div className="comment-author vcard">
-        <Image src={image} alt={name} width={50} height={50} className="avatar rounded-full" />
+        <Image
+          src={image}
+          alt={name}
+          width={50}
+          height={50}
+          className="avatar rounded-full"
+        />
         <cite className="fn ml-2">{name}</cite>
       </div>
 
@@ -26,7 +37,9 @@ const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) =
       </div>
 
       <div className="reply">
-        <Link href={"#"} rel="nofollow" className="comment-reply-link">Reply</Link>
+        <Link href={"#"} rel="nofollow" className="comment-reply-link">
+          Reply
+        </Link>
       </div>
 
       {replies && replies.length > 0 && (
@@ -42,7 +55,7 @@ const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) =
   );
 };
 
-export default function Comments() {
+export default function Comments({ productId }: { productId: string }) {
   const [comments, setComments] = useState<CommentType[]>([]);
 
   useEffect(() => {
@@ -62,24 +75,15 @@ export default function Comments() {
 
   return (
     <div className="post-comments comments-area style-1 clearfix">
-      <h4 className="comments-title mb-2">Comments ({comments.length})</h4>
-      <p className="dz-title-text">Join the conversation and share your views.</p>
-
-      <div id="comment">
-        <ol className="comment-list space-y-6">
-          {comments.map((comment) => (
-            <li key={comment.id} className="comment">
-              <CommentBlog {...comment} />
-            </li>
-          ))}
-        </ol>
-      </div>
-
       <div className="default-form comment-respond style-1 mt-6" id="respond">
-        <h4 className="comment-reply-title mb-2" id="reply-title">Good Comments</h4>
-        <p className="dz-title-text">Share your thoughts and feedback to help us improve.</p>
+        <h4 className="comment-reply-title mb-2" id="reply-title">
+          Share Your Review
+        </h4>
+        <p className="dz-title-text">
+          Share your thoughts and feedback to help us improve.
+        </p>
         <div className="clearfix">
-          <CommentForm />
+          <CommentForm productId={productId} />
         </div>
       </div>
     </div>
