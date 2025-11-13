@@ -102,7 +102,7 @@ export default function ShopProductDefault({
         <section className="content-inner-3 pb-0">
           <div className="container">
             <div className="product-description">
-              <ProductDescription />
+              <ProductDescription productId={product._id} />
             </div>
           </div>
         </section>
