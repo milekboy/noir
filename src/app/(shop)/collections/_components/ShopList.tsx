@@ -175,16 +175,15 @@ export default function ShopList({
   const [selectedCollection, setSelectedCollection] = useState("Collections");
 
   const [categoryParam, setCategoryParam] = useState("");
-  const [categoryData, setCategoryData] = useState<CategoryProps>();
+  const [categoryData, setCategoryData] = useState<CategoryProps | null >();
 
   const searchParams = useSearchParams();
   // const categoryParam = searchParams.get("category");
   const subParam = searchParams.get("sub");
   const getCatgegoryProducts = async (category: string) => {
     try {
-      const res = await networkInstance.get(
-        `/product/filter/category-name?name=${category}&page=1&limit=10`
-      );
+      const res = await networkInstance.get(`/product/filter/category-name?name=${category}&page=1&limit=10`);
+     
       setProducts(res.data.products);
       console.log("category products", res.data);
     } catch (error) {
@@ -195,8 +194,10 @@ export default function ShopList({
   useEffect(() => {
     if (categoryParam === "") {
       getProducts();
-    } else if (categoryParam) {
-      getCatgegoryProducts(categoryParam || "");
+    } else if(categoryParam){
+      getCatgegoryProducts(categoryParam || "Null")
+      console.log(categoryParam)
+      
     }
   }, [categoryParam]);
   useEffect(() => {
@@ -472,67 +473,30 @@ export default function ShopList({
                 color: "#444",
               }}
             >
-              {breadcrumb.map((crumb: string, idx: number) => (
-                <span key={idx} style={{ marginRight: "6px" }}>
-                  <Link
-                    href={`${
-                      breadcrumb[idx] === "Collections"
-                        ? "/collections"
-                        : breadcrumb[idx] === "Home"
-                        ? "/"
-                        : `/collections?category=${encodeURIComponent(crumb)}`
-                    }`}
-                    onClick={() => {
-                      window.location.reload();
-                    }}
-                    style={{
-                      color: "#000",
-                      fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
-                      cursor:
-                        idx === breadcrumb.length - 1 ? "default" : "pointer",
-                    }}
-                  >
-                    {breadcrumb.length > 3 ? (
-                      crumb
-                    ) : (
-                      <p style={{ fontWeight: !searchParams ? 600 : 400 }}>
-                        <Link href={"/"} onClick={() => router.push("/")}>
-                          {" "}
-                          Home{" "}
-                        </Link>
-                        <span style={{ margin: "0 6px", color: "#999" }}>
-                          {">"}
-                        </span>{" "}
-                        <Link
-                          href={"/collections"}
-                          onClick={() => router.push("/collections")}
-                        >
-                          {" "}
-                          Collections
-                        </Link>
-                        {categoryParam && (
-                          <>
-                            {" "}
-                            <span style={{ margin: "0 6px", color: "#999" }}>
-                              {">"}
-                            </span>{" "}
-                            <Link
-                              href={`/collections?category=${categoryParam}`}
-                            >
-                              {`${categoryParam}`}
-                            </Link>
-                          </>
-                        )}
-                      </p>
-                    )}
-                  </Link>
-                  {idx < breadcrumb.length - 1 && (
-                    <span style={{ margin: "0 6px", color: "#999" }}>
-                      {">"}
-                    </span>
-                  )}
-                </span>
-              ))}
+              <nav aria-label="breadcrumb" style={{ padding: "10px 0" }}>
+                <Link href="/">Home</Link>
+                <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
+                    <Link href="/collections" onClick={()=> {setCategoryData(null); setTimeout(()=> {window.location.reload()},1000)}}>Collections</Link>
+                {categoryParam && (
+                  <>
+                    
+                    <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
+                    <Link onClick={()=> {router.push(
+                        `/collections?category=${encodeURIComponent(
+                          categoryParam
+                        )}`
+                      ); getCatgegoryProducts(categoryParam)}} href={`/collections?category=${encodeURIComponent(categoryParam)}`}>
+                      {categoryParam}
+                    </Link>
+                  </>
+                )}
+                {subParam && (
+                  <>
+                    <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
+                    <span>{subParam}</span>
+                  </>
+                )}
+              </nav>
             </nav>
           )}
         </div>
