@@ -484,7 +484,11 @@ useEffect(()=> {
                   <>
                     
                     <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
-                    <Link href={`/collections?category=${encodeURIComponent(categoryParam)}`}>
+                    <Link onClick={()=> {router.push(
+                        `/collections?category=${encodeURIComponent(
+                          categoryParam
+                        )}`
+                      ); getCatgegoryProducts(categoryParam)}} href={`/collections?category=${encodeURIComponent(categoryParam)}`}>
                       {categoryParam}
                     </Link>
                   </>
