@@ -83,12 +83,11 @@ export default function ShopSearch({
   );
 
   const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<
-    [number, number] | null
-  >(null);
+  const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
 
-  const onPriceChange = (range: [number, number]) =>
-    setSelectedPriceRange(range);
+  const onPriceChange = (range: number[]) => {
+    setSelectedPrices((prev) => [...new Set([...prev, ...range])]);
+  };
   const onColorChange = (colors: string[]) => setSelectedColors(colors);
 
   const onSizeChange = (sizes: number[]) => {
@@ -105,7 +104,7 @@ export default function ShopSearch({
     setSelectedColors([]);
     setSelectedSizes([]);
     // setBreadcrumb(["Home"]);
-    setSelectedPriceRange(null);
+    setSelectedPrices([]);
     setSelectedCategoryId(null);
     // router.push("/collections");
   };
@@ -489,7 +488,7 @@ export default function ShopSearch({
               </div>
               <div
                 className="d-flex justify-content-space-between align-items-center m-b30"
-                style={{ marginTop: "30px", marginLeft: "-30px" }}
+                style={{ marginTop: "-10px", marginLeft: "-30px" }}
               >
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
@@ -594,18 +593,22 @@ export default function ShopSearch({
                         );
                       })}
 
-                      {/* ✅ Dynamic price range tag */}
-                      {selectedPriceRange && (
-                        <li>
-                          <button
-                            className="tag-btn"
-                            onClick={() => setSelectedPriceRange(null)}
-                          >
-                            ₦{selectedPriceRange[0].toLocaleString()}
-                            <i className="icon feather icon-x tag-close" />
-                          </button>
-                        </li>
-                      )}
+                      {selectedPrices?.length > 0 &&
+                        selectedPrices.map((price) => (
+                          <li key={price}>
+                            <button
+                              className="tag-btn"
+                              onClick={() =>
+                                setSelectedPrices(
+                                  selectedPrices.filter((s) => s !== price)
+                                )
+                              }
+                            >
+                              ₦{price.toLocaleString()}
+                              <i className="icon feather icon-x tag-close" />
+                            </button>
+                          </li>
+                        ))}
                     </ul>
 
                     {/*  */}
@@ -651,13 +654,11 @@ export default function ShopSearch({
                               return false;
 
                             // Price filter
-                            if (selectedPriceRange) {
-                              const price = Number(item.price);
-                              if (
-                                price < selectedPriceRange[0] ||
-                                price > selectedPriceRange[1]
-                              )
-                                return false;
+                            if (
+                              selectedPrices.length &&
+                              !selectedPrices.includes(Number(item.price))
+                            ) {
+                              return false;
                             }
 
                             return true;
