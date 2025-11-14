@@ -185,7 +185,7 @@ export default function HeaderSideShoppingCard(props: propType) {
         window.location.reload();
       }, 2000);
     } 
-    alert("hello")
+ 
     try {
       const sessionId = localStorage.getItem("sessionId");
       await NetworkInstance().delete(`/wishlist/${productId}`, {
