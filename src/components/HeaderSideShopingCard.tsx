@@ -173,9 +173,7 @@ export default function HeaderSideShoppingCard(props: propType) {
     () => pathname.split("/").filter(Boolean),
     [pathname]
   );
-    () => pathname.split("/").filter(Boolean),
-    [pathname]
-  );
+  
   async function handleDelete(productId: string, index: number) {
     setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));

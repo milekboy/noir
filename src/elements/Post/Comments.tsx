@@ -101,7 +101,7 @@ export default function Comments() {
           Share your thoughts and feedback to help us improve.
         </p>
         <div className="clearfix">
-          <CommentForm productId={productId} />
+          <CommentForm productId="" />
         </div>
       </div>
     </div>
