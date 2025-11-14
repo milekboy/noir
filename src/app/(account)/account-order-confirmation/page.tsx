@@ -18,22 +18,30 @@ function AccountOrderConfirm() {
 
   useEffect(() => {
     if (status === "successful") {
-      const cartId = localStorage.getItem("cartId");
+      const hasReloaded = sessionStorage.getItem("hasReloaded");
 
-      localStorage.removeItem("cartId");
-      localStorage.removeItem("shippingId");
-      setCartCount(0);
+      if (!hasReloaded) {
+        const cartId = localStorage.getItem("cartId");
 
-      console.log("✅ Payment successful! Your order is confirmed.");
-      console.log("cartId:", cartId);
-      console.log("tx_ref:", tx_ref);
-      console.log("transaction_id:", transaction_id);
+        localStorage.removeItem("cartId");
+        localStorage.removeItem("shippingId");
+        setCartCount(0);
 
-      localStorage.removeItem("cartId");
-      localStorage.removeItem("shippingId");
-      setCartCount(0);
+        console.log("✅ Payment successful! Your order is confirmed.");
+        console.log("cartId:", cartId);
+        console.log("tx_ref:", tx_ref);
+        console.log("transaction_id:", transaction_id);
+
+        // mark as reloaded so it doesn't happen again
+        sessionStorage.setItem("hasReloaded", "true");
+
+        // reload after short delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
     }
-  }, [searchParams, setCartCount]);
+  }, [status, tx_ref, transaction_id, setCartCount]);
 
   return (
     <CommanLayout>

@@ -17,8 +17,10 @@ const CommanBanner = ({
   return (
     <div
       className="dz-bnr-in bg-secondar overlay-black-ligh py-3"
-      // style={{backgroundImage:`url(${image})`}}
-      style={{ backgroundColor: "white" }}
+      style={{
+        backgroundImage: `url(https://res.cloudinary.com/dbpjskran/image/upload/v1729679011/cld-sample-2.jpg)`,
+      }}
+      // style={{ backgroundColor: "white" }}
     >
       <div className="container  d-flex justify-content-center align-items-center py-2">
         <div className="dz-bnr-inr-entry  w-lg-25">

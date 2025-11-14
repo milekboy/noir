@@ -3,13 +3,11 @@ import IMAGES from "../../constant/theme";
 import ProductTabStyleOne from "./ProductTabStyleOne";
 import Comments from "../Post/Comments";
 
-interface Rating {
-  user: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
-export default function ProductDescription() {
+export default function ProductDescription({
+  productId,
+}: {
+  productId: string;
+}) {
   return (
     <div className="dz-tabs">
       <Tab.Container defaultActiveKey={"description"}>
@@ -20,8 +18,10 @@ export default function ProductDescription() {
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as="li">
-                        <Nav.Link as="button" eventKey={"review"}>Reviews</Nav.Link>
-                    </Nav.Item>
+            <Nav.Link as="button" eventKey={"review"}>
+              Reviews
+            </Nav.Link>
+          </Nav.Item>
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey={"description"}>
@@ -35,7 +35,12 @@ export default function ProductDescription() {
                       textAlign: "center",
                     }}
                   >
-                   A versatile and comfortable designed for everyday wear. Made from soft, breathable cotton fabric, it offers a relaxed fit that keeps you cool and stylish all day long. Perfect for pairing with jeans, shorts, or layering under jackets, this classic tee is a wardrobe essential for casual and effortless style
+                    A versatile and comfortable designed for everyday wear. Made
+                    from soft, breathable cotton fabric, it offers a relaxed fit
+                    that keeps you cool and stylish all day long. Perfect for
+                    pairing with jeans, shorts, or layering under jackets, this
+                    classic tee is a wardrobe essential for casual and
+                    effortless style
                   </p>
                 </div>
               </div>
@@ -43,7 +48,7 @@ export default function ProductDescription() {
           </Tab.Pane>
 
           <Tab.Pane eventKey={"review"}>
-            <Comments />
+            <Comments productId={productId} />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>

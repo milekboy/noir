@@ -13,11 +13,22 @@ interface CommentType {
   replies?: CommentType[];
 }
 
-const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) => {
+const CommentBlog: React.FC<CommentType> = ({
+  image,
+  name,
+  content,
+  replies,
+}) => {
   return (
     <div className="comment-body">
       <div className="comment-author vcard">
-        <Image src={image} alt={name} width={50} height={50} className="avatar rounded-full" />
+        <Image
+          src={image}
+          alt={name}
+          width={50}
+          height={50}
+          className="avatar rounded-full"
+        />
         <cite className="fn ml-2">{name}</cite>
       </div>
 
@@ -26,7 +37,9 @@ const CommentBlog: React.FC<CommentType> = ({ image, name, content, replies }) =
       </div>
 
       <div className="reply">
-        <Link href={"#"} rel="nofollow" className="comment-reply-link">Reply</Link>
+        <Link href={"#"} rel="nofollow" className="comment-reply-link">
+          Reply
+        </Link>
       </div>
 
       {replies && replies.length > 0 && (
@@ -81,10 +94,14 @@ export default function Comments() {
       </div>
 
       <div className="default-form comment-respond style-1 mt-6" id="respond">
-        <h4 className="comment-reply-title mb-2" id="reply-title">Good Comments</h4>
-        <p className="dz-title-text">Share your thoughts and feedback to help us improve.</p>
+        <h4 className="comment-reply-title mb-2" id="reply-title">
+          Share Your Review
+        </h4>
+        <p className="dz-title-text">
+          Share your thoughts and feedback to help us improve.
+        </p>
         <div className="clearfix">
-          <CommentForm />
+          <CommentForm productId={productId} />
         </div>
       </div>
     </div>

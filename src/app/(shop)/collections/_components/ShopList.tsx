@@ -72,8 +72,6 @@ export default function ShopList({
     }
   };
 
-  
-
   const [detailModal, setDetailModal] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -83,9 +81,8 @@ export default function ShopList({
 
   const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
-
   const onPriceChange = (range: number[]) => {
-    setSelectedPrices([...new Set(range)]);
+    setSelectedPrices((prev) => [...new Set([...prev, ...range])]);
   };
 
   const onColorChange = (colors: string[]) => setSelectedColors(colors);
@@ -177,22 +174,23 @@ export default function ShopList({
   const [selectedCollection, setSelectedCollection] = useState("Collections");
 
   const [categoryParam, setCategoryParam] = useState("");
-  const [categoryData, setCategoryData] = useState<CategoryProps | null >();
+  const [categoryData, setCategoryData] = useState<CategoryProps | null>();
 
   const searchParams = useSearchParams();
   // const categoryParam = searchParams.get("category");
-   const subParam = searchParams.get("sub");
-const getCatgegoryProducts = async (category: string) => {
-
+  const subParam = searchParams.get("sub");
+  const getCatgegoryProducts = async (category: string) => {
     try {
-      const res = await networkInstance.get(`/product/filter/category-name?name=${category}&page=1&limit=10`);
-     
+      const res = await networkInstance.get(
+        `/product/filter/category-name?name=${category}&page=1&limit=10`
+      );
+
       setProducts(res.data.products);
       console.log("category products", res.data);
     } catch (error) {
       console.error("Error fetching category products:", error);
     }
-  }
+  };
 
 const getSubCatgegoryProducts = async (subcategoryId: string, categoryId: string) => {
 
@@ -215,7 +213,7 @@ useEffect(()=> {
       console.log(`not pro ${searchParams.getAll("category")}`)
       
     }
-},[categoryParam])
+  }, [categoryParam]);
   useEffect(() => {
     setCategoryParam(searchParams.get("category") || "");
    
@@ -489,23 +487,44 @@ useEffect(()=> {
               <nav aria-label="breadcrumb" style={{ padding: "10px 0" }}>
                 <Link href="/">Home</Link>
                 <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
-                    <Link href="/collections" onClick={()=> {setCategoryData(null); setTimeout(()=> {window.location.reload()},1000)}}>Collections</Link>
+                <Link
+                  href="/collections"
+                  onClick={() => {
+                    setCategoryData(null);
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1000);
+                  }}
+                >
+                  Collections
+                </Link>
                 {categoryParam && (
                   <>
-                    
-                    <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
-                    <Link onClick={()=> {router.push(
-                        `/collections?category=${encodeURIComponent(
-                          categoryParam
-                        )}`
-                      ); getCatgegoryProducts(categoryParam)}} href={`/collections?category=${encodeURIComponent(categoryParam)}`}>
+                    <span style={{ margin: "0 6px", color: "#999" }}>
+                      {">"}
+                    </span>
+                    <Link
+                      onClick={() => {
+                        router.push(
+                          `/collections?category=${encodeURIComponent(
+                            categoryParam
+                          )}`
+                        );
+                        getCatgegoryProducts(categoryParam);
+                      }}
+                      href={`/collections?category=${encodeURIComponent(
+                        categoryParam
+                      )}`}
+                    >
                       {categoryParam}
                     </Link>
                   </>
                 )}
                 {subParam && (
                   <>
-                    <span style={{ margin: "0 6px", color: "#999" }}>{">"}</span>
+                    <span style={{ margin: "0 6px", color: "#999" }}>
+                      {">"}
+                    </span>
                     <span>{subParam}</span>
                   </>
                 )}
@@ -591,24 +610,21 @@ useEffect(()=> {
 
             {/* Main Content */}
             <div className="col-80 col-xl-12 col-sm-">
-              
-              { categoryParam && (
+              {categoryParam && (
                 <h4 className="mb-3" style={{ color: "black" }}>
                   New In
                 </h4>
               )}
               <div className="row">
                 <div className="col-xl-12">
-                  
                   <ShopCategorySlider
                     categorySelect={categoryData?.subCategory ?? []}
                   />
-                  
                 </div>
               </div>
               <div
                 className="d-flex justify-content-space-between align-items-center  "
-                style={{ marginTop: "30px", marginLeft: "-30px" }}
+                style={{ marginTop: "-10px", marginLeft: "-30px" }}
               >
                 {/* Select boxes (shown/hidden based on state) */}
                 {showFilters && (
