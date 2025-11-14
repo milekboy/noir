@@ -48,10 +48,11 @@ export default function ProductDescription({
           </Tab.Pane>
 
           <Tab.Pane eventKey={"review"}>
-            <Comments productId={productId} />
+            <Comments/>
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>
     </div>
   );
 }
+

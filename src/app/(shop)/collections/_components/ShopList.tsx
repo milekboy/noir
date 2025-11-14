@@ -192,16 +192,31 @@ export default function ShopList({
     }
   };
 
-  useEffect(() => {
-    if (categoryParam === "") {
+const getSubCatgegoryProducts = async (subcategoryId: string, categoryId: string) => {
+
+    try {
+      const res = await networkInstance.get(`category/${subcategoryId}/subcategory/${categoryId}?page=1&limit=12`);
+      setProducts(res.data.products);
+      console.log("subcategory products", res.data);
+    } catch (error) {
+      console.error("Error fetching subcategory products:", error);
+    } 
+  }
+
+useEffect(()=> {
+    if(!categoryParam){
       getProducts();
-    } else if (categoryParam) {
-      getCatgegoryProducts(categoryParam || "Null");
-      console.log(categoryParam);
+      // alert(`all pro ${searchParams.getAll("category")}`)
+    } else if(categoryParam){
+      getCatgegoryProducts(categoryParam || "Null")
+      // alert("not all")
+      console.log(`not pro ${searchParams.getAll("category")}`)
+      
     }
   }, [categoryParam]);
   useEffect(() => {
     setCategoryParam(searchParams.get("category") || "");
+   
   }, [searchParams]);
 
   // Select default category data based on the category query parameter
@@ -216,11 +231,6 @@ export default function ShopList({
     }
   }, [categoryParam, navItems]);
 
-  useEffect(() => {
-    categoryData?.label;
-
-    // console.log(categoryData, "categorydata")
-  }, [categoryData]);
   return (
     <div className="page-content bg-light">
       <header
@@ -411,6 +421,7 @@ export default function ShopList({
                             onClick={(e) => {
                               e.preventDefault();
                               handleDropdownClick(item.label, drop.label);
+                              getSubCatgegoryProducts(item.id, drop.id)
                               setCategoryData(item);
                               router.push(
                                 `/collections?category=${encodeURIComponent(

@@ -54,8 +54,13 @@ const CommentBlog: React.FC<CommentType> = ({
     </div>
   );
 };
-
-export default function Comments({ productId }: { productId: string }) {
+interface Rating {
+  user: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+export default function Comments() {
   const [comments, setComments] = useState<CommentType[]>([]);
 
   useEffect(() => {
@@ -75,6 +80,19 @@ export default function Comments({ productId }: { productId: string }) {
 
   return (
     <div className="post-comments comments-area style-1 clearfix">
+      <h4 className="comments-title mb-2">Comments ({comments.length})</h4>
+      <p className="dz-title-text">Join the conversation and share your views.</p>
+
+      <div id="comment">
+        <ol className="comment-list space-y-6">
+          {comments.map((comment:any, idx:number) => (
+            <li key={idx} className="comment">
+              <CommentBlog {...comment} />
+            </li>
+          ))}
+        </ol>
+      </div>
+
       <div className="default-form comment-respond style-1 mt-6" id="respond">
         <h4 className="comment-reply-title mb-2" id="reply-title">
           Share Your Review
@@ -83,7 +101,7 @@ export default function Comments({ productId }: { productId: string }) {
           Share your thoughts and feedback to help us improve.
         </p>
         <div className="clearfix">
-          <CommentForm productId={productId} />
+          <CommentForm productId="" />
         </div>
       </div>
     </div>

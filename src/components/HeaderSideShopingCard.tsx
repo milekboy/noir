@@ -173,21 +173,20 @@ export default function HeaderSideShoppingCard(props: propType) {
     () => pathname.split("/").filter(Boolean),
     [pathname]
   );
+  
   async function handleDelete(productId: string, index: number) {
     setWishListCount((prev: any) => prev - 1);
     setWishlist((prev) => prev.filter((_, i) => i !== index));
-
     const isCollectionPage =
-      segments.length === 3 && segments[0] === "collections";
+    segments.length === 3 && segments[0] === "collections";
     console.log(segments);
     if (isCollectionPage) {
       console.log("✅ User is on a collection page:", pathname);
       setTimeout(() => {
         window.location.reload();
-      }, 1500);
-    } else {
-      return;
-    }
+      }, 2000);
+    } 
+ 
     try {
       const sessionId = localStorage.getItem("sessionId");
       await NetworkInstance().delete(`/wishlist/${productId}`, {
